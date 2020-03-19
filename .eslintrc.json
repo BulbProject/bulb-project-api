@@ -1,0 +1,44 @@
+{
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "prettier/@typescript-eslint"
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": {},
+      "node": {
+        "extensions": [
+          ".ts"
+        ]
+      }
+    }
+  },
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/member-ordering": "warn",
+    "import/named": "off",
+    "import/extensions": "off",
+    "import/prefer-default-export": "off",
+    "no-console": "warn",
+    "no-restricted-globals": "off",
+    "no-empty-function": "warn",
+    "no-unused-vars": "warn",
+    "no-useless-constructor": "off",
+    "prettier/prettier": "warn",
+    "spaced-comment": "warn"
+  }
+}
