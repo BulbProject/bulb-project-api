@@ -11,7 +11,7 @@ Project brain 💡
 ## Available NPM scripts
 
 - `yarn dev` - Start Dev server for development;
-- `yarn build` - Compile files to JavaScript (to folder `dist/`);
+- `yarn build` - Compile files to JavaScript (to folder `build/`);
 - `yarn start` - Start API Service (include command `build`);
 - `yarn autofix` - Lint and fix source files;
 - `yarn autoformat` - Formatting source files.
