@@ -23,8 +23,6 @@ export interface Metric {
   /**
    * The schema element that the metric relates.
    * For example observation may be defined against items or against lot.
-   *
-   * @ToDo: make a discriminated union.
    */
   relatesTo?: 'item' | 'lot';
   /**

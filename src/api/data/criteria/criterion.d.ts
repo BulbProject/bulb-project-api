@@ -1,6 +1,8 @@
 import { RequirementGroup } from './requirement-group';
 
-export interface Criterion {
+export type Criterion = CriterionItem | CriterionBidder;
+
+interface CriterionBase {
   /**
    * The identifier for this criterion.
    */
@@ -23,8 +25,6 @@ export interface Criterion {
    * Where relatesTo = "item" this field must be populated with the id of the item in this tender section
    * which the criterion relates to.
    * Where relatesTo <> "item" this field should be omitted.
-   *
-   * @ToDo: make this a discriminated union.
    */
   relatedItem?: string;
   /**
@@ -32,4 +32,14 @@ export interface Criterion {
    * For example criterion may be defined against items or against bidders.
    */
   relatesTo?: 'item' | 'bidder';
+}
+
+interface CriterionItem extends CriterionBase {
+  relatesTo?: 'item';
+  relatedItem: string;
+}
+
+interface CriterionBidder extends CriterionBase {
+  relatesTo?: 'bidder';
+  relatedItem?: never;
 }

@@ -2,7 +2,9 @@ import { Period } from '../../data';
 import { RequirementReference } from './requirement-reference';
 import { OrganizationReference } from './organization-reference';
 
-export interface RequirementResponse {
+export type RequirementResponse = RequirementResponseItem | RequirementResponseTenderer;
+
+interface RequirementResponseBase {
   /**
    * The identifier for this requirement response.
    */
@@ -31,8 +33,6 @@ export interface RequirementResponse {
   /**
    * Where this requirement response relates to an item and is provided by the buyer or procuring entity
    * this field should be used to reference the id in the items' section for the item the response relates to.
-   *
-   * @ToDo: make a discriminated union.
    */
   relatedItem?: string;
   /**
@@ -40,5 +40,15 @@ export interface RequirementResponse {
    * this field should be used as OrganizationReference the entry in the parties section
    * for the tenderer the response relates to.
    */
+  relatedTenderer?: OrganizationReference;
+}
+
+interface RequirementResponseItem extends RequirementResponseBase {
+  relatedItem?: string;
+  relatedTenderer?: never;
+}
+
+interface RequirementResponseTenderer extends RequirementResponseBase {
+  relatedItem?: never;
   relatedTenderer?: OrganizationReference;
 }

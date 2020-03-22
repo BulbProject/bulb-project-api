@@ -2,7 +2,9 @@ import { DataType } from '../../shared';
 import { OptionDetails } from '../options';
 import { Period } from '../period';
 
-export interface Requirement {
+export type Requirement = RequirementNumber | RequirementString | RequirementBoolean;
+
+interface RequirementBase {
   /**
    * The identifier for this requirement.
    */
@@ -15,13 +17,11 @@ export interface Requirement {
    * Requirement description.
    */
   description?: string;
-  dataType?: DataType;
+  dataType: DataType;
   /**
    * Used to state the requirement when the response must be particular value.
-   *
-   * @ToDo: make a discriminated union.
    */
-  expectedValue?: string | number;
+  expectedValue?: string | number | boolean;
   /**
    * Used to state the lower bound of the requirement when the response must be within a certain range.
    */
@@ -38,4 +38,25 @@ export interface Requirement {
    * Used to specify a particular period the requirement applies to, for example the bidder's turnover in a given year.
    */
   period?: Period;
+}
+
+interface RequirementNumber extends RequirementBase {
+  dataType: 'number' | 'integer';
+  expectedValue?: number;
+  minValue?: number;
+  maxValue?: number;
+}
+
+interface RequirementString extends RequirementBase {
+  dataType: 'string';
+  expectedValue?: string;
+  minValue?: never;
+  maxValue?: never;
+}
+
+interface RequirementBoolean extends RequirementBase {
+  dataType: 'boolean';
+  expectedValue?: boolean;
+  minValue?: never;
+  maxValue?: never;
 }
