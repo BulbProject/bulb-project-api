@@ -4,7 +4,7 @@ export interface Coefficient {
   /**
    * An identifier for this coefficient.
    */
-  id: number | string;
+  id: string | number;
   /**
    * Precise value that has to be applied for conversion in specific case.
    */

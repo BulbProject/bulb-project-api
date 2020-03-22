@@ -6,7 +6,7 @@ export interface Unit {
    * For example, with UNCEFACT, this is the value of the 'Common Code' column.
    * From this identifier, applications can look-up the human readable name or symbol for this unit of measure.
    */
-  id?: string;
+  id: string;
   /**
    * Name of the unit.
    */

@@ -4,7 +4,7 @@ export interface Conversion {
   /**
    * An identifier for this conversion.
    */
-  id: number | string;
+  id: string | number;
   /**
    * Free text description of this conversion could be shared here.
    */

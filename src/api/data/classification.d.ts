@@ -2,7 +2,7 @@ export interface Classification {
   /**
    * The classification code drawn from the selected scheme.
    */
-  id?: string | number;
+  id: string | number;
   /**
    * A textual description or title for the code.
    */
