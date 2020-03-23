@@ -4,6 +4,7 @@
     "target": "es5",
     "moduleResolution": "node",
     "strict": true,
+    "esModuleInterop": true,
     "outDir": "build",
     "baseUrl": "src",
     "paths": {
