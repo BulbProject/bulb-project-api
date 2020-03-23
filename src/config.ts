@@ -4,7 +4,8 @@ export const serviceConfig = {
   port: +(process.env.SERVICE_PORT || 3333),
 };
 
-export const loggerConfig = {
-  maxFileSizeMb: process.env.LOG_FILE_SIZE_MB || '5',
-  maxFilesSaveDays: process.env.LOG_FILES_SAVE_DAYS || '30',
+export const dbConfig = {
+  host: process.env.DB_HOST || '',
+  port: process.env.DB_PORT || '27017',
+  name: process.env.DB_NAME || 'bulb-api',
 };

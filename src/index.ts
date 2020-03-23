@@ -1,5 +1,7 @@
 import fastify from 'fastify';
 
+import { connectToDb } from 'lib/db';
+
 import routes from 'routes';
 
 import { serviceConfig } from 'config';
@@ -13,6 +15,8 @@ const start = async (): Promise<void> => {
     await app.listen(serviceConfig.port);
     // eslint-disable-next-line no-console
     if (process.env.NODE_ENV !== 'production') console.log(app.printRoutes());
+
+    await connectToDb();
   } catch (error) {
     app.log.error(error);
     process.exit(1);
