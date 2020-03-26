@@ -35,7 +35,7 @@
     "import/named": "off",
     "import/extensions": "off",
     "import/prefer-default-export": "off",
-    "no-console": "warn",
+    "no-console": "off",
     "no-restricted-globals": "off",
     "no-empty-function": "warn",
     "no-unused-vars": "off",
