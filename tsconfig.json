@@ -13,7 +13,7 @@
       "models": ["./models/index.ts"],
       "controllers": ["./controllers/index.ts"],
       "lib/*": ["./lib/*"],
-      "types": ["./types/index.ts"]
+      "types/": ["./types/*"]
     }
   },
   "include": ["src"],
