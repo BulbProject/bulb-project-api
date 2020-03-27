@@ -1,19 +1,19 @@
 import { CategoryVersionModel } from 'models';
 
-import { Category } from 'types/data/category';
-import { CategoryVersion } from 'types/transport/category-version';
+import { Category } from 'types/data';
+import { CategoryVersion } from 'types/transport';
 
 const save = async (category: Category): Promise<{ id: string; version: string } | undefined> => {
   try {
     /* @TODO need change to real data */
-    const categoryForSaving = {
+    const categoryVersionForSaving = {
       _id: '123',
       version: '1',
       date: '2018-10-18T06:20:14Z',
       category,
     };
 
-    await new CategoryVersionModel(categoryForSaving).save();
+    await new CategoryVersionModel(categoryVersionForSaving).save();
 
     return {
       id: category.id,
