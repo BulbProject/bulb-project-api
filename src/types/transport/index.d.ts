@@ -1,2 +1,2 @@
-export * from './category-package';
+export * from './versions-package';
 export * from './category-version';

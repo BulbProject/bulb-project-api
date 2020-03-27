@@ -1,10 +1,8 @@
-import { CategoryVersion } from './category-version';
-
 /**
  * The version package contains a list of versions along with some publishing metadata.  A 'package' of a version
  * follows the same structure as a version, but combines information from multiple points in time into a single summary.
  */
-export interface CategoryPackage<Publisher = {}> {
+export interface VersionsPackage<Publisher = {}> {
   /**
    * A link to the license that applies to the data in this package. A Public Domain Dedication
    * or [Open Definition Conformant](http://opendefinition.org/licenses/) license is recommended. The canonical URI
@@ -37,5 +35,5 @@ export interface CategoryPackage<Publisher = {}> {
   /**
    * An array of one or more versions
    */
-  versions: CategoryVersion[];
+  versions: string[];
 }
