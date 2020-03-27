@@ -2,7 +2,7 @@ import { Document, Schema, model } from 'mongoose';
 
 import { VersionsPackage } from 'types/transport';
 
-type TVersionsPackageModel = VersionsPackage & Document;
+type VersionsPackageModelType = VersionsPackage & Document;
 
 const versionsPackageSchema = new Schema({
   id: String,
@@ -18,4 +18,4 @@ const versionsPackageSchema = new Schema({
   versions: [String],
 });
 
-export const VersionsPackageModel = model<TVersionsPackageModel>('versions-packages', versionsPackageSchema);
+export const VersionsPackageModel = model<VersionsPackageModelType>('versions-packages', versionsPackageSchema);
