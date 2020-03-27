@@ -13,7 +13,6 @@ routes.forEach(route => route(app));
 const start = async (): Promise<void> => {
   try {
     await app.listen(serviceConfig.port);
-    // eslint-disable-next-line no-console
     if (process.env.NODE_ENV !== 'production') console.log(app.printRoutes());
 
     await connectToDb();

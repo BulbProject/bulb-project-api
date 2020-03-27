@@ -16,5 +16,5 @@ export interface CategoryVersion {
   /**
    * An identifier for this particular version of information
    */
-  id: string;
+  version: string;
 }
