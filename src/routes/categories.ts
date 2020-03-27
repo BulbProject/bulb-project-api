@@ -1,16 +1,16 @@
 import fastify from 'fastify';
 
-import { categoryVersion, versionsPackage } from 'controllers';
+import { categoriesListEntity, versionsPackage, categoryVersion } from 'controllers';
 
 export const categories = (app: fastify.FastifyInstance): void => {
   app.register(
     (instance, opts, next) => {
       instance.get('/', async () => {
-        return 'Categories list';
+        return await categoriesListEntity.getAll();
       });
 
       instance.get('/:categoryId', async ({ params }) => {
-        return versionsPackage.getOne(params.categoryId);
+        return await versionsPackage.getOne(params.categoryId);
       });
 
       instance.get('/:categoryId/:version', async ({ params }) => {
