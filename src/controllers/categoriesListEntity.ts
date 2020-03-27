@@ -1,5 +1,7 @@
 import { CategoriesListEntityModel } from 'models';
 
+import { CategoriesListEntity } from 'types/transport';
+
 const save = async (categoryId: string, version: string): Promise<{ saved: boolean } | undefined> => {
   try {
     await new CategoriesListEntityModel({ id: categoryId, version }).save();
@@ -10,7 +12,7 @@ const save = async (categoryId: string, version: string): Promise<{ saved: boole
   }
 };
 
-const getAll = async (): Promise<{ id: string; version: string }[] | undefined> => {
+const getAll = async (): Promise<CategoriesListEntity[] | undefined> => {
   try {
     return await CategoriesListEntityModel.find({}, '-_id -__v');
   } catch (e) {
