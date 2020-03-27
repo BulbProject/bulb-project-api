@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 
-import { categoryVersion } from 'controllers';
+import { categoryVersion, versionsPackage } from 'controllers';
 
 export const categories = (app: fastify.FastifyInstance): void => {
   app.register(
@@ -9,8 +9,8 @@ export const categories = (app: fastify.FastifyInstance): void => {
         return 'Categories list';
       });
 
-      instance.get('/:categoryId', async req => {
-        return `Category with id ${req.params.categoryId}`;
+      instance.get('/:categoryId', async ({ params }) => {
+        return versionsPackage.getOne(params.categoryId);
       });
 
       instance.get('/:categoryId/:version', async ({ params }) => {

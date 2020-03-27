@@ -1,12 +1,14 @@
 import fastify from 'fastify';
 
-import { categoryVersion } from 'controllers';
+import { categoryVersion, versionsPackage } from 'controllers';
 
 /* @TODO Must be secure */
 export const manage = (app: fastify.FastifyInstance): void => {
   app.register(
     (instance, opts, next) => {
       instance.post('/categories/:categoryId', async ({ body }) => {
+        await versionsPackage.save(body.id);
+
         return await categoryVersion.save(body);
       });
 
