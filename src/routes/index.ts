@@ -1,6 +1,6 @@
-import { categories } from './categories';
-import { manage } from './manage';
-import { action } from './action';
-import { specification } from './specification';
+import { categoriesRoute } from './categories';
+import { manageRoute } from './manage';
+import { doRoute } from './do';
+import { specificationRoute } from './specification';
 
-export default [categories, manage, action, specification];
+export default [categoriesRoute, manageRoute, doRoute, specificationRoute];
