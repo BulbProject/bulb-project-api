@@ -1,7 +1,14 @@
 import './lib/env';
 
+import packageJson from '../package.json';
+
 export const serviceConfig = {
-  port: +(process.env.SERVICE_PORT || 3333),
+  host: process.env.SERVICE_HOST || '',
+  port: process.env.SERVICE_PORT || '3333',
+  url: `${process.env.SERVICE_HOST}${process.env.SERVICE_PORT ? `:${process.env.SERVICE_PORT}` : ''}`,
+
+  name: 'The Bulb Project',
+  version: packageJson.version,
 };
 
 export const dbConfig = {
