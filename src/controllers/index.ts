@@ -1,5 +1,5 @@
-import categoryControllers from './category';
+import categoryVersionController from './categoryVersion';
 
-export const category = {
-  ...categoryControllers,
+export const categoryVersion = {
+  ...categoryVersionController,
 };

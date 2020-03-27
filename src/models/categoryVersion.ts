@@ -2,9 +2,9 @@ import { Document, Schema, model } from 'mongoose';
 
 import { CategoryVersion } from 'types/transport/category-version';
 
-type CategoryModel = CategoryVersion & Document;
+type TCategoryVersionsModel = CategoryVersion & Document;
 
-const categoryModel = new Schema(
+const categoryVersionSchema = new Schema(
   {
     _id: String,
     version: String,
@@ -166,4 +166,4 @@ const categoryModel = new Schema(
   }
 );
 
-export const CategoryModel = model<CategoryModel>('categories', categoryModel);
+export const CategoryVersionModel = model<TCategoryVersionsModel>('categoriesVersions', categoryVersionSchema);

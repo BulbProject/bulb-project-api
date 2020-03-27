@@ -1,4 +1,4 @@
-import { CategoryModel } from 'models';
+import { CategoryVersionModel } from 'models';
 
 import { Category } from 'types/data/category';
 import { CategoryVersion } from 'types/transport/category-version';
@@ -12,8 +12,9 @@ const save = async (category: Category): Promise<{ id: string; version: string }
       date: '2018-10-18T06:20:14Z',
       category,
     };
-    const _category = new CategoryModel(categoryForSaving);
-    await _category.save();
+
+    await new CategoryVersionModel(categoryForSaving).save();
+
     return {
       id: category.id,
       version: '1',
@@ -25,10 +26,10 @@ const save = async (category: Category): Promise<{ id: string; version: string }
 
 const getOne = async (categoryId: string, version: string): Promise<CategoryVersion | null | undefined> => {
   try {
-    return await CategoryModel.findOne(
+    return await CategoryVersionModel.findOne(
       {
         'category.id': categoryId,
-        version: version,
+        version,
       },
       '-_id -__v'
     );
