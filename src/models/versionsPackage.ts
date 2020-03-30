@@ -5,7 +5,7 @@ import { VersionsPackage } from 'types/transport';
 type VersionsPackageModelType = VersionsPackage & Document;
 
 const versionsPackageSchema = new Schema({
-  id: String,
+  _id: String,
   uri: String,
   version: String,
   publisher: {
