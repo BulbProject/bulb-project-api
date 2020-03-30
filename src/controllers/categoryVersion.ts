@@ -1,7 +1,5 @@
 import { CategoryVersionModel } from 'models';
 
-import { categoryAddBodySchema } from 'validation-schemas';
-
 import { Category } from 'types/data';
 import { CategoryVersion } from 'types/transport';
 
@@ -10,8 +8,6 @@ const add = async (
   version: string,
   publishedDate: string
 ): Promise<{ id: string; version: string }> => {
-  await categoryAddBodySchema.validate(category);
-
   const metaData = {
     _id: `${category.id}-${version}`,
     version,
