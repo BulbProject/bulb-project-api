@@ -2,14 +2,29 @@ import fastify from 'fastify';
 
 import { categoriesListEntity, versionsPackage, categoryVersion } from 'controllers';
 
+import { categoryAddBodySchema } from 'validation-schemas';
+
+import { formatDate } from 'utils';
+
 /* @TODO Must be secure */
 export const manageRoute = (app: fastify.FastifyInstance): void => {
-  app.post('/manage/categories/:categoryId', async ({ body }) => {
-    await categoriesListEntity.save(body.id, '1');
+  app.post('/manage/categories/:categoryId', {}, async (req, reply) => {
+    const { body } = req;
 
-    await versionsPackage.save(body.id);
+    const version = 'v1';
+    const publishedDate = formatDate(new Date());
 
-    return await categoryVersion.save(body);
+    try {
+      await categoryAddBodySchema.validate(body);
+
+      await categoriesListEntity.add(body.id, version);
+
+      await versionsPackage.add(body.id, version, publishedDate);
+
+      return await categoryVersion.add(body, version, publishedDate);
+    } catch (e) {
+      return reply.code(400).send(e);
+    }
   });
 
   app.patch('/manage/categories/:categoryId', async req => {

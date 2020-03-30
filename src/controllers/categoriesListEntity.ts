@@ -2,14 +2,10 @@ import { CategoriesListEntityModel } from 'models';
 
 import { CategoriesListEntity } from 'types/transport';
 
-const save = async (categoryId: string, version: string): Promise<{ saved: boolean } | undefined> => {
-  try {
-    await new CategoriesListEntityModel({ id: categoryId, version }).save();
+const add = async (categoryId: string, version: string): Promise<void> => {
+  const categoriesListEntityForSaving = { id: categoryId, version };
 
-    return { saved: true };
-  } catch (e) {
-    console.error(e);
-  }
+  await new CategoriesListEntityModel(categoriesListEntityForSaving).save();
 };
 
 const getAll = async (): Promise<CategoriesListEntity[] | undefined> => {
@@ -20,4 +16,4 @@ const getAll = async (): Promise<CategoriesListEntity[] | undefined> => {
   }
 };
 
-export default { save, getAll };
+export default { add, getAll };

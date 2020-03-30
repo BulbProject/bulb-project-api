@@ -14,7 +14,9 @@
       "models": ["./models/index.ts"],
       "controllers": ["./controllers/index.ts"],
       "lib/*": ["./lib/*"],
-      "types/": ["./types/*"]
+      "validation-schemas": ["./validation-schemas/index.ts"],
+      "types/": ["./types/*"],
+      "utils": ["./utils.ts"]
     }
   },
   "include": ["src"],

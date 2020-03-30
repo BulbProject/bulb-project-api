@@ -1,6 +1,6 @@
 import categoriesListEntityController from './categoriesListEntity';
-import categoryVersionController from './categoryVersion';
 import versionsPackageController from './versionsPackage';
+import categoryVersionController from './categoryVersion';
 
 export const categoriesListEntity = {
   ...categoriesListEntityController,
