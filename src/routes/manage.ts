@@ -6,11 +6,13 @@ import { formatDate } from 'utils';
 
 /* @TODO Must be secure */
 export const manageRoute = (app: fastify.FastifyInstance): void => {
-  app.post('/manage/categories/:categoryId', async ({ body }, reply) => {
-    try {
-      const version = 'v1';
-      const publishedDate = formatDate(new Date());
+  app.post('/manage/categories/:categoryId', async (req, reply) => {
+    const { body } = req;
 
+    const version = 'v1';
+    const publishedDate = formatDate(new Date());
+
+    try {
       await categoriesListEntity.add(body.id, version);
 
       await versionsPackage.add(body.id, version, publishedDate);
