@@ -1,27 +1,29 @@
 import { CategoryVersionModel } from 'models';
 
+import { categoryAddBodySchema } from 'validation-schemas';
+
 import { Category } from 'types/data';
 import { CategoryVersion } from 'types/transport';
 
-const save = async (category: Category): Promise<{ id: string; version: string } | undefined> => {
-  try {
-    /* @TODO need change to real data */
-    const categoryVersionForSaving = {
-      _id: '123',
-      version: '1',
-      date: '2018-10-18T06:20:14Z',
-      category,
-    };
+const add = async (
+  category: Category,
+  version: string,
+  publishedDate: string
+): Promise<{ id: string; version: string }> => {
+  await categoryAddBodySchema.validate(category);
 
-    await new CategoryVersionModel(categoryVersionForSaving).save();
+  const metaData = {
+    _id: `${category.id}-${version}`,
+    version,
+    date: publishedDate,
+  };
 
-    return {
-      id: category.id,
-      version: '1',
-    };
-  } catch (e) {
-    console.error(e);
-  }
+  await new CategoryVersionModel(Object.assign({}, metaData, { category })).save();
+
+  return {
+    id: category.id,
+    version,
+  };
 };
 
 const getOne = async (categoryId: string, version: string): Promise<CategoryVersion | null | undefined> => {
@@ -38,4 +40,4 @@ const getOne = async (categoryId: string, version: string): Promise<CategoryVers
   }
 };
 
-export default { save, getOne };
+export default { add, getOne };
