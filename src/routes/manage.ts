@@ -11,9 +11,9 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
       const version = 'v1';
       const publishedDate = formatDate(new Date());
 
-      await categoriesListEntity.save(body.id, version);
+      await categoriesListEntity.add(body.id, version);
 
-      await versionsPackage.save(body.id, version, publishedDate);
+      await versionsPackage.add(body.id, version, publishedDate);
 
       return await categoryVersion.add(body, version, publishedDate);
     } catch (e) {

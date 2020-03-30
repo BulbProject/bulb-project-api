@@ -6,7 +6,7 @@ import { VersionsPackage } from 'types/transport';
 
 const { name, version: serviceVersion, url } = serviceConfig;
 
-const save = async (categoryId: string, version: string, publishedDate: string): Promise<void> => {
+const add = async (categoryId: string, version: string, publishedDate: string): Promise<void> => {
   const versionsPackageForSaving = {
     _id: categoryId,
     id: categoryId,
@@ -33,4 +33,4 @@ const getOne = async (categoryId: string): Promise<VersionsPackage | null | unde
   }
 };
 
-export default { save, getOne };
+export default { add, getOne };

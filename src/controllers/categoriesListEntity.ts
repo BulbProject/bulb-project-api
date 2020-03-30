@@ -2,7 +2,7 @@ import { CategoriesListEntityModel } from 'models';
 
 import { CategoriesListEntity } from 'types/transport';
 
-const save = async (categoryId: string, version: string): Promise<void> => {
+const add = async (categoryId: string, version: string): Promise<void> => {
   const categoriesListEntityForSaving = { id: categoryId, version };
 
   await new CategoriesListEntityModel(categoriesListEntityForSaving).save();
@@ -16,4 +16,4 @@ const getAll = async (): Promise<CategoriesListEntity[] | undefined> => {
   }
 };
 
-export default { save, getAll };
+export default { add, getAll };
