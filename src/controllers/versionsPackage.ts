@@ -25,12 +25,21 @@ const add = async (categoryId: string, version: string, publishedDate: string): 
   await new VersionsPackageModel(versionsPackageForSaving).save();
 };
 
-const getOne = async (categoryId: string): Promise<VersionsPackage | null | undefined> => {
-  try {
-    return await VersionsPackageModel.findOne({ id: categoryId }, '-_id -__v -id');
-  } catch (e) {
-    console.error(e);
-  }
+const getOne = async (categoryId: string): Promise<VersionsPackage | null> => {
+  return await VersionsPackageModel.findById(categoryId, '-_id -__v -id');
 };
 
-export default { add, getOne };
+const updateOne = async (categoryId: string, version: string): Promise<void> => {
+  const versionsPackage = await getOne(categoryId);
+
+  if (!versionsPackage) throw new Error(`Can't find version package for category with id - ${categoryId}`);
+
+  const { versions } = versionsPackage;
+
+  await VersionsPackageModel.findOneAndUpdate(
+    { _id: categoryId },
+    { versions: [...versions, `${url}/categories/${categoryId}/${version}`] }
+  );
+};
+
+export default { add, updateOne, getOne };

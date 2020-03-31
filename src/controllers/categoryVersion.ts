@@ -36,4 +36,8 @@ const getOne = async (categoryId: string, version: string): Promise<CategoryVers
   }
 };
 
-export default { add, getOne };
+const getAllWithId = async (categoryId: string): Promise<{ _id: string }[]> => {
+  return await CategoryVersionModel.find({ 'category.id': categoryId }, { _id: 1 });
+};
+
+export default { add, getOne, getAllWithId };
