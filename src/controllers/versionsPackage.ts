@@ -26,7 +26,7 @@ const add = async (categoryId: string, version: string, publishedDate: string): 
 };
 
 const getOne = async (categoryId: string): Promise<VersionsPackage | null> => {
-  return await VersionsPackageModel.findById(categoryId, '-_id -__v -id');
+  return await VersionsPackageModel.findById(categoryId, { _id: 0, __v: 0 });
 };
 
 const updateOne = async (categoryId: string, version: string): Promise<void> => {
