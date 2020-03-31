@@ -11,11 +11,11 @@ const add = async (categoryId: string, version: string): Promise<void> => {
 const getAll = async (): Promise<CategoriesListEntity[]> => {
   return await CategoriesListEntityModel.find({}).then(categoryListEntities =>
     categoryListEntities
+      .sort((a, b) => +b.updatedAt - +a.updatedAt)
       .map(({ _id, version }) => ({
         id: _id,
         version: version,
       }))
-      .sort((a, b) => b.version.localeCompare(a.version))
   );
 };
 
