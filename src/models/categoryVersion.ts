@@ -9,7 +9,10 @@ const categoryVersionSchema = new Schema({
   version: String,
   date: String,
   category: {
-    id: String,
+    id: {
+      type: String,
+      index: true,
+    },
     title: String,
     description: String,
     classification: {
