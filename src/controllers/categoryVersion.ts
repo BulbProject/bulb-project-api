@@ -28,12 +28,12 @@ const getOne = async (categoryId: string, version: string): Promise<CategoryVers
       'category.id': categoryId,
       version,
     },
-    { _id: 0, __v: 0 }
+    { _id: 0 }
   );
 };
 
 const getAllWithId = async (categoryId: string): Promise<{ _id: string }[]> => {
-  return await CategoryVersionModel.find({ 'category.id': categoryId }, { _id: 1 });
+  return await CategoryVersionModel.find({ 'category.id': categoryId });
 };
 
 export default { add, getOne, getAllWithId };
