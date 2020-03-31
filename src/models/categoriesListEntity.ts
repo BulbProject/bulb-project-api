@@ -5,7 +5,7 @@ import { CategoriesListEntity } from 'types/transport';
 type CategoriesListEntityType = CategoriesListEntity & Document;
 
 const categoriesListEntitySchema = new Schema({
-  id: String,
+  _id: String,
   version: String,
 });
 
