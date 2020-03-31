@@ -8,12 +8,15 @@ const add = async (categoryId: string, version: string): Promise<void> => {
   await new CategoriesListEntityModel(categoriesListEntityForSaving).save();
 };
 
-const getAll = async (): Promise<CategoriesListEntity[] | undefined> => {
-  try {
-    return await CategoriesListEntityModel.find({}, '-_id -__v');
-  } catch (e) {
-    console.error(e);
-  }
+const getAll = async (): Promise<CategoriesListEntity[]> => {
+  return await CategoriesListEntityModel.find({}).then(categoryListEntities =>
+    categoryListEntities
+      .map(({ _id, version }) => ({
+        id: _id,
+        version: version,
+      }))
+      .sort((a, b) => b.version.localeCompare(a.version))
+  );
 };
 
 const updateOne = async (categoryId: string, version: string): Promise<void> => {

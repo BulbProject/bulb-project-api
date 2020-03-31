@@ -22,18 +22,14 @@ const add = async (
   };
 };
 
-const getOne = async (categoryId: string, version: string): Promise<CategoryVersion | null | undefined> => {
-  try {
-    return await CategoryVersionModel.findOne(
-      {
-        'category.id': categoryId,
-        version,
-      },
-      '-_id -__v'
-    );
-  } catch (e) {
-    console.error(e);
-  }
+const getOne = async (categoryId: string, version: string): Promise<CategoryVersion | null> => {
+  return await CategoryVersionModel.findOne(
+    {
+      'category.id': categoryId,
+      version,
+    },
+    { _id: 0, __v: 0 }
+  );
 };
 
 const getAllWithId = async (categoryId: string): Promise<{ _id: string }[]> => {
