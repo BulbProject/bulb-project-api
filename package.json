@@ -2,13 +2,14 @@
   "name": "bulb-broject-api",
   "version": "0.0.1",
   "description": "API Service for Bulb Project",
-  "main": "build/index.js",
+  "main": "build/app/index.js",
   "author": "uStudio Front-end Department",
   "repository": "https://github.com/BulbProject/bulb-project-api.git",
   "scripts": {
     "dev": "cross-env NODE_PATH=./src NODE_ENV=development nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "build": "tsc --diagnostics",
-    "start": "yarn build && cross-env NODE_PATH=./build NODE_ENV=production node build/index.js",
+    "build": "yarn clear && tsc --diagnostics && renamer --find src --replace app ./build/*",
+    "start": "yarn build && cross-env NODE_PATH=./build/app NODE_ENV=production node build/app/index.js",
+    "clear": "rimraf build",
     "autofix": "eslint --fix --quiet -c .eslintrc.json --ext .ts src/",
     "autoformat": "prettier --write \"src/**/*.ts\""
   },
@@ -25,6 +26,8 @@
     "fastify-swagger": "^2.5.0",
     "mongoose": "^5.9.6",
     "typescript": "^3.8.3",
+    "renamer": "^1.1.4",
+    "rimraf": "^3.0.2",
     "yup": "^0.28.3"
   },
   "devDependencies": {

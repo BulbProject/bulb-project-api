@@ -1,0 +1,35 @@
+version: '3.7'
+
+volumes:
+  mongo-data: {}
+
+services:
+  bulb-db:
+    image: mongo:bionic
+    container_name: 'bulb-db'
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - mongo-data:/usr/data/db
+
+  bulb-api:
+    container_name: 'bulb-api'
+    build: .
+    ports:
+      - ${SERVICE_PORT}:${SERVICE_PORT}
+    environment:
+      - NODE_ENV=production
+      - SERVICE_PROTOCOL=${SERVICE_PROTOCOL}
+      - SERVICE_HOST=${SERVICE_HOST}
+      - SERVICE_PORT=${SERVICE_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    depends_on:
+      - bulb-db

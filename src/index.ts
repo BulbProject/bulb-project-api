@@ -9,13 +9,13 @@ import { serviceConfig } from 'config';
 
 const app = fastify({ logger: true, ignoreTrailingSlash: true });
 
-if (process.env.NODE_ENV === 'development') swagger.register(app);
+swagger.register(app);
 
 routes.forEach(route => route(app));
 
 const start = async (): Promise<void> => {
   try {
-    await app.listen(serviceConfig.port);
+    await app.listen({ host: serviceConfig.host, port: +serviceConfig.port });
     if (process.env.NODE_ENV === 'development') console.log(app.printRoutes());
 
     await connectToDb();
