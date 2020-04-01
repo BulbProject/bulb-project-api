@@ -63,10 +63,6 @@ export const categoryAddBodySchema = object()
           id,
           title,
           description: string(),
-          relatesTo: string()
-            .oneOf(['item'])
-            .required(),
-          relatedItem: string().required(),
           requirementGroups: array()
             .of(
               object().shape({
