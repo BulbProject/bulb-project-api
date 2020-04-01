@@ -1,18 +1,15 @@
 version: '3.7'
 
-volumes:
-  mongo-data: {}
-
 services:
   bulb-db:
-    image: mongo:4.0.12
+    image: mongo:bionic
     container_name: ${DB_HOST}
     ports:
       - ${DB_PORT}:${DB_PORT}
     expose:
       - ${DB_PORT}
     volumes:
-      - mongo-data:/usr/data/db
+      - ./data/bulb-db:/usr/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
