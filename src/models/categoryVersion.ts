@@ -4,6 +4,15 @@ import { CategoryVersion } from 'types/transport';
 
 type CategoryVersionsModelType = CategoryVersion & Document;
 
+const classificationSchema = new Schema(
+  {
+    id: String,
+    scheme: String,
+    description: String,
+  },
+  { _id: false }
+);
+
 const categoryVersionSchema = new Schema(
   {
     _id: String,
@@ -16,42 +25,30 @@ const categoryVersionSchema = new Schema(
       },
       title: String,
       description: String,
-      classification: {
-        id: String,
-        scheme: String,
-        description: String,
-      },
+      classification: classificationSchema,
       items: [
         {
+          _id: false,
           id: String,
           description: String,
-          classification: {
-            id: String,
-            scheme: String,
-            description: String,
-          },
-          additionalClassifications: [
-            {
-              id: String,
-              scheme: String,
-              description: String,
-            },
-          ],
+          classification: classificationSchema,
+          additionalClassifications: [classificationSchema],
         },
       ],
       criteria: [
         {
+          _id: false,
           id: String,
           title: String,
           description: String,
-          relatesTo: String,
-          relatedItem: String,
           requirementGroups: [
             {
+              _id: false,
               id: String,
               description: String,
               requirements: [
                 {
+                  _id: false,
                   id: String,
                   title: String,
                   description: String,
@@ -66,69 +63,78 @@ const categoryVersionSchema = new Schema(
                     durationInDays: Number,
                   },
                   optionDetails: {
-                    optionGroups: [
-                      {
-                        id: String,
-                        description: String,
-                        relatesTo: String,
-                        options: [
-                          {
-                            id: String,
-                            description: String,
-                            placeOfPerformance: {
-                              addressDetails: {
-                                country: {
-                                  scheme: String,
-                                  id: String,
-                                  description: String,
-                                  uri: String,
-                                },
-                                region: {
-                                  scheme: String,
-                                  id: String,
-                                  description: String,
-                                  uri: String,
-                                },
-                                locality: {
-                                  scheme: String,
-                                  id: String,
-                                  description: String,
-                                  uri: String,
-                                },
-                              },
-                              streetAddress: String,
-                              postalCode: String,
-                            },
-                            contractPeriod: {
-                              startDate: String,
-                              endDate: String,
-                            },
-                            value: {},
-                            minValue: Number,
-                            maxValue: Number,
-                            period: {
-                              startDate: String,
-                              endDate: String,
-                              maxExtentDate: String,
-                              durationInDays: Number,
-                            },
-                            measure: {},
-                            unit: {
-                              scheme: String,
+                    optionGroups: {
+                      type: [
+                        {
+                          _id: false,
+                          id: String,
+                          description: String,
+                          relatesTo: String,
+                          options: [
+                            {
+                              _id: false,
                               id: String,
-                              name: String,
-                              uri: String,
+                              description: String,
+                              placeOfPerformance: {
+                                addressDetails: {
+                                  country: {
+                                    scheme: String,
+                                    id: String,
+                                    description: String,
+                                    uri: String,
+                                  },
+                                  region: {
+                                    scheme: String,
+                                    id: String,
+                                    description: String,
+                                    uri: String,
+                                  },
+                                  locality: {
+                                    scheme: String,
+                                    id: String,
+                                    description: String,
+                                    uri: String,
+                                  },
+                                },
+                                streetAddress: String,
+                                postalCode: String,
+                              },
+                              contractPeriod: {
+                                startDate: String,
+                                endDate: String,
+                              },
+                              value: {},
+                              minValue: Number,
+                              maxValue: Number,
+                              period: {
+                                startDate: String,
+                                endDate: String,
+                                maxExtentDate: String,
+                                durationInDays: Number,
+                              },
+                              measure: {},
+                              unit: {
+                                scheme: String,
+                                id: String,
+                                name: String,
+                                uri: String,
+                              },
                             },
-                          },
-                        ],
-                      },
-                    ],
-                    optionsToCombine: [
-                      {
-                        id: String,
-                        relatedOptions: [String],
-                      },
-                    ],
+                          ],
+                        },
+                      ],
+                      default: undefined,
+                    },
+                    optionsToCombine: {
+                      type: [
+                        {
+                          _id: false,
+                          id: String,
+                          relatedOptions: [String],
+                        },
+                      ],
+                      default: undefined,
+                    },
                   },
                 },
               ],
@@ -138,6 +144,7 @@ const categoryVersionSchema = new Schema(
       ],
       conversions: [
         {
+          _id: false,
           id: String,
           relatesTo: String,
           relatedItem: String,
@@ -145,6 +152,7 @@ const categoryVersionSchema = new Schema(
           description: String,
           coefficients: [
             {
+              _id: false,
               id: String,
               value: {},
               minValue: Number,

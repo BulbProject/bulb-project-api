@@ -9,14 +9,15 @@ const add = async (categoryId: string, version: string): Promise<void> => {
 };
 
 const getAll = async (): Promise<CategoriesListEntity[]> => {
-  return await CategoriesListEntityModel.find({}).then(categoryListEntities =>
-    categoryListEntities
-      .sort((a, b) => +b.updatedAt - +a.updatedAt)
-      .map(({ _id, version }) => ({
+  return await CategoriesListEntityModel.find({})
+    .sort([['updatedAt', 'desc']])
+    .then(categoryListEntities =>
+      categoryListEntities.map(({ _id, version, updatedAt }) => ({
         id: _id,
         version: version,
+        date: updatedAt,
       }))
-  );
+    );
 };
 
 const updateOne = async (categoryId: string, version: string): Promise<void> => {

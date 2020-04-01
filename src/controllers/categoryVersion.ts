@@ -8,13 +8,14 @@ const add = async (
   version: string,
   publishedDate: string
 ): Promise<{ id: string; version: string }> => {
-  const metaData = {
+  const newCategoryVersion = {
     _id: `${category.id}-${version}`,
     version,
     date: publishedDate,
+    category,
   };
 
-  await new CategoryVersionModel(Object.assign({}, metaData, { category })).save();
+  await new CategoryVersionModel(newCategoryVersion).save();
 
   return {
     id: category.id,
