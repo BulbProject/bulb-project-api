@@ -5,7 +5,14 @@ import { dbConfig } from 'config';
 export const connectToDb = async (): Promise<void> => {
   mongoose.set('useCreateIndex', true);
 
-  await mongoose.connect(`mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.name}`, {
+  const url = `mongodb://${dbConfig.host}:${dbConfig.port}`;
+
+  console.log('Connecting to DB ...');
+
+  await mongoose.connect(url, {
+    user: dbConfig.username,
+    pass: dbConfig.password,
+    dbName: dbConfig.name,
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
