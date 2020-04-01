@@ -5,7 +5,7 @@ services:
     image: mongo:bionic
     container_name: ${DB_HOST}
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT}:27017
     expose:
       - ${DB_PORT}
     volumes:
