@@ -15,7 +15,7 @@ routes.forEach(route => route(app));
 
 const start = async (): Promise<void> => {
   try {
-    await app.listen(+serviceConfig.port);
+    await app.listen({ host: '0.0.0.0', port: +serviceConfig.port });
     if (process.env.NODE_ENV === 'development') console.log(app.printRoutes());
 
     await connectToDb();
