@@ -86,6 +86,12 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
+        response: {
+          404: {
+            type: 'string',
+            example: 'Version <version> for category with id <categoryId> not found',
+          },
+        },
       },
     },
     getCategoryVersion
