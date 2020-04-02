@@ -3,23 +3,40 @@ import fastify from 'fastify';
 import { postCategory, putCategory } from 'controllers/manage';
 import { category } from 'json-schemas';
 
+const tags = ['Manage'];
+const body = {
+  type: 'object',
+  required: ['version', 'date', 'category'],
+  properties: {
+    version: {
+      type: 'string',
+    },
+    date: {
+      type: 'string',
+    },
+    category: category,
+  },
+};
+const params = {
+  categoryId: {
+    type: 'string',
+    description: 'Category ID',
+  },
+};
+
 /* @TODO Must be secure */
 export const manageRoute = (app: fastify.FastifyInstance): void => {
   app.post(
     '/manage/categories/:categoryId',
     {
       schema: {
-        body: {
-          type: 'object',
-          required: ['version', 'date', 'category'],
-          properties: {
-            version: {
-              type: 'string',
-            },
-            date: {
-              type: 'string',
-            },
-            category: category,
+        tags,
+        params,
+        body,
+        response: {
+          400: {
+            type: 'string',
+            example: ['Path parameter categoryId is missing', 'Path parameter categoryId is not equal to body.id'],
           },
         },
       },
@@ -27,5 +44,24 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
     postCategory
   );
 
-  app.put('/manage/categories/:categoryId', {}, putCategory);
+  app.put(
+    '/manage/categories/:categoryId',
+    {
+      schema: {
+        tags,
+        params,
+        body,
+        response: {
+          400: {
+            type: 'string',
+            example: [
+              'Category with id <categoryId> not found and can`t update',
+              'Path parameter categoryId is not equal to body.id',
+            ],
+          },
+        },
+      },
+    },
+    putCategory
+  );
 };
