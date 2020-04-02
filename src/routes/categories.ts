@@ -2,6 +2,8 @@ import fastify from 'fastify';
 
 import { getCategoriesList, getVersionsPackage, getCategoryVersion } from 'controllers/categories';
 
+import { category } from 'json-schemas';
+
 const tags = ['Categories'];
 const params = {
   categoryId: {
@@ -107,6 +109,19 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
           version: params.version,
         },
         response: {
+          200: {
+            type: 'object',
+            required: ['category', 'date', 'version'],
+            properties: {
+              date: {
+                type: 'string',
+              },
+              version: {
+                type: 'string',
+              },
+              category,
+            },
+          },
           404: {
             type: 'string',
             example: 'Version <version> for category with id <categoryId> not found',
