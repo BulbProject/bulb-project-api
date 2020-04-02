@@ -4,7 +4,7 @@ import { period } from './period';
 
 export const category = {
   type: 'object',
-  required: ['id', 'title', 'description', 'classification', 'conversions', 'criteria', 'items'],
+  required: ['id', 'title', 'description', 'classification', 'items', 'criteria', 'conversions'],
   properties: {
     id: {
       type: 'string',
@@ -16,12 +16,12 @@ export const category = {
       type: 'string',
     },
     classification,
-    conversions: {
+    items: {
       type: 'array',
       minItems: 1,
       items: {
         type: 'object',
-        required: ['id', 'coefficients'],
+        required: ['id', 'description', 'classification'],
         properties: {
           id: {
             type: 'string',
@@ -29,41 +29,11 @@ export const category = {
           description: {
             type: 'string',
           },
-          coefficients: {
+          classification,
+          additionalClassifications: {
             type: 'array',
             minItems: 1,
-            items: {
-              type: 'object',
-              required: ['id'],
-              properties: {
-                id: {
-                  type: 'string',
-                },
-                coefficient: {
-                  type: 'number',
-                },
-                value: {
-                  type: 'number',
-                },
-                minValue: {
-                  type: 'number',
-                },
-                maxValue: {
-                  type: 'number',
-                },
-                period,
-              },
-            },
-          },
-          rationale: {
-            type: 'string',
-          },
-          relatesTo: {
-            type: 'string',
-            enum: ['requirement', 'metric'],
-          },
-          relatedItem: {
-            type: 'string',
+            items: classification,
           },
         },
       },
@@ -73,7 +43,7 @@ export const category = {
       minItems: 1,
       items: {
         type: 'object',
-        required: ['id', 'requirementGroups'],
+        required: ['id', 'title', 'requirementGroups'],
         properties: {
           id: {
             type: 'string',
@@ -102,7 +72,7 @@ export const category = {
                   minItems: 1,
                   items: {
                     type: 'object',
-                    required: ['id', 'dataType'],
+                    required: ['id', 'title', 'dataType'],
                     properties: {
                       id: {
                         type: 'string',
@@ -115,16 +85,16 @@ export const category = {
                       },
                       dataType: {
                         type: 'string',
-                        enum: ['string', 'number', 'integer', 'boolean'],
+                        enum: ['boolean', 'string', 'number', 'integer'],
                       },
                       expectedValue: {
-                        type: ['string', 'number', 'integer', 'boolean'],
+                        type: ['boolean', 'string', 'number', 'integer'],
                       },
                       minValue: {
-                        type: 'number',
+                        type: ['number', 'integer'],
                       },
                       maxValue: {
-                        type: 'number',
+                        type: ['number', 'integer'],
                       },
                       period,
                       optionDetails: {
@@ -136,7 +106,7 @@ export const category = {
                             minItems: 1,
                             items: {
                               type: 'object',
-                              required: ['id', 'options', 'relatesTo'],
+                              required: ['id', 'relatesTo', 'options'],
                               properties: {
                                 id: {
                                   type: 'string',
@@ -144,17 +114,17 @@ export const category = {
                                 description: {
                                   type: 'string',
                                 },
+                                relatesTo: {
+                                  type: 'string',
+                                  enum: ['value'],
+                                },
                                 options,
-                              },
-                              relatesTo: {
-                                type: 'string',
                               },
                             },
                           },
                           optionsToCombine: {
                             type: 'array',
                             minItems: 1,
-                            required: ['id', 'relatedOptions'],
                             items: {
                               type: 'object',
                               required: ['id', 'relatedOptions'],
@@ -162,7 +132,13 @@ export const category = {
                                 id: {
                                   type: 'string',
                                 },
-                                relatedOptions: options,
+                                relatedOptions: {
+                                  type: 'array',
+                                  minItems: 1,
+                                  items: {
+                                    type: 'string',
+                                  },
+                                },
                               },
                             },
                           },
@@ -177,24 +153,47 @@ export const category = {
         },
       },
     },
-    items: {
+    conversions: {
       type: 'array',
       minItems: 1,
       items: {
         type: 'object',
-        required: ['id', 'classification'],
+        required: ['id', 'relatesTo', 'relatedItem', 'coefficients'],
         properties: {
           id: {
+            type: 'string',
+          },
+          relatesTo: {
+            type: 'string',
+            enum: ['requirement', 'metric'],
+          },
+          relatedItem: {
             type: 'string',
           },
           description: {
             type: 'string',
           },
-          classification,
-          additionalClassifications: {
+          rationale: {
+            type: 'string',
+          },
+          coefficients: {
             type: 'array',
             minItems: 1,
-            items: classification,
+            items: {
+              type: 'object',
+              required: ['id', 'value', 'coefficient'],
+              properties: {
+                id: {
+                  type: 'string',
+                },
+                coefficient: {
+                  type: 'number',
+                },
+                value: {
+                  type: ['string', 'number', 'integer'],
+                },
+              },
+            },
           },
         },
       },

@@ -18,14 +18,26 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
+        summary: 'Adding of category',
         params: {
           categoryId: params.categoryId,
         },
         body: category,
         response: {
+          200: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+              },
+              version: {
+                type: 'string',
+              },
+            },
+          },
           400: {
             type: 'string',
-            example: ['Path parameter categoryId is missing', 'Path parameter categoryId is not equal to body.id'],
+            example: ['Path parameter <categoryId> is missing', 'Path parameter categoryId is not equal to body.id'],
           },
         },
       },
@@ -38,11 +50,23 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
+        summary: 'Updating of category',
         params: {
           categoryId: params.categoryId,
         },
         body: category,
         response: {
+          200: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+              },
+              version: {
+                type: 'string',
+              },
+            },
+          },
           400: {
             type: 'string',
             example: [
