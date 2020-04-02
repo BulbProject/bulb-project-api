@@ -118,7 +118,7 @@ export const category = {
                         enum: ['string', 'number', 'integer', 'boolean'],
                       },
                       expectedValue: {
-                        type: ['string', 'number', 'boolean'],
+                        type: ['string', 'number', 'integer', 'boolean'],
                       },
                       minValue: {
                         type: 'number',
@@ -168,64 +168,6 @@ export const category = {
                         },
                       },
                       period,
-                    },
-                    dependencies: {
-                      dataType: {
-                        oneOf: [
-                          {
-                            properties: {
-                              dataType: {
-                                const: 'string',
-                              },
-                              expectedValue: {
-                                type: 'string',
-                              },
-                            },
-                          },
-                          {
-                            properties: {
-                              dataType: {
-                                const: 'boolean',
-                              },
-                              expectedValue: {
-                                type: 'boolean',
-                              },
-                            },
-                          },
-                          {
-                            properties: {
-                              dataType: {
-                                const: 'number',
-                              },
-                              expectedValue: {
-                                type: 'number',
-                              },
-                              minValue: {
-                                type: 'number',
-                              },
-                              maxValue: {
-                                type: 'number',
-                              },
-                            },
-                          },
-                          {
-                            properties: {
-                              dataType: {
-                                const: 'integer',
-                              },
-                              expectedValue: {
-                                type: 'integer',
-                              },
-                              minValue: {
-                                type: 'integer',
-                              },
-                              maxValue: {
-                                type: 'integer',
-                              },
-                            },
-                          },
-                        ],
-                      },
                     },
                   },
                 },
