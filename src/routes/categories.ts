@@ -3,6 +3,16 @@ import fastify from 'fastify';
 import { getCategoriesList, getVersionsPackage, getCategoryVersion } from 'controllers/categories';
 
 const tags = ['Categories'];
+const params = {
+  categoryId: {
+    type: 'string',
+    description: 'Category ID',
+  },
+  version: {
+    type: 'string',
+    description: 'Category Version',
+  },
+};
 
 export const categoriesRoute = (app: fastify.FastifyInstance): void => {
   app.get(
@@ -33,6 +43,9 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
+        params: {
+          categoryId: params.categoryId,
+        },
         response: {
           200: {
             type: 'object',
@@ -86,6 +99,10 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
+        params: {
+          categoryId: params.categoryId,
+          version: params.version,
+        },
         response: {
           404: {
             type: 'string',
