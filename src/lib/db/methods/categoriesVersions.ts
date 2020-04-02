@@ -24,7 +24,7 @@ const add = async (
 };
 
 const getOne = async (categoryId: string, version: string): Promise<CategoryVersion | null> => {
-  return await CategoryVersionModel.findOne(
+  return CategoryVersionModel.findOne(
     {
       'category.id': categoryId,
       version,
@@ -34,7 +34,7 @@ const getOne = async (categoryId: string, version: string): Promise<CategoryVers
 };
 
 const getAllWithId = async (categoryId: string): Promise<{ _id: string }[]> => {
-  return await CategoryVersionModel.find({ 'category.id': categoryId });
+  return CategoryVersionModel.find({ 'category.id': categoryId });
 };
 
 export default { add, getOne, getAllWithId };

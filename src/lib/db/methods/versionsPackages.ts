@@ -25,12 +25,12 @@ const add = async (categoryId: string, version: string, publishedDate: string): 
   await new VersionsPackageModel(versionsPackageForSaving).save();
 };
 
-const getOne = async (categoryId: string): Promise<VersionsPackage | null> => {
-  return await VersionsPackageModel.findById(categoryId, { _id: 0, __v: 0 });
+const getOneWithId = async (categoryId: string): Promise<VersionsPackage | null> => {
+  return VersionsPackageModel.findById(categoryId, { _id: 0, __v: 0 });
 };
 
 const updateOne = async (categoryId: string, version: string): Promise<void> => {
-  const versionsPackage = await getOne(categoryId);
+  const versionsPackage = await getOneWithId(categoryId);
 
   if (!versionsPackage) throw new Error(`Can't find version package for category with id - ${categoryId}`);
 
@@ -42,4 +42,4 @@ const updateOne = async (categoryId: string, version: string): Promise<void> => 
   );
 };
 
-export default { add, updateOne, getOne };
+export default { add, updateOne, getOneWithId };
