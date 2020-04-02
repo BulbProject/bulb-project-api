@@ -1,6 +1,5 @@
 export const period = {
   type: 'object',
-  required: ['duration'],
   properties: {
     duration: {
       type: 'string',

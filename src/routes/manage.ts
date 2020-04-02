@@ -4,13 +4,6 @@ import { postCategory, putCategory } from 'controllers/manage';
 import { category } from 'json-schemas';
 
 const tags = ['Manage'];
-const body = {
-  type: 'object',
-  required: ['version', 'date', 'category'],
-  properties: {
-    category,
-  },
-};
 const params = {
   categoryId: {
     type: 'string',
@@ -28,7 +21,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         params: {
           categoryId: params.categoryId,
         },
-        body,
+        body: category,
         response: {
           400: {
             type: 'string',
@@ -48,7 +41,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         params: {
           categoryId: params.categoryId,
         },
-        body,
+        body: category,
         response: {
           400: {
             type: 'string',

@@ -21,7 +21,7 @@ export const category = {
       minItems: 1,
       items: {
         type: 'object',
-        required: ['id', 'description', 'coefficients', 'rationale'],
+        required: ['id', 'coefficients'],
         properties: {
           id: {
             type: 'string',
@@ -34,7 +34,7 @@ export const category = {
             minItems: 1,
             items: {
               type: 'object',
-              required: ['id', 'period'],
+              required: ['id'],
               properties: {
                 id: {
                   type: 'string',

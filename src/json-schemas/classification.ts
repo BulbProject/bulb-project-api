@@ -1,6 +1,6 @@
 export const classification = {
   type: 'object',
-  required: ['id'],
+  required: ['id', 'scheme'],
   properties: {
     id: {
       type: 'string',
