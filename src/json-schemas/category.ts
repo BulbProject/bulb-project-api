@@ -126,6 +126,7 @@ export const category = {
                       maxValue: {
                         type: 'number',
                       },
+                      period,
                       optionDetails: {
                         type: 'object',
                         required: ['optionGroups'],
@@ -167,7 +168,6 @@ export const category = {
                           },
                         },
                       },
-                      period,
                     },
                   },
                 },
