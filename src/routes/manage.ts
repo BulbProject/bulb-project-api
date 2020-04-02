@@ -8,12 +8,6 @@ const body = {
   type: 'object',
   required: ['version', 'date', 'category'],
   properties: {
-    version: {
-      type: 'string',
-    },
-    date: {
-      type: 'string',
-    },
     category: category,
   },
 };

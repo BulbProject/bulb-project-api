@@ -240,7 +240,7 @@ export const category = {
       minItems: 1,
       items: {
         type: 'object',
-        required: ['id'],
+        required: ['id', 'classification'],
         properties: {
           id: {
             type: 'string',
