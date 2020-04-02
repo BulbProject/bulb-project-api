@@ -71,6 +71,10 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
               },
             },
           },
+          404: {
+            type: 'string',
+            example: 'Category with id <categoryId> not found',
+          },
         },
       },
     },
