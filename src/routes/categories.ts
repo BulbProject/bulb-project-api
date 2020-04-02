@@ -2,7 +2,7 @@ import fastify from 'fastify';
 
 import { getCategoriesList, getVersionsPackage, getCategoryVersion } from 'controllers/categories';
 
-import { category } from '../json-schemas';
+import { category } from 'json-schemas';
 
 const tags = ['Categories'];
 const params = {
@@ -113,13 +113,13 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
             type: 'object',
             required: ['category', 'date', 'version'],
             properties: {
-              category,
               date: {
                 type: 'string',
               },
               version: {
                 type: 'string',
               },
+              category,
             },
           },
           404: {
