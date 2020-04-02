@@ -4,7 +4,6 @@ node_modules
 
 build
 logs
-yarn-error.log
+*.log
 
 .env
-docker-compose.dev.yml
