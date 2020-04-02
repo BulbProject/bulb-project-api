@@ -31,6 +31,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
                 type: 'string',
               },
             },
+            required: ['id', 'version'],
           },
         },
       },
@@ -66,6 +67,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
                     type: 'string',
                   },
                 },
+                required: ['name', 'uri'],
               },
               license: {
                 type: 'string',
@@ -83,6 +85,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
                 },
               },
             },
+            required: ['publishedDate', 'publisher', 'uri', 'version', 'versions'],
           },
           404: {
             type: 'string',
