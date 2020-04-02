@@ -15,7 +15,7 @@ export const category = {
     description: {
       type: 'string',
     },
-    classification: classification,
+    classification,
     conversions: {
       type: 'array',
       minItems: 1,
@@ -51,7 +51,7 @@ export const category = {
                 maxValue: {
                   type: 'number',
                 },
-                period: period,
+                period,
               },
             },
           },
@@ -143,7 +143,7 @@ export const category = {
                                 description: {
                                   type: 'string',
                                 },
-                                options: options,
+                                options,
                               },
                               relatesTo: {
                                 type: 'string',
@@ -167,7 +167,7 @@ export const category = {
                           },
                         },
                       },
-                      period: period,
+                      period,
                     },
                     dependencies: {
                       dataType: {
@@ -248,7 +248,7 @@ export const category = {
           description: {
             type: 'string',
           },
-          classification: classification,
+          classification,
           additionalClassifications: {
             type: 'array',
             minItems: 1,

@@ -8,7 +8,7 @@ const body = {
   type: 'object',
   required: ['version', 'date', 'category'],
   properties: {
-    category: category,
+    category,
   },
 };
 const params = {
@@ -25,7 +25,9 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
-        params,
+        params: {
+          categoryId: params.categoryId,
+        },
         body,
         response: {
           400: {
@@ -43,7 +45,9 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
-        params,
+        params: {
+          categoryId: params.categoryId,
+        },
         body,
         response: {
           400: {
