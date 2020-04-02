@@ -21,7 +21,6 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
                 type: 'string',
               },
             },
-            required: ['id', 'version'],
           },
         },
       },
@@ -34,6 +33,45 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              uri: {
+                type: 'string',
+              },
+              version: {
+                type: 'string',
+              },
+              publisher: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string',
+                  },
+                  uri: {
+                    type: 'string',
+                  },
+                },
+              },
+              license: {
+                type: 'string',
+              },
+              publicationPolicy: {
+                type: 'string',
+              },
+              publishedDate: {
+                type: 'string',
+              },
+              versions: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
       },
     },
     getVersionsPackage
