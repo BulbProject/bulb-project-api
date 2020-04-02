@@ -1,14 +1,14 @@
 export const classification = {
   type: 'object',
-  required: ['id', 'scheme'],
+  required: ['scheme', 'id'],
   properties: {
+    scheme: {
+      type: 'string',
+    },
     id: {
       type: 'string',
     },
     description: {
-      type: 'string',
-    },
-    scheme: {
       type: 'string',
     },
     uri: {

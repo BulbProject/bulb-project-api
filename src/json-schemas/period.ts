@@ -1,12 +1,6 @@
 export const period = {
   type: 'object',
   properties: {
-    duration: {
-      type: 'string',
-    },
-    durationInDays: {
-      type: 'number',
-    },
     startDate: {
       type: 'string',
     },
@@ -15,6 +9,12 @@ export const period = {
     },
     maxExtentDate: {
       type: 'string',
+    },
+    duration: {
+      type: 'string',
+    },
+    durationInDays: {
+      type: 'number',
     },
   },
 };

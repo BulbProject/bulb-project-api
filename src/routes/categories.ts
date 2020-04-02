@@ -21,19 +21,26 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     '/categories',
     {
       schema: {
+        summary: 'Categories list',
         tags,
         response: {
           200: {
-            type: 'object',
-            properties: {
-              id: {
-                type: 'string',
-              },
-              version: {
-                type: 'string',
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['id', 'version', 'date'],
+              properties: {
+                id: {
+                  type: 'string',
+                },
+                version: {
+                  type: 'string',
+                },
+                date: {
+                  type: 'string',
+                },
               },
             },
-            required: ['id', 'version'],
           },
         },
       },
@@ -46,12 +53,14 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
+        summary: 'Versions package',
         params: {
           categoryId: params.categoryId,
         },
         response: {
           200: {
             type: 'object',
+            required: ['uri', 'version', 'publisher', 'license', 'publicationPolicy', 'publishedDate', 'versions'],
             properties: {
               uri: {
                 type: 'string',
@@ -61,6 +70,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
               },
               publisher: {
                 type: 'object',
+                required: ['name', 'uri'],
                 properties: {
                   name: {
                     type: 'string',
@@ -69,7 +79,6 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
                     type: 'string',
                   },
                 },
-                required: ['name', 'uri'],
               },
               license: {
                 type: 'string',
@@ -87,7 +96,6 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
                 },
               },
             },
-            required: ['publishedDate', 'publisher', 'uri', 'version', 'versions'],
           },
           404: {
             type: 'string',
@@ -104,6 +112,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
+        summary: 'Category version',
         params: {
           categoryId: params.categoryId,
           version: params.version,
@@ -111,12 +120,12 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
         response: {
           200: {
             type: 'object',
-            required: ['category', 'date', 'version'],
+            required: ['date', 'version', 'category'],
             properties: {
-              date: {
+              version: {
                 type: 'string',
               },
-              version: {
+              date: {
                 type: 'string',
               },
               category,
