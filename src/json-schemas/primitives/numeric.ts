@@ -10,18 +10,11 @@ interface NumericProps {
 }
 
 export const numeric = (args?: NumericProps) => {
-  const getType = () => {
-    switch (args?.type) {
-      case 'integer':
-        return 'integer';
-      case 'number':
-        return 'number';
-      case 'mixed':
-      default:
-        return ['integer', 'number'];
-    }
-  };
+  const getType = (type: NumericType = 'number') => {
+    if (type === 'mixed') return ['integer', 'number'];
 
+    return type;
+  };
   const filteredArgs = args ? (({ type, ...rest }) => rest)(args) : {};
 
   return {

@@ -6,6 +6,6 @@ export const period = object({
     endDate: string(),
     maxExtentDate: string(),
     duration: string(),
-    durationInDays: numeric({ type: 'number' }),
+    durationInDays: numeric(),
   },
 });

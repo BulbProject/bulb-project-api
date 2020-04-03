@@ -47,8 +47,8 @@ export const category = object({
                       description: string(),
                       dataType: string({ enum: ['boolean', 'string', 'number', 'integer'] }),
                       expectedValue: mixed(['boolean', 'string', 'number', 'integer']),
-                      minValue: numeric(),
-                      maxValue: numeric(),
+                      minValue: numeric({ type: 'mixed' }),
+                      maxValue: numeric({ type: 'mixed' }),
                       period,
                       optionDetails: object({
                         required: ['optionGroups'],
@@ -105,7 +105,7 @@ export const category = object({
               required: ['id', 'value', 'coefficient'],
               properties: {
                 id: string(),
-                coefficient: numeric({ type: 'number' }),
+                coefficient: numeric(),
                 value: mixed(['string', 'number', 'integer']),
               },
             }),
