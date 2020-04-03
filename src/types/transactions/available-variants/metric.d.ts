@@ -1,24 +1,7 @@
+import { Metric as OCDSMetric } from 'ts4ocds/extensions/metrics';
 import { Observation } from './observation';
 
-export interface Metric {
-  /**
-   * An identifier for this metric.
-   * In some cases this may be drawn from a codelist of metrics required for this type of contracting process,
-   * or in other instances may be an arbitrary identifier.
-   */
-  id: string;
-  /**
-   * The title of this metric.
-   */
-  title?: string;
-  /**
-   * A short description of the metric.
-   * This may include short details of measurement methods.
-   */
-  description?: string;
-  /**
-   * An array of Observation: target or actual values for this metric.
-   */
+export interface Metric extends OCDSMetric {
   observations: Observation[];
   /**
    * The schema element that the metric relates.
