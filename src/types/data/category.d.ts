@@ -1,6 +1,6 @@
-import { Classification } from './classification';
-import { Conversion } from './conversion';
-import { Criterion } from './criteria';
+import { Classification } from 'ts4ocds';
+import { Conversion } from 'ts4ocds/extensions/conversions';
+import { Criterion } from 'ts4ocds/extensions/requirements';
 import { Item } from './item';
 
 export interface Category {
