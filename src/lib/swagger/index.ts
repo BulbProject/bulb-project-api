@@ -19,7 +19,11 @@ const register = (app: fastify.FastifyInstance): void => {
       schemes: [serviceConfig.protocol],
       consumes: ['application/json'],
       produces: ['application/json'],
-      securityDefinitions: serviceConfig.securityDefinitions,
+      securityDefinitions: {
+        baseAuth: {
+          type: 'basic',
+        },
+      },
     },
   });
 };

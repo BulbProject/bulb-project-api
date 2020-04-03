@@ -3,6 +3,11 @@ import atob from 'atob';
 
 import { managerCred } from 'config';
 
+interface Credentials {
+  username: string;
+  password: string;
+}
+
 const parseAuthorizationHeader = (authorization: string): string => {
   const parsedAuthorization = authorization.match(/(?<=Basic )(.+)/);
 
@@ -22,16 +27,10 @@ const decodeCredentials = (credentials: string): Credentials => {
   };
 };
 
-const validateCredentials = (credentials: Credentials): void => {
-  const validateCredentialParameter = (credential: string, value: string): void => {
-    if (managerCred[credential as keyof Credentials] !== value) {
-      throw `Invalid credentials provided.`;
-    }
-  };
-
-  return Object.keys(credentials).forEach(credential =>
-    validateCredentialParameter(credential, credentials[credential as keyof Credentials])
-  );
+const validateCredentials = ({ username, password }: Credentials): void => {
+  if (managerCred.username !== username || managerCred.password !== password) {
+    throw 'Invalid credentials provided.';
+  }
 };
 
 const handleAuthorization: fastify.FastifyMiddleware = async (req, reply, done) => {
@@ -54,10 +53,5 @@ const handleAuthorization: fastify.FastifyMiddleware = async (req, reply, done) 
     return reply.code(403).send(e?.message || e);
   }
 };
-
-interface Credentials {
-  username: string;
-  password: string;
-}
 
 export default handleAuthorization;

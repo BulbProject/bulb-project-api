@@ -11,15 +11,6 @@ const params = {
     description: 'Category ID',
   },
 };
-const headers = {
-  type: 'object',
-  properties: {
-    authorization: {
-      type: 'string',
-      description: 'Base64 encoded <username:password>',
-    },
-  },
-};
 const security = [{ baseAuth: [] }];
 
 export const manageRoute = (app: fastify.FastifyInstance): void => {
@@ -29,7 +20,6 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
       onRequest: handleAuthorization,
       schema: {
         tags,
-        headers,
         security,
         summary: 'Adding of category',
         params: {
@@ -64,7 +54,6 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
       onRequest: handleAuthorization,
       schema: {
         tags,
-        headers,
         security,
         summary: 'Updating of category',
         params: {

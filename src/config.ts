@@ -12,11 +12,6 @@ export const serviceConfig = {
 
   name: 'The Bulb Project',
   version: packageJson.version,
-  securityDefinitions: {
-    baseAuth: {
-      type: 'basic',
-    },
-  },
 };
 
 export const dbConfig = {
