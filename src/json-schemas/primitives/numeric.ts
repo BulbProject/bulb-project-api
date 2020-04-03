@@ -1,7 +1,7 @@
-type numericType = 'number' | 'integer' | 'mixed';
+type NumericType = 'number' | 'integer' | 'mixed';
 
-interface NumberProps {
-  type: numericType;
+interface NumericProps {
+  type: NumericType;
   multipleOf?: number;
   minimum?: number;
   exclusiveMinimum?: number;
@@ -9,7 +9,7 @@ interface NumberProps {
   exclusiveMaximum?: number;
 }
 
-export const numeric = (args?: NumberProps) => {
+export const numeric = (args?: NumericProps) => {
   const getType = () => {
     switch (args?.type) {
       case 'integer':

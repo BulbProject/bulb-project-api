@@ -21,7 +21,7 @@ interface StringProps {
   maxLength?: number;
   pattern?: string;
   format?: Format;
-  enum: string[];
+  enum?: string[];
 }
 
 export const string = (args?: StringProps) => {
