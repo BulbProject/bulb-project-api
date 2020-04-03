@@ -1,19 +1,13 @@
-export const options = {
-  type: 'array',
+import { string, mixed, object, array } from './primitives';
+
+export const options = array({
   minItems: 1,
-  items: {
-    type: 'object',
+  items: object({
     required: ['id', 'description', 'value'],
     properties: {
-      id: {
-        type: 'string',
-      },
-      description: {
-        type: 'string',
-      },
-      value: {
-        type: ['string', 'number'],
-      },
+      id: string(),
+      description: string(),
+      value: mixed(['string', 'number']),
     },
-  },
-};
+  }),
+});

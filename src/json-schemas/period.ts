@@ -1,20 +1,11 @@
-export const period = {
-  type: 'object',
+import { string, numeric, object } from './primitives';
+
+export const period = object({
   properties: {
-    startDate: {
-      type: 'string',
-    },
-    endDate: {
-      type: 'string',
-    },
-    maxExtentDate: {
-      type: 'string',
-    },
-    duration: {
-      type: 'string',
-    },
-    durationInDays: {
-      type: 'number',
-    },
+    startDate: string(),
+    endDate: string(),
+    maxExtentDate: string(),
+    duration: string(),
+    durationInDays: numeric(),
   },
-};
+});
