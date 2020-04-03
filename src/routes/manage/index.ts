@@ -61,6 +61,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
   app.put(
     '/manage/categories/:categoryId',
     {
+      onRequest: handleAuthorization,
       schema: {
         tags,
         headers,
