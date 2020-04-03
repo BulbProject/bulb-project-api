@@ -1,18 +1,11 @@
-export const classification = {
-  type: 'object',
+import { object, string } from './primitives';
+
+export const classification = object({
   required: ['scheme', 'id'],
   properties: {
-    scheme: {
-      type: 'string',
-    },
-    id: {
-      type: 'string',
-    },
-    description: {
-      type: 'string',
-    },
-    uri: {
-      type: 'string',
-    },
+    scheme: string(),
+    id: string(),
+    description: string(),
+    uri: string(),
   },
-};
+});
