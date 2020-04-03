@@ -2,7 +2,7 @@ import fastify from 'fastify';
 
 import { postCategory, putCategory } from 'controllers/manage';
 import { category } from 'json-schemas';
-import handleAuthentication from './authentication';
+import handleAuthorization from './authorization';
 
 const tags = ['Manage'];
 const params = {
@@ -11,14 +11,26 @@ const params = {
     description: 'Category ID',
   },
 };
+const headers = {
+  type: 'object',
+  properties: {
+    authorization: {
+      type: 'string',
+      description: 'Base64 encoded <username:password>',
+    },
+  },
+};
+const security = [{ baseAuth: [] }];
 
 export const manageRoute = (app: fastify.FastifyInstance): void => {
   app.post(
     '/manage/categories/:categoryId',
     {
-      preHandler: handleAuthentication,
+      onRequest: handleAuthorization,
       schema: {
         tags,
+        headers,
+        security,
         summary: 'Adding of category',
         params: {
           categoryId: params.categoryId,
@@ -49,9 +61,10 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
   app.put(
     '/manage/categories/:categoryId',
     {
-      preHandler: handleAuthentication,
       schema: {
         tags,
+        headers,
+        security,
         summary: 'Updating of category',
         params: {
           categoryId: params.categoryId,

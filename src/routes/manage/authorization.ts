@@ -1,4 +1,7 @@
 import fastify from 'fastify';
+import atob from 'atob';
+
+import { managerCred } from 'config';
 
 const parseAuthorizationHeader = (authorization: string): string => {
   const parsedAuthorization = authorization.match(/(?<=Basic )(.+)/);
@@ -21,7 +24,7 @@ const decodeCredentials = (credentials: string): Credentials => {
 
 const validateCredentials = (credentials: Credentials): void => {
   const validateCredentialParameter = (credential: string, value: string): void => {
-    if (process.env[`CRED_${credential.toUpperCase()}`] !== value) {
+    if (managerCred[credential as keyof Credentials] !== value) {
       throw `Invalid ${credential}.`;
     }
   };
@@ -31,13 +34,16 @@ const validateCredentials = (credentials: Credentials): void => {
   );
 };
 
-const handleAuthentication: fastify.FastifyMiddleware = (req, reply, done) => {
-  if (!req.headers.Authorization) {
-    reply.code(401).header('WWW-Authenticate', 'Basic realm="Bulb Project API Manager"');
+const handleAuthorization: fastify.FastifyMiddleware = async (req, reply, done) => {
+  if (!req.headers?.authorization) {
+    return reply
+      .code(401)
+      .header('WWW-Authenticate', 'Basic realm="Bulb Project API Manager"')
+      .send();
   }
 
   try {
-    const headerCredentials = parseAuthorizationHeader(req.headers.Authorization);
+    const headerCredentials = parseAuthorizationHeader(req.headers.authorization);
 
     const credentials = decodeCredentials(headerCredentials);
 
@@ -45,7 +51,7 @@ const handleAuthentication: fastify.FastifyMiddleware = (req, reply, done) => {
 
     done();
   } catch (e) {
-    reply.code(403).send(e.message);
+    return reply.code(403).send(e?.message || e);
   }
 };
 
@@ -54,4 +60,4 @@ interface Credentials {
   password: string;
 }
 
-export default handleAuthentication;
+export default handleAuthorization;

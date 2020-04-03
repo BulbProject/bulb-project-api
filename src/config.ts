@@ -12,6 +12,11 @@ export const serviceConfig = {
 
   name: 'The Bulb Project',
   version: packageJson.version,
+  securityDefinitions: {
+    baseAuth: {
+      type: 'basic',
+    },
+  },
 };
 
 export const dbConfig = {
@@ -20,4 +25,9 @@ export const dbConfig = {
   username: process.env.DB_USERNAME || 'admin',
   password: process.env.DB_PASSWORD || '123456',
   name: process.env.DB_NAME || 'bulb-api',
+};
+
+export const managerCred = {
+  username: process.env.CRED_USERNAME || '',
+  password: process.env.CRED_USERNAME || '',
 };
