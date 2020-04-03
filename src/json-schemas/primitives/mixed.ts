@@ -1,7 +1,7 @@
 type mixedType = 'string' | 'number' | 'integer' | 'boolean';
 
-export const mixed = (args: { type: mixedType[] }) => {
+export const mixed = (type: mixedType[]) => {
   return {
-    type: args.type,
+    type,
   };
 };

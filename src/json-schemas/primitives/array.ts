@@ -1,9 +1,7 @@
-interface Item {
-  [key: string]: any;
-}
+type Items = Record<string, any>;
 
 interface ArrayProps {
-  items: Item;
+  items: Items;
   contains?: object;
   minItems?: number;
   maxItems?: number;

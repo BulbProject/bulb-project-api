@@ -1,9 +1,7 @@
-interface Property {
-  [key: string]: any;
-}
+type Property = Record<string, any>;
 
 interface ObjectProps {
-  properties: object;
+  properties: Property;
   required?: string[];
   propertyNames?: {
     pattern: string;

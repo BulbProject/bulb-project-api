@@ -1,4 +1,4 @@
-type format =
+type Format =
   | 'date-time'
   | 'time'
   | 'date'
@@ -20,8 +20,8 @@ interface StringProps {
   minLength?: number;
   maxLength?: number;
   pattern?: string;
-  format?: format;
-  enum: string[] | number[];
+  format?: Format;
+  enum: string[];
 }
 
 export const string = (args?: StringProps) => {
