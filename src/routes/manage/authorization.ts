@@ -1,7 +1,7 @@
 import fastify from 'fastify';
 import atob from 'atob';
 
-import { managerCred } from 'config';
+import { manageCred } from 'config';
 
 interface Credentials {
   username: string;
@@ -9,31 +9,38 @@ interface Credentials {
 }
 
 const parseAuthorizationHeader = (authorization: string): string => {
-  const parsedAuthorization = authorization.match(/(?<=Basic )(.+)/);
+  const [parsedAuthorization] = authorization.match(/(?<=Basic )(.+)/) || [];
 
   if (!parsedAuthorization?.length) {
     throw 'Incorrect Authorization header format.';
   }
 
-  return parsedAuthorization[0];
+  return parsedAuthorization;
 };
 
 const decodeCredentials = (credentials: string): Credentials => {
-  const decodedArray = atob(credentials).split(':');
+  const [username, password] = atob(credentials).split(':');
 
   return {
-    username: decodedArray[0],
-    password: decodedArray[1],
+    username,
+    password,
   };
 };
 
 const validateCredentials = ({ username, password }: Credentials): void => {
-  if (managerCred.username !== username || managerCred.password !== password) {
+  if (manageCred.username !== username || manageCred.password !== password) {
     throw 'Invalid credentials provided.';
   }
 };
 
-const handleAuthorization: fastify.FastifyMiddleware = async (req, reply, done) => {
+const handleAuthorization: fastify.FastifyMiddleware<
+  unknown,
+  unknown,
+  unknown,
+  unknown,
+  unknown,
+  { authorization: string }
+> = async (req, reply) => {
   if (!req.headers?.authorization) {
     return reply
       .code(401)
@@ -47,10 +54,8 @@ const handleAuthorization: fastify.FastifyMiddleware = async (req, reply, done) 
     const credentials = decodeCredentials(headerCredentials);
 
     validateCredentials(credentials);
-
-    done();
   } catch (e) {
-    return reply.code(403).send(e?.message || e);
+    return reply.code(403).send(e.message || e);
   }
 };
 

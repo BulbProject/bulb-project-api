@@ -1,8 +1,10 @@
 import fastify from 'fastify';
 
 import { postCategory, putCategory } from 'controllers/manage';
-import { category } from 'json-schemas';
+
 import handleAuthorization from './authorization';
+
+import { category } from 'json-schemas';
 
 const tags = ['Manage'];
 const params = {
@@ -20,8 +22,8 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
       onRequest: handleAuthorization,
       schema: {
         tags,
-        security,
         summary: 'Adding of category',
+        security,
         params: {
           categoryId: params.categoryId,
         },
@@ -54,8 +56,8 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
       onRequest: handleAuthorization,
       schema: {
         tags,
-        security,
         summary: 'Updating of category',
+        security,
         params: {
           categoryId: params.categoryId,
         },
