@@ -1,202 +1,117 @@
 import { classification } from './classification';
 import { options } from './options';
 import { period } from './period';
+import { string, numeric, mixed, object, array } from './primitives';
 
-export const category = {
-  type: 'object',
+export const category = object({
   required: ['id', 'title', 'description', 'classification', 'items', 'criteria', 'conversions'],
   properties: {
-    id: {
-      type: 'string',
-    },
-    title: {
-      type: 'string',
-    },
-    description: {
-      type: 'string',
-    },
+    id: string(),
+    title: string(),
+    description: string(),
     classification,
-    items: {
-      type: 'array',
+    items: array({
       minItems: 1,
-      items: {
-        type: 'object',
+      items: object({
         required: ['id', 'description', 'classification'],
         properties: {
-          id: {
-            type: 'string',
-          },
-          description: {
-            type: 'string',
-          },
+          id: string(),
+          description: string(),
           classification,
-          additionalClassifications: {
-            type: 'array',
-            minItems: 1,
-            items: classification,
-          },
+          additionalClassifications: array({ minItems: 1, items: classification }),
         },
-      },
-    },
-    criteria: {
-      type: 'array',
+      }),
+    }),
+    criteria: array({
       minItems: 1,
-      items: {
-        type: 'object',
+      items: object({
         required: ['id', 'title', 'requirementGroups'],
         properties: {
-          id: {
-            type: 'string',
-          },
-          title: {
-            type: 'string',
-          },
-          description: {
-            type: 'string',
-          },
-          requirementGroups: {
-            type: 'array',
+          id: string(),
+          title: string(),
+          description: string(),
+          requirementGroups: array({
             minItems: 1,
-            items: {
-              type: 'object',
+            items: object({
               required: ['id', 'requirements'],
               properties: {
-                id: {
-                  type: 'string',
-                },
-                description: {
-                  type: 'string',
-                },
-                requirements: {
-                  type: 'array',
+                id: string(),
+                description: string(),
+                requirements: array({
                   minItems: 1,
-                  items: {
-                    type: 'object',
+                  items: object({
                     required: ['id', 'title', 'dataType'],
                     properties: {
-                      id: {
-                        type: 'string',
-                      },
-                      title: {
-                        type: 'string',
-                      },
-                      description: {
-                        type: 'string',
-                      },
-                      dataType: {
-                        type: 'string',
-                        enum: ['boolean', 'string', 'number', 'integer'],
-                      },
-                      expectedValue: {
-                        type: ['boolean', 'string', 'number', 'integer'],
-                      },
-                      minValue: {
-                        type: ['number', 'integer'],
-                      },
-                      maxValue: {
-                        type: ['number', 'integer'],
-                      },
+                      id: string(),
+                      title: string(),
+                      description: string(),
+                      dataType: string({ enum: ['boolean', 'string', 'number', 'integer'] }),
+                      expectedValue: mixed(['boolean', 'string', 'number', 'integer']),
+                      minValue: numeric({ type: 'mixed' }),
+                      maxValue: numeric({ type: 'mixed' }),
                       period,
-                      optionDetails: {
-                        type: 'object',
+                      optionDetails: object({
                         required: ['optionGroups'],
                         properties: {
-                          optionGroups: {
-                            type: 'array',
+                          optionGroups: array({
                             minItems: 1,
-                            items: {
-                              type: 'object',
+                            items: object({
                               required: ['id', 'relatesTo', 'options'],
                               properties: {
-                                id: {
-                                  type: 'string',
-                                },
-                                description: {
-                                  type: 'string',
-                                },
-                                relatesTo: {
-                                  type: 'string',
-                                  enum: ['value'],
-                                },
+                                id: string(),
+                                description: string(),
+                                relatesTo: string({ enum: ['value'] }),
                                 options,
                               },
-                            },
-                          },
-                          optionsToCombine: {
-                            type: 'array',
+                            }),
+                          }),
+                          optionsToCombine: array({
                             minItems: 1,
-                            items: {
-                              type: 'object',
+                            items: object({
                               required: ['id', 'relatedOptions'],
                               properties: {
-                                id: {
-                                  type: 'string',
-                                },
-                                relatedOptions: {
-                                  type: 'array',
+                                id: string(),
+                                relatedOptions: array({
                                   minItems: 1,
-                                  items: {
-                                    type: 'string',
-                                  },
-                                },
+                                  items: string(),
+                                }),
                               },
-                            },
-                          },
+                            }),
+                          }),
                         },
-                      },
+                      }),
                     },
-                  },
-                },
+                  }),
+                }),
               },
-            },
-          },
+            }),
+          }),
         },
-      },
-    },
-    conversions: {
-      type: 'array',
+      }),
+    }),
+    conversions: array({
       minItems: 1,
-      items: {
-        type: 'object',
+      items: object({
         required: ['id', 'relatesTo', 'relatedItem', 'coefficients'],
         properties: {
-          id: {
-            type: 'string',
-          },
-          relatesTo: {
-            type: 'string',
-            enum: ['requirement', 'metric'],
-          },
-          relatedItem: {
-            type: 'string',
-          },
-          description: {
-            type: 'string',
-          },
-          rationale: {
-            type: 'string',
-          },
-          coefficients: {
-            type: 'array',
+          id: string(),
+          relatesTo: string({ enum: ['requirement', 'metric'] }),
+          relatedItem: string(),
+          description: string(),
+          rationale: string(),
+          coefficients: array({
             minItems: 1,
-            items: {
-              type: 'object',
+            items: object({
               required: ['id', 'value', 'coefficient'],
               properties: {
-                id: {
-                  type: 'string',
-                },
-                coefficient: {
-                  type: 'number',
-                },
-                value: {
-                  type: ['string', 'number', 'integer'],
-                },
+                id: string(),
+                coefficient: numeric(),
+                value: mixed(['string', 'number', 'integer']),
               },
-            },
-          },
+            }),
+          }),
         },
-      },
-    },
+      }),
+    }),
   },
-};
+});
