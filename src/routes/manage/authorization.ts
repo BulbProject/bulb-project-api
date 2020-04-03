@@ -25,7 +25,7 @@ const decodeCredentials = (credentials: string): Credentials => {
 const validateCredentials = (credentials: Credentials): void => {
   const validateCredentialParameter = (credential: string, value: string): void => {
     if (managerCred[credential as keyof Credentials] !== value) {
-      throw `Invalid ${credential}.`;
+      throw `Invalid credentials provided.`;
     }
   };
 

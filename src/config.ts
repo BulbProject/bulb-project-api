@@ -29,5 +29,5 @@ export const dbConfig = {
 
 export const managerCred = {
   username: process.env.CRED_USERNAME || '',
-  password: process.env.CRED_USERNAME || '',
+  password: process.env.CRED_PASSWORD || '',
 };
