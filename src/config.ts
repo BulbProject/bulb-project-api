@@ -21,3 +21,8 @@ export const dbConfig = {
   password: process.env.DB_PASSWORD || '123456',
   name: process.env.DB_NAME || 'bulb-api',
 };
+
+export const manageCred = {
+  username: process.env.MANAGE_USERNAME || '',
+  password: process.env.MANAGE_PASSWORD || '',
+};

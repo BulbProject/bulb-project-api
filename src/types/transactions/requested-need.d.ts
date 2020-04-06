@@ -1,4 +1,4 @@
-import { RequirementResponse } from './requirement';
+import { RequirementResponse } from './requirement-response';
 
 /**
  * General transaction for request a specific need by CA.

@@ -14,10 +14,14 @@
     "autoformat": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
+    "@types/atob": "^2.1.2",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.3",
     "@types/mongoose": "^5.7.7",
     "@types/node": "^13.9.1",
     "@types/pino": "^5.17.0",
     "@types/yup": "^0.26.33",
+    "atob": "^2.1.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.23",
     "dotenv": "^8.2.0",
@@ -27,6 +31,7 @@
     "pino-pretty": "^4.0.0",
     "renamer": "^1.1.4",
     "rimraf": "^3.0.2",
+    "ts4ocds": "^1.0.0-beta.2",
     "typescript": "^3.8.3",
     "yup": "^0.28.3"
   },
