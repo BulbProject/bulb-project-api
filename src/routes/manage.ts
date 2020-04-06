@@ -26,6 +26,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         response: {
           200: {
             type: 'object',
+            required: ['id', 'version'],
             properties: {
               id: {
                 type: 'string',
@@ -58,6 +59,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         response: {
           200: {
             type: 'object',
+            required: ['id', 'version'],
             properties: {
               id: {
                 type: 'string',
