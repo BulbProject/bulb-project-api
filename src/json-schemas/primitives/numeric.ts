@@ -7,6 +7,7 @@ interface NumericProps {
   exclusiveMinimum?: number;
   maximum?: number;
   exclusiveMaximum?: number;
+  example?: number;
 }
 
 export const numeric = (args?: NumericProps) => {
