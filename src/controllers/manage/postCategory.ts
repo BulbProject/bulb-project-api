@@ -17,7 +17,7 @@ export const postCategory: RequestHandler<
   { categoryId: string },
   unknown,
   Category
-> = async ({ params: { categoryId }, body }, reply) => {
+> = async ({ params: { categoryId }, body }) => {
   if (!categoryId) throw errorBuilder(400, 'Path parameter id category is missing');
 
   const version = 'v1';

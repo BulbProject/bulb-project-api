@@ -3,6 +3,9 @@ import fastify from 'fastify';
 import { getCategoriesList, getVersionsPackage, getCategoryVersion } from 'controllers/categories';
 
 import { category } from 'json-schemas';
+import { object, string, array } from 'json-schemas/primitives';
+
+import { generateSchemaForError, errorsMap } from 'utils';
 
 const tags = ['Categories'];
 const params = {
@@ -24,24 +27,18 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
         summary: 'Categories list',
         tags,
         response: {
-          200: {
-            type: 'array',
-            items: {
-              type: 'object',
+          200: array({
+            description: 'Successful response',
+            items: object({
               required: ['id', 'version', 'date'],
               properties: {
-                id: {
-                  type: 'string',
-                },
-                version: {
-                  type: 'string',
-                },
-                date: {
-                  type: 'string',
-                },
+                id: string(),
+                version: string(),
+                date: string({ format: 'date-time' }),
               },
-            },
-          },
+            }),
+          }),
+          500: generateSchemaForError(errorsMap[500], 'Server error'),
         },
       },
     },
@@ -58,49 +55,29 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
           categoryId: params.categoryId,
         },
         response: {
-          200: {
-            type: 'object',
+          200: object({
+            description: 'Successful response',
             required: ['uri', 'version', 'publisher', 'license', 'publicationPolicy', 'publishedDate', 'versions'],
             properties: {
-              uri: {
-                type: 'string',
-              },
-              version: {
-                type: 'string',
-              },
-              publisher: {
-                type: 'object',
+              uri: string(),
+              version: string(),
+              publisher: object({
                 required: ['name', 'uri'],
                 properties: {
-                  name: {
-                    type: 'string',
-                  },
-                  uri: {
-                    type: 'string',
-                  },
+                  name: string(),
+                  uri: string(),
                 },
-              },
-              license: {
-                type: 'string',
-              },
-              publicationPolicy: {
-                type: 'string',
-              },
-              publishedDate: {
-                type: 'string',
-              },
-              versions: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
+              }),
+              license: string(),
+              publicationPolicy: string(),
+              publishedDate: string(),
+              versions: array({
+                items: string(),
+              }),
             },
-          },
-          404: {
-            type: 'string',
-            example: 'Category with id <categoryId> not found',
-          },
+          }),
+          404: generateSchemaForError(errorsMap[404], 'Versions package not found'),
+          500: generateSchemaForError(errorsMap[500], 'Server error'),
         },
       },
     },
@@ -118,23 +95,17 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
           version: params.version,
         },
         response: {
-          200: {
-            type: 'object',
+          200: object({
+            description: 'Successful response',
             required: ['date', 'version', 'category'],
             properties: {
-              version: {
-                type: 'string',
-              },
-              date: {
-                type: 'string',
-              },
+              version: string(),
+              date: string({ format: 'date-time' }),
               category,
             },
-          },
-          404: {
-            type: 'string',
-            example: 'Version <version> for category with id <categoryId> not found',
-          },
+          }),
+          404: generateSchemaForError(errorsMap[404], 'Version not found'),
+          500: generateSchemaForError(errorsMap[404], 'Server error'),
         },
       },
     },
