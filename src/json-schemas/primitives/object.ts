@@ -1,6 +1,8 @@
 type Property = Record<string, any>;
 
 interface ObjectProps {
+  title?: string;
+  description?: string;
   properties: Property;
   required?: string[];
   propertyNames?: {

@@ -22,6 +22,7 @@ interface StringProps {
   pattern?: string;
   format?: Format;
   enum?: string[];
+  example?: string;
 }
 
 export const string = (args?: StringProps) => {
