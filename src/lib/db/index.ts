@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+import logger from 'lib/logger';
+
 import { dbConfig } from 'config';
 
 export const connectToDb = async (): Promise<void> => {
@@ -7,7 +9,7 @@ export const connectToDb = async (): Promise<void> => {
 
   const url = `mongodb://${dbConfig.host}:${dbConfig.port}`;
 
-  console.log('Connecting to DB ...');
+  logger.info('Connecting to DB ...');
 
   await mongoose.connect(url, {
     user: dbConfig.username,
@@ -17,5 +19,5 @@ export const connectToDb = async (): Promise<void> => {
     useUnifiedTopology: true,
   });
 
-  console.log('DB was connected');
+  logger.info('DB was connected');
 };
