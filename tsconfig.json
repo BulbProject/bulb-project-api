@@ -7,17 +7,7 @@
     "strict": true,
     "esModuleInterop": true,
     "outDir": "build",
-    "baseUrl": "src",
-    "paths": {
-      "config": ["./config.ts"],
-      "routes": ["./routes/index.ts"],
-      "models": ["./models/index.ts"],
-      "controllers": ["./controllers/index.ts"],
-      "lib/*": ["./lib/*"],
-      "validation-schemas": ["./validation-schemas/index.ts"],
-      "types/": ["./types/*"],
-      "utils": ["./utils.ts"]
-    }
+    "baseUrl": "src"
   },
   "include": ["src"],
   "exclude": ["node_modules", "build"]
