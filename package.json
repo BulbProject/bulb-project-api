@@ -30,7 +30,7 @@
     "pino-pretty": "^4.0.0",
     "renamer": "^1.1.4",
     "rimraf": "^3.0.2",
-    "ts4ocds": "^1.0.0-beta.2",
+    "ts4ocds": "^1.0.0-beta.4",
     "typescript": "^3.8.3",
     "yup": "^0.28.3"
   },
