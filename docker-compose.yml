@@ -33,5 +33,7 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
+      - MANAGE_USERNAME=${MANAGE_USERNAME}
+      - MANAGE_PASSWORD=${MANAGE_PASSWORD}
     depends_on:
       - bulb-db
