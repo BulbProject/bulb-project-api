@@ -1,5 +1,7 @@
 import fastify from 'fastify';
 
+import cors from 'fastify-cors';
+
 import { connectToDb } from 'lib/db';
 import swagger from 'lib/swagger';
 import { loggerOptions } from 'lib/logger';
@@ -11,6 +13,8 @@ import { serviceConfig } from 'config';
 const app = fastify({ logger: loggerOptions, ignoreTrailingSlash: true });
 
 swagger.register(app);
+
+app.register(cors);
 
 routes.forEach(route => route(app));
 
