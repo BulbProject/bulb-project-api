@@ -9,7 +9,7 @@ export const requestedNeed = object({
         required: ['id', 'value', 'requirement'],
         properties: {
           id: string(),
-          value: mixed(['string', 'number', 'integer']),
+          value: mixed(['boolean', 'string', 'number', 'integer']),
           requirement: object({
             required: ['id'],
             properties: {
