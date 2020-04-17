@@ -10,7 +10,7 @@ import { categoryAddBodySchema } from 'validation-schemas';
 
 import { Category } from 'types/data';
 
-export const postCategory: RequestHandler<
+export const addCategory: RequestHandler<
   unknown,
   unknown,
   unknown,

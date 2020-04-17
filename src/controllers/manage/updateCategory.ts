@@ -10,7 +10,7 @@ import { categoryAddBodySchema } from 'validation-schemas';
 import { Category } from 'types/data';
 import { ValidationError } from 'yup';
 
-export const putCategory: RequestHandler<
+export const updateCategory: RequestHandler<
   unknown,
   unknown,
   unknown,
