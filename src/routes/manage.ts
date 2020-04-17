@@ -1,8 +1,8 @@
 import fastify from 'fastify';
 
-import { postCategory, putCategory } from 'controllers/manage';
+import { addCategory, updateCategory } from 'controllers/manage';
 
-import handleAuthorization from './authorization';
+import handleAuthorization from 'middleware/authorization';
 
 import { category } from 'json-schemas';
 import { object, string } from 'json-schemas/primitives';
@@ -11,10 +11,7 @@ import { generateSchemaForError, errorsMap } from 'utils';
 
 const tags = ['Manage'];
 const params = {
-  categoryId: {
-    type: 'string',
-    description: 'Category ID',
-  },
+  categoryId: string({ description: 'Category ID' }),
 };
 const security = [{ baseAuth: [] }];
 const successfulResponseSchema = object({
@@ -33,7 +30,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
       onRequest: handleAuthorization,
       schema: {
         tags,
-        summary: 'Adding of category',
+        summary: 'Add a new category',
         security,
         params: {
           categoryId: params.categoryId,
@@ -48,7 +45,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         },
       },
     },
-    postCategory
+    addCategory
   );
 
   app.put(
@@ -57,7 +54,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
       onRequest: handleAuthorization,
       schema: {
         tags,
-        summary: 'Updating of category',
+        summary: 'Add new version for existing category',
         security,
         params: {
           categoryId: params.categoryId,
@@ -73,6 +70,6 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         },
       },
     },
-    putCategory
+    updateCategory
   );
 };
