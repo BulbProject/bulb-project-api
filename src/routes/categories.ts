@@ -24,7 +24,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     '/categories',
     {
       schema: {
-        summary: 'Categories list',
+        summary: 'List All Categories',
         tags,
         response: {
           200: array({
@@ -50,7 +50,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
-        summary: 'Versions package',
+        summary: 'Request specific category',
         params: {
           categoryId: params.categoryId,
         },
@@ -89,7 +89,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
     {
       schema: {
         tags,
-        summary: 'Category version',
+        summary: 'Requesting specific version of category',
         params: {
           categoryId: params.categoryId,
           version: params.version,
