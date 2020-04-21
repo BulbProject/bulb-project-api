@@ -1,13 +1,9 @@
-import { RequestHandler } from 'fastify';
+import { TypedRequestHandler } from 'types/request-data';
 
-export const calculation: RequestHandler<
-  unknown,
-  unknown,
-  unknown,
-  { categoryId: string; version: string },
-  unknown,
-  {}
-> = async ({ body, params: { categoryId, version } }) => {
+export const calculation: TypedRequestHandler<{ categoryId: string; version: string }> = async ({
+  body,
+  params: { categoryId, version },
+}) => {
   return {
     HELLO: 'WORLD',
     requestInfo: {

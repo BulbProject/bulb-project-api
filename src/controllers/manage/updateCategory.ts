@@ -1,5 +1,3 @@
-import { RequestHandler } from 'fastify';
-
 import { categoriesVersions, versionsPackages, categoriesList } from 'lib/db/methods';
 import errorBuilder from 'lib/errorBuilder';
 
@@ -8,16 +6,14 @@ import { formatDate, getLastVersion } from 'utils';
 import { categoryAddBodySchema } from 'validation-schemas';
 
 import { Category } from 'types/data';
+import { TypedRequestHandler } from 'types/request-data';
+
 import { ValidationError } from 'yup';
 
-export const updateCategory: RequestHandler<
-  unknown,
-  unknown,
-  unknown,
-  { categoryId: string },
-  unknown,
-  Category
-> = async ({ params: { categoryId }, body }) => {
+export const updateCategory: TypedRequestHandler<{ categoryId: string }, Category> = async ({
+  params: { categoryId },
+  body,
+}) => {
   if (!categoryId) throw errorBuilder(400, 'Path parameter id category is missing');
 
   try {
