@@ -17,6 +17,8 @@ type Format =
   | 'regex';
 
 interface StringProps {
+  title?: string;
+  description?: string;
   minLength?: number;
   maxLength?: number;
   pattern?: string;
