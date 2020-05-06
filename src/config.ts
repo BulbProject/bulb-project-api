@@ -3,12 +3,8 @@ import './lib/env';
 import packageJson from '../package.json';
 
 export const serviceConfig = {
-  protocol: process.env.SERVICE_PROTOCOL || 'http',
-  host: process.env.SERVICE_HOST || 'localhost',
+  url: process.env.SERVICE_URL || `http://localhost:${process.env.SERVICE_PORT}`,
   port: process.env.SERVICE_PORT,
-  url: `${process.env.SERVICE_PROTOCOL}://${process.env.SERVICE_HOST}${
-    process.env.SERVICE_PORT ? `:${process.env.SERVICE_PORT}` : ''
-  }`,
 
   name: 'The Bulb Project',
   version: packageJson.version,

@@ -16,7 +16,7 @@ const register = (app: fastify.FastifyInstance): void => {
         description: 'Swagger API Documentation',
         version: packageJson.version,
       },
-      schemes: [serviceConfig.protocol],
+      schemes: [serviceConfig.url.match(/^(https|http)/)?.[0] || 'http'],
       consumes: ['application/json'],
       produces: ['application/json'],
       securityDefinitions: {

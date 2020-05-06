@@ -24,8 +24,7 @@ services:
     expose:
       - ${SERVICE_PORT}
     environment:
-      - SERVICE_PROTOCOL=${SERVICE_PROTOCOL}
-      - SERVICE_HOST=${SERVICE_HOST}
+      - SERVICE_URL=${SERVICE_URL}
       - SERVICE_PORT=${SERVICE_PORT}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
