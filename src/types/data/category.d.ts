@@ -1,6 +1,6 @@
-import { Classification } from 'ts4ocds';
+import { Classification, Unit } from 'ts4ocds';
 import { Conversion } from 'ts4ocds/extensions/conversions';
-import { Criterion } from 'ts4ocds/extensions/requirements';
+import { Criterion, RequirementGroup, Requirement } from 'ts4ocds/extensions/requirements';
 import { Item } from './item';
 
 export interface Category {
@@ -30,7 +30,7 @@ export interface Category {
    * that the Procuring Entity intends to purchase.
    * Array according to [ocds_requirements_extension](https://github.com/open-contracting-extensions/ocds_requirements_extension)
    */
-  criteria: Criterion[];
+  criteria: Criterion<RequirementGroup<Requirement & { unit: Unit }>>[];
   /**
    * List of the types of goods available under this category.
    */
