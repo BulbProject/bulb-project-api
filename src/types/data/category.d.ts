@@ -3,10 +3,6 @@ import { Conversion } from 'ts4ocds/extensions/conversions';
 import { Criterion, RequirementGroup, Requirement } from 'ts4ocds/extensions/requirements';
 import { Item } from './item';
 
-type CategoryRequirement = Requirement & { unit: Unit };
-type CategoryRequirementGroup = RequirementGroup & { requirements: CategoryRequirement[] };
-type CategoryCriterion = Criterion & { requirementGroups: CategoryRequirementGroup[] };
-
 export interface Category {
   /**
    * ID for this category specified as a code of a relevant CPV class common for all the items under this category.
@@ -34,7 +30,7 @@ export interface Category {
    * that the Procuring Entity intends to purchase.
    * Array according to [ocds_requirements_extension](https://github.com/open-contracting-extensions/ocds_requirements_extension)
    */
-  criteria: CategoryCriterion[];
+  criteria: Criterion<RequirementGroup<Requirement & { unit: Unit }>>[];
   /**
    * List of the types of goods available under this category.
    */
