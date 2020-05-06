@@ -56,6 +56,12 @@ const categoryVersionSchema = new Schema(
                   expectedValue: {},
                   minValue: Number,
                   maxValue: Number,
+                  unit: {
+                    scheme: String,
+                    id: String,
+                    name: String,
+                    uri: String,
+                  },
                   period: {
                     startDate: String,
                     endDate: String,

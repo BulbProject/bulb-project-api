@@ -49,6 +49,15 @@ export const category = object({
                       expectedValue: mixed(['boolean', 'string', 'number', 'integer']),
                       minValue: numeric({ type: 'mixed' }),
                       maxValue: numeric({ type: 'mixed' }),
+                      unit: object({
+                        required: ['id', 'name'],
+                        properties: {
+                          scheme: string(),
+                          id: string(),
+                          name: string(),
+                          uri: string(),
+                        },
+                      }),
                       period,
                       optionDetails: object({
                         required: ['optionGroups'],
