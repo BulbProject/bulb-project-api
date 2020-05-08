@@ -100,7 +100,167 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({ category, version,
       },
       {
         id: '02000000',
-        relatedItem: 'item-1',
+        relatedItem: 'item-2',
+        quantity: 32,
+        forecasts: [
+          {
+            id: '02010000',
+            title: 'Payback Period',
+            observations: [
+              {
+                id: '02010100',
+                notes: 'Unit per hours',
+                measure: '51',
+                unit: {
+                  id: '02010101',
+                  name: 'hour',
+                },
+              },
+            ],
+          },
+          {
+            id: '02020000',
+            title: 'Lifetime Savings / Unit',
+            observations: [
+              {
+                id: '02020100',
+                notes: 'Electricity',
+                measure: '2.28',
+                unit: {
+                  id: '02020101',
+                  name: 'kWh',
+                },
+              },
+              {
+                id: '02020200',
+                notes: 'Financial',
+                measure: '148.82',
+                unit: {
+                  id: '02020201',
+                  name: 'UAH',
+                },
+              },
+            ],
+          },
+        ],
+        targets: [
+          {
+            id: '02010000',
+            description: 'Beautifulness',
+            observations: [
+              {
+                id: '02010100',
+                notes: 'Shininess',
+                measure: '100500',
+              },
+              {
+                id: '02010200',
+                notes: 'Glowy',
+                measure: 'Yes',
+              },
+            ],
+          },
+          {
+            id: '02020000',
+            description: 'Item classification',
+            observations: [
+              {
+                id: '02020100',
+                notes: 'Bulb',
+                measure: 'Yes',
+              },
+            ],
+          },
+        ],
+        avgValue: {
+          amount: 12,
+          currency: 'UAH',
+        },
+        relatedProducts: ['432'],
+      },
+      {
+        id: '03000000',
+        relatedItem: 'item-3',
+        quantity: 32,
+        forecasts: [
+          {
+            id: '02010000',
+            title: 'Payback Period',
+            observations: [
+              {
+                id: '02010100',
+                notes: 'Unit per hours',
+                measure: '51',
+                unit: {
+                  id: '02010101',
+                  name: 'hour',
+                },
+              },
+            ],
+          },
+          {
+            id: '02020000',
+            title: 'Lifetime Savings / Unit',
+            observations: [
+              {
+                id: '02020100',
+                notes: 'Electricity',
+                measure: '2.28',
+                unit: {
+                  id: '02020101',
+                  name: 'kWh',
+                },
+              },
+              {
+                id: '02020200',
+                notes: 'Financial',
+                measure: '148.82',
+                unit: {
+                  id: '02020201',
+                  name: 'UAH',
+                },
+              },
+            ],
+          },
+        ],
+        targets: [
+          {
+            id: '02010000',
+            description: 'Beautifulness',
+            observations: [
+              {
+                id: '02010100',
+                notes: 'Shininess',
+                measure: '100500',
+              },
+              {
+                id: '02010200',
+                notes: 'Glowy',
+                measure: 'Yes',
+              },
+            ],
+          },
+          {
+            id: '02020000',
+            description: 'Item classification',
+            observations: [
+              {
+                id: '02020100',
+                notes: 'Bulb',
+                measure: 'Yes',
+              },
+            ],
+          },
+        ],
+        avgValue: {
+          amount: 12,
+          currency: 'UAH',
+        },
+        relatedProducts: ['432'],
+      },
+      {
+        id: '04000000',
+        relatedItem: 'item-4',
         quantity: 32,
         forecasts: [
           {
