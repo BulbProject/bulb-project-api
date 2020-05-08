@@ -53,6 +53,17 @@ export const categoryAddBodySchema = object()
       )
       .min(1)
       .required(),
+    documents: array()
+      .of(
+        object().shape({
+          id,
+          documentType: string(),
+          title,
+          url: string(),
+          datePublished: string(),
+        })
+      )
+      .min(1),
     criteria: array()
       .of(
         object().shape({

@@ -22,6 +22,19 @@ export const category = object({
         },
       }),
     }),
+    documents: array({
+      minItems: 1,
+      items: object({
+        required: ['id', 'documentType', 'title', 'url', 'datePublished'],
+        properties: {
+          id: string(),
+          documentType: string(),
+          title: string(),
+          url: string(),
+          datePublished: string(),
+        },
+      }),
+    }),
     criteria: array({
       minItems: 1,
       items: object({

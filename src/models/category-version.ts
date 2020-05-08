@@ -36,6 +36,15 @@ const categoryVersionSchema = new Schema(
           additionalClassifications: [classificationSchema],
         },
       ],
+      documents: [
+        {
+          id: String,
+          documentType: String,
+          title: String,
+          url: String,
+          datePublished: String,
+        },
+      ],
       criteria: [
         {
           _id: false,
