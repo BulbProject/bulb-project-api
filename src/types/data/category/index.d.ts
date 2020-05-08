@@ -1,4 +1,4 @@
-import type { Classification, Unit } from 'ts4ocds';
+import type { Classification, Unit, Document } from 'ts4ocds';
 import type { Conversion } from 'ts4ocds/extensions/conversions';
 import type { Criterion, RequirementGroup, Requirement } from 'ts4ocds/extensions/requirements';
 import type { Item } from './item';
@@ -21,10 +21,10 @@ export interface Category {
    */
   classification: Classification;
   /**
-   * Conversions needed to run a calculation of available valiants once Procuring Entities' need is captured.
-   * Array according to [eOCDS-conversions](https://github.com/eOCDS-Extensions/eOCDS-conversions).
+   * List of the types of goods available under this category.
    */
-  conversions: Conversion[];
+  items: Item[];
+  documents?: (Document & { relatesTo: 'item'; relatedItem: string })[];
   /**
    * Criteria describe the sequence of related questions, where answers are needed to reflect the specific needs
    * that the Procuring Entity intends to purchase.
@@ -32,7 +32,8 @@ export interface Category {
    */
   criteria: Criterion<RequirementGroup<Requirement & { unit: Unit }>>[];
   /**
-   * List of the types of goods available under this category.
+   * Conversions needed to run a calculation of available valiants once Procuring Entities' need is captured.
+   * Array according to [eOCDS-conversions](https://github.com/eOCDS-Extensions/eOCDS-conversions).
    */
-  items: Item[];
+  conversions: Conversion[];
 }
