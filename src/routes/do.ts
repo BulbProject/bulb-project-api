@@ -4,7 +4,7 @@ import { calculation } from 'controllers/do';
 
 import { object, string } from 'json-schemas/primitives';
 import { availableVariants, requestedNeed } from 'json-schemas';
-import { errorsMap, generateSchemaForError } from '../utils';
+import { errorsMap, generateSchemaForError } from 'utils';
 
 const tags = ['Calculation & Evaluation'];
 const params = {
