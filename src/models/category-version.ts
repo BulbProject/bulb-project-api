@@ -41,6 +41,8 @@ const categoryVersionSchema = new Schema(
           id: String,
           documentType: String,
           title: String,
+          relatesTo: String,
+          relatedItem: String,
           url: String,
           datePublished: String,
         },

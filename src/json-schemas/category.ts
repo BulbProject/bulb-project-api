@@ -30,6 +30,8 @@ export const category = object({
           id: string(),
           documentType: string(),
           title: string(),
+          relatesTo: string(),
+          relatedItem: string(),
           url: string(),
           datePublished: string(),
         },

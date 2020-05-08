@@ -59,6 +59,8 @@ export const categoryAddBodySchema = object()
           id,
           documentType: string(),
           title,
+          relatesTo: string(),
+          relatedItem: string(),
           url: string(),
           datePublished: string(),
         })
