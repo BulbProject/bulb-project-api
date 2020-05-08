@@ -1,4 +1,4 @@
-import { Category } from '../data';
+import type { Category } from '../data';
 
 /**
  * Each version provides data about an actual version of the category at a particular point in time.
@@ -6,15 +6,15 @@ import { Category } from '../data';
  */
 export interface CategoryVersion {
   /**
-   * A specific category of goods presented by its particular version.
+   * An identifier for this particular version of information
    */
-  category: Category;
+  version: string;
   /**
    * The date this version was released, or published.
    */
   date: string;
   /**
-   * An identifier for this particular version of information
+   * A specific category of goods presented by its particular version.
    */
-  version: string;
+  category: Category;
 }

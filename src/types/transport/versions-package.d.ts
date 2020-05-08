@@ -2,7 +2,7 @@
  * The version package contains a list of versions along with some publishing metadata.  A 'package' of a version
  * follows the same structure as a version, but combines information from multiple points in time into a single summary.
  */
-export interface VersionsPackage<Publisher = {}> {
+export interface VersionsPackage {
   /**
    * A link to the license that applies to the data in this package. A Public Domain Dedication
    * or [Open Definition Conformant](http://opendefinition.org/licenses/) license is recommended. The canonical URI
@@ -22,7 +22,10 @@ export interface VersionsPackage<Publisher = {}> {
   /**
    * Information to uniquely identify the publisher of this package.
    */
-  publisher: Publisher;
+  publisher: {
+    name: string;
+    uri: string;
+  };
   /**
    * The URI of this package that identifies it uniquely in the world. Recommended practice is to use
    * a dereferenceable URI, where a persistent copy of this package is available.

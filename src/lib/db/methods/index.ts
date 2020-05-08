@@ -1,6 +1,6 @@
-import _categoriesList from './categoriesList';
-import _versionsPackages from './versionsPackages';
-import _categoriesVersions from './categoriesVersions';
+import _categoriesList from './categories-list';
+import _versionsPackages from './versions-packages';
+import _categoriesVersions from './categories-versions';
 
 export const categoriesList = {
   ..._categoriesList,

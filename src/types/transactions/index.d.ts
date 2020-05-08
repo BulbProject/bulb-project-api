@@ -1,2 +1,2 @@
 export * from './requested-need';
-export * from './requirement-response';
+export * from './available-variants';

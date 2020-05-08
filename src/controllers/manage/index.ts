@@ -1,2 +1,2 @@
-export * from './addCategory';
-export * from './updateCategory';
+export * from './add-category';
+export * from './update-category';

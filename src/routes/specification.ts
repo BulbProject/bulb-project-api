@@ -1,7 +1,7 @@
 import fastify from 'fastify';
 
 export const specificationRoute = (app: fastify.FastifyInstance): void => {
-  app.get('/specification/:categoryId/:version', { schema: { hide: true } }, async req => {
+  app.get('/specification/:categoryId/:version', { schema: { hide: true } }, async (req) => {
     return `Specification for specific good from category chosen for:
          categoryId ${req.params.categoryId},
          version ${req.params.version},
@@ -11,7 +11,7 @@ export const specificationRoute = (app: fastify.FastifyInstance): void => {
          `;
   });
 
-  app.get('/specification/:categoryId/:version/:calculationId/:variantId', { schema: { hide: true } }, async req => {
+  app.get('/specification/:categoryId/:version/:calculationId/:variantId', { schema: { hide: true } }, async (req) => {
     return `Specification for specific good from category chosen for:
          categoryId ${req.params.categoryId},
          version ${req.params.version},

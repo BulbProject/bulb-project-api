@@ -1,7 +1,7 @@
-import { Classification, Unit } from 'ts4ocds';
-import { Conversion } from 'ts4ocds/extensions/conversions';
-import { Criterion, RequirementGroup, Requirement } from 'ts4ocds/extensions/requirements';
-import { Item } from './item';
+import type { Classification, Unit } from 'ts4ocds';
+import type { Conversion } from 'ts4ocds/extensions/conversions';
+import type { Criterion, RequirementGroup, Requirement } from 'ts4ocds/extensions/requirements';
+import type { Item } from './item';
 
 export interface Category {
   /**

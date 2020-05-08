@@ -1,7 +1,7 @@
-import { RequestHandler } from 'fastify';
+import type { RequestHandler } from 'fastify';
 
 import { versionsPackages } from 'lib/db/methods';
-import errorBuilder from 'lib/errorBuilder';
+import errorBuilder from 'lib/error-builder';
 
 export const getVersionsPackage: RequestHandler<unknown, unknown, unknown, { categoryId: string }> = async ({
   params: { categoryId },

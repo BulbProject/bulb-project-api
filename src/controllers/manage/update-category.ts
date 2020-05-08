@@ -1,14 +1,14 @@
 import { categoriesVersions, versionsPackages, categoriesList } from 'lib/db/methods';
-import errorBuilder from 'lib/errorBuilder';
+import errorBuilder from 'lib/error-builder';
 
 import { formatDate, getLastVersion } from 'utils';
 
 import { categoryAddBodySchema } from 'validation-schemas';
 
-import { Category } from 'types/data';
-import { TypedRequestHandler } from 'types/request-data';
+import type { Category } from 'types/data';
+import type { TypedRequestHandler } from 'types/request-data';
 
-import { ValidationError } from 'yup';
+import type { ValidationError } from 'yup';
 
 export const updateCategory: TypedRequestHandler<
   { categoryId: string },

@@ -10,7 +10,7 @@ export const formatDate = (date: Date): string => `${dayjs.utc(date).format('YYY
 
 export const getLastVersion = (versions: { _id: string }[]) => {
   return versions
-    .map(version => +version._id.replace(/^.*-v/, ''))
+    .map((version) => +version._id.replace(/^.*-v/, ''))
     .sort((versionA, versionB) => versionB - versionA)[0];
 };
 

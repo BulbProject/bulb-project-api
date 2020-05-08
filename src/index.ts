@@ -16,7 +16,7 @@ swagger.register(app);
 
 app.register(cors);
 
-routes.forEach(route => route(app));
+routes.forEach((route) => route(app));
 
 const start = async (): Promise<void> => {
   try {

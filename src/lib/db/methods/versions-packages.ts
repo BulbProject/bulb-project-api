@@ -2,7 +2,7 @@ import { VersionsPackageModel } from 'models';
 
 import { serviceConfig } from 'config';
 
-import { VersionsPackage } from 'types/transport';
+import type { VersionsPackage } from 'types/transport';
 
 const { name, version: serviceVersion, url } = serviceConfig;
 

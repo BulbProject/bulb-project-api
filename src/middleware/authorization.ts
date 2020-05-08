@@ -42,10 +42,7 @@ const handleAuthorization: fastify.FastifyMiddleware<
   { authorization: string }
 > = async (req, reply) => {
   if (!req.headers?.authorization) {
-    return reply
-      .code(401)
-      .header('WWW-Authenticate', 'Basic realm="Bulb Project API Manager"')
-      .send();
+    return reply.code(401).header('WWW-Authenticate', 'Basic realm="Bulb Project API Manager"').send();
   }
 
   try {

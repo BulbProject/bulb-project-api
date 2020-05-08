@@ -1,5 +1,5 @@
-import { OrganizationReference } from 'ts4ocds';
-import { RequirementResponse as OCDSRequirementResponse } from 'ts4ocds/extensions/requirements';
+import type { OrganizationReference } from 'ts4ocds';
+import type { RequirementResponse as OCDSRequirementResponse } from 'ts4ocds/extensions/requirements';
 
 export type RequirementResponse = ItemRequirementResponse | TendererRequirementResponse;
 
