@@ -1,4 +1,4 @@
-import type { AlgorithmEngine } from 'types/algorithmEngine';
+import type { AlgorithmEngine } from 'types/algorithm-engine';
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({ category, version, requestedNeed }) => {

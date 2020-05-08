@@ -1,3 +1,3 @@
-export * from './categoriesListEntity';
-export * from './versionsPackage';
-export * from './categoryVersion';
+export * from './categories-list-entity';
+export * from './versions-package';
+export * from './category-version';

@@ -4,7 +4,7 @@ import type { RequestedNeed } from 'types/transactions';
 import algorithms from './algorithms';
 
 import { categoriesVersions } from 'lib/db/methods';
-import errorBuilder from 'lib/errorBuilder';
+import errorBuilder from 'lib/error-builder';
 
 export const calculation: TypedRequestHandler<{ categoryId: string; version: string }, RequestedNeed> = async ({
   body: requestedNeed,

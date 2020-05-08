@@ -1,6 +1,6 @@
 import type { Value } from 'ts4ocds';
 
-import type { Metric } from './metric';
+import type { Metric } from 'ts4ocds/extensions/metrics';
 
 interface AvailableVariant {
   id: string;

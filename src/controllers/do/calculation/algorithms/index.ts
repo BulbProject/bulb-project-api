@@ -1,6 +1,6 @@
 import LightingEquipmentAndElectricLamps from './31500000-7';
 
-import type { AlgorithmEngine } from 'types/algorithmEngine';
+import type { AlgorithmEngine } from 'types/algorithm-engine';
 
 const algorithmsMap: {
   [cpvCode: string]: AlgorithmEngine;

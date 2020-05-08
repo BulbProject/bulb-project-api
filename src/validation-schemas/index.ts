@@ -1,1 +1,1 @@
-export * from './categoryAddBody';
+export * from './category-add-body';

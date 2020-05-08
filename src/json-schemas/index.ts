@@ -4,4 +4,4 @@ export * from './options';
 export * from './period';
 export * from './primitives';
 export * from './requestedNeed';
-export * from './availableVariants';
+export * from './available-variants';
