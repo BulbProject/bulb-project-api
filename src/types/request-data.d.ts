@@ -1,4 +1,4 @@
-import { RequestHandler } from 'fastify';
+import type { RequestHandler } from 'fastify';
 
 export type TypedRequestHandler<
   PathParams,
