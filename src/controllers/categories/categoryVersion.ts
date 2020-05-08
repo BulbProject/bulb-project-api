@@ -1,4 +1,4 @@
-import { RequestHandler } from 'fastify';
+import type { RequestHandler } from 'fastify';
 
 import { categoriesVersions } from 'lib/db/methods';
 import errorBuilder from 'lib/errorBuilder';

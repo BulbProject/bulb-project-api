@@ -1,6 +1,6 @@
 import { CategoriesListEntityModel } from 'models';
 
-import { CategoriesListEntity } from 'types/transport';
+import type { CategoriesListEntity } from 'types/transport';
 
 const add = async (categoryId: string, version: string): Promise<void> => {
   const categoriesListEntityForSaving = { _id: categoryId, version };
@@ -11,7 +11,7 @@ const add = async (categoryId: string, version: string): Promise<void> => {
 const getAll = async (): Promise<CategoriesListEntity[]> => {
   return await CategoriesListEntityModel.find({})
     .sort([['updatedAt', 'desc']])
-    .then(categoryListEntities =>
+    .then((categoryListEntities) =>
       categoryListEntities.map(({ _id, version, updatedAt }) => ({
         id: _id,
         version: version,

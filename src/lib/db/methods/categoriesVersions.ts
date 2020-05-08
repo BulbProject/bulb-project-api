@@ -1,7 +1,7 @@
 import { CategoryVersionModel } from 'models';
 
-import { Category } from 'types/data';
-import { CategoryVersion } from 'types/transport';
+import type { Category } from 'types/data';
+import type { CategoryVersion } from 'types/transport';
 
 const add = async (
   category: Category,

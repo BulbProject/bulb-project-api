@@ -3,11 +3,11 @@ import errorBuilder from 'lib/errorBuilder';
 
 import { formatDate } from 'utils';
 
-import { ValidationError } from 'yup';
+import type { ValidationError } from 'yup';
 import { categoryAddBodySchema } from 'validation-schemas';
 
-import { Category } from 'types/data';
-import { TypedRequestHandler } from 'types/request-data';
+import type { Category } from 'types/data';
+import type { TypedRequestHandler } from 'types/request-data';
 
 export const addCategory: TypedRequestHandler<
   { categoryId: string },

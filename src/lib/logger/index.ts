@@ -1,4 +1,5 @@
-import pino, { LoggerOptions } from 'pino';
+import pino from 'pino';
+import type { LoggerOptions } from 'pino';
 
 export const loggerOptions: LoggerOptions = {
   name: 'Bulb API',

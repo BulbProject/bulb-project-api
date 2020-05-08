@@ -1,6 +1,7 @@
-import { Document, Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
+import type { Document } from 'mongoose';
 
-import { CategoriesListEntity } from 'types/transport';
+import type { CategoriesListEntity } from 'types/transport';
 
 type CategoriesListEntityType = CategoriesListEntity &
   Document & {

@@ -1,4 +1,5 @@
-import { array, boolean, object, number, string, mixed, Schema } from 'yup';
+import { array, boolean, object, number, string, mixed } from 'yup';
+import type { Schema } from 'yup';
 
 const id = string().required();
 const title = string().required();
@@ -29,9 +30,7 @@ const optionDetails = (value: Schema<string | number>) =>
 const classification = (scheme = 'CPV') =>
   object()
     .shape({
-      scheme: string()
-        .matches(new RegExp(scheme))
-        .required(),
+      scheme: string().matches(new RegExp(scheme)).required(),
       id: string().required(),
       description: string().required(),
     })
@@ -49,10 +48,7 @@ export const categoryAddBodySchema = object()
           id,
           description: string().required(),
           classification: classification(),
-          additionalClassifications: array()
-            .of(classification('ProzorroMarketProfile'))
-            .min(1)
-            .required(),
+          additionalClassifications: array().of(classification('ProzorroMarketProfile')).min(1).required(),
         })
       )
       .min(1)
@@ -74,42 +70,40 @@ export const categoryAddBodySchema = object()
                       id,
                       title,
                       description: string(),
-                      dataType: string()
-                        .oneOf(['boolean', 'string', 'number', 'integer'])
-                        .required(),
+                      dataType: string().oneOf(['boolean', 'string', 'number', 'integer']).required(),
                       expectedValue: mixed()
                         .when('dataType', {
-                          is: dataType => dataType === 'boolean',
+                          is: (dataType) => dataType === 'boolean',
                           then: boolean().required(),
                         })
                         .when('dataType', {
-                          is: dataType => dataType === 'string',
+                          is: (dataType) => dataType === 'string',
                           then: string(),
                         })
                         .when('dataType', {
-                          is: dataType => dataType === 'number',
+                          is: (dataType) => dataType === 'number',
                           then: number(),
                         })
                         .when('dataType', {
-                          is: dataType => dataType === 'integer',
+                          is: (dataType) => dataType === 'integer',
                           then: number().integer(),
                         }),
                       minValue: mixed()
                         .when('dataType', {
-                          is: dataType => dataType === 'number',
+                          is: (dataType) => dataType === 'number',
                           then: number(),
                         })
                         .when('dataType', {
-                          is: dataType => dataType === 'integer',
+                          is: (dataType) => dataType === 'integer',
                           then: number().integer(),
                         }),
                       maxValue: mixed()
                         .when('dataType', {
-                          is: dataType => dataType === 'number',
+                          is: (dataType) => dataType === 'number',
                           then: number(),
                         })
                         .when('dataType', {
-                          is: dataType => dataType === 'integer',
+                          is: (dataType) => dataType === 'integer',
                           then: number().integer(),
                         }),
                       unit: object().shape({
@@ -120,11 +114,11 @@ export const categoryAddBodySchema = object()
                       }),
                       optionDetails: mixed()
                         .when('dataType', {
-                          is: dataType => dataType === 'string',
+                          is: (dataType) => dataType === 'string',
                           then: optionDetails(string().required()),
                         })
                         .when('dataType', {
-                          is: dataType => dataType === 'number' || dataType === 'integer',
+                          is: (dataType) => dataType === 'number' || dataType === 'integer',
                           then: optionDetails(number().required()),
                         }),
                     })

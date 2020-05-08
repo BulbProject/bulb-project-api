@@ -1,6 +1,7 @@
-import { Document, Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
+import type { Document } from 'mongoose';
 
-import { VersionsPackage } from 'types/transport';
+import type { VersionsPackage } from 'types/transport';
 
 type VersionsPackageModelType = VersionsPackage & Document;
 
