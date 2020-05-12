@@ -1,8 +1,8 @@
 export enum BulbTypes {
-  Incandescent = '31511000-1',
-  Fluorescent = '31514000-2',
+  Incandescent = '31519100-8',
   Halogen = '31512000-8',
-  LED = '31512341-2',
+  Fluorescent = '31532900-3',
+  LED = '31712341-2',
 }
 
 export type TechCharacteristics = {
