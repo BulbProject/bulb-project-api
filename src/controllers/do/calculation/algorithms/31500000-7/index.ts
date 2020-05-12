@@ -91,8 +91,6 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           // @TODO need clarification
         ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
 
-      console.log(currentBulb.power);
-
       currentBulb.lum = calculationPower * techCharacteristics[bulbCode].lumPerWatt;
 
       currentBulb.pRef =
@@ -247,7 +245,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
 
       observations.push({
         id: '0301',
-        notes: 'Економія електроенергії',
+        notes: 'Економія електроенергії на рік',
         measure: currentBulb.energyEconomy,
         unit: {
           id: '332',
@@ -258,13 +256,14 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       if (currentBulb.energyEconomy) {
         observations.push({
           id: '0302',
-          notes: 'Фінансова економія',
+          notes: 'Фінансова економія на рік',
           value: {
             amount: (currentBulb.financeEconomy as number) ?? 'Інформацію не представлено',
             currency: currentBulb.financeEconomy ? ('грн' as 'UAH') : ('' as 'UAH'),
           },
         });
       }
+
       metrics.push({
         id: '0300',
         title: 'Економічні показники',
