@@ -19,6 +19,7 @@ export type Calculation = {
     lum: number;
     pRef: number;
     eei: number;
+    workingHoursInYear: number | undefined;
     modeOfUseLifetime: number;
     energyEconomy: number | undefined;
     financeEconomy: number | undefined;

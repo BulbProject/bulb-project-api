@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 import errorBuilder from 'lib/error-builder';
 
 import type { AlgorithmEngine } from 'types/algorithm-engine';
@@ -86,7 +88,10 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       currentBulb.power =
         techCharacteristics[bulbCode].availablePowers.find(
           (availablePower: number) => availablePower >= calculationPower
-        ) || 0;
+          // @TODO need clarification
+        ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
+
+      console.log(currentBulb.power);
 
       currentBulb.lum = calculationPower * techCharacteristics[bulbCode].lumPerWatt;
 
@@ -146,13 +151,13 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     Object.keys(availableBulbTypes).forEach((_) => {
       const bulbCode = _ as BulbTypes;
 
-      const workingHoursInWeek = modeOfUseResponses.reduce((_workingHoursInWeek, requirementResponse) => {
-        return _workingHoursInWeek * (requirementResponse.value as number);
-      }, 1);
+      const workingHoursInWeek = (modeOfUseResponses[0].value as number) * (modeOfUseResponses[1].value as number);
+      const workingHoursInYear = workingHoursInWeek * weeksInYear;
+
+      availableBulbTypes[bulbCode].workingHoursInYear = workingHoursInYear;
 
       availableBulbTypes[bulbCode].modeOfUseLifetime = +(
-        techCharacteristics[bulbCode].timeRate /
-        (workingHoursInWeek * weeksInYear)
+        techCharacteristics[bulbCode].timeRate / workingHoursInYear
       ).toFixed(2);
     });
   }
@@ -167,13 +172,19 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
   Object.keys(availableBulbTypes).forEach((_) => {
     const bulbCode = _ as BulbTypes;
 
-    availableBulbTypes[bulbCode].energyEconomy =
-      availableBulbTypes[bulbTypeNeed].power - availableBulbTypes[bulbCode].power;
+    if (availableBulbTypes[bulbCode].workingHoursInYear) {
+      availableBulbTypes[bulbCode].energyEconomy =
+        ((availableBulbTypes[bulbTypeNeed].power * quantity - availableBulbTypes[bulbCode].power * quantity) *
+          (availableBulbTypes[bulbCode].workingHoursInYear as number)) /
+        1000;
 
-    if (typeof tariffsRequirements[0].value === 'number' && tariffsRequirements[0].value > 0) {
-      availableBulbTypes[bulbCode].financeEconomy =
-        availableBulbTypes[bulbTypeNeed].power * quantity * tariffsRequirements[0].value * 0.001 -
-        availableBulbTypes[bulbCode].power * quantity * tariffsRequirements[0].value * 0.001;
+      if (typeof tariffsRequirements[0].value === 'number' && tariffsRequirements[0].value > 0) {
+        availableBulbTypes[bulbCode].financeEconomy = +(
+          (availableBulbTypes[bulbTypeNeed].power * quantity * tariffsRequirements[0].value * 0.001 -
+            availableBulbTypes[bulbCode].power * quantity * tariffsRequirements[0].value * 0.001) *
+          (availableBulbTypes[bulbCode].workingHoursInYear as number)
+        ).toFixed(2);
+      }
     }
   });
 
@@ -184,12 +195,13 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     availableBulbTypes[bulbCode].eeClass = calculateEnergyEfficiencyClass(availableBulbTypes[bulbCode].eei);
   });
 
-  // @ts-ignore
-  const availableVariants: AvailableVariant[] = Object.keys(availableBulbTypes).map((_, index) => {
+  const availableVariants: AvailableVariant[] = Object.keys(availableBulbTypes).map((_) => {
     const bulbCode = _ as BulbTypes;
     const currentBulb = availableBulbTypes[bulbCode];
 
-    const technicalIndicators = {
+    const metrics = [];
+
+    metrics.push({
       id: '0100',
       title: 'Технічні показники',
       observations: [
@@ -205,16 +217,15 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
         {
           id: '0102',
           notes: 'Термін експлуатації',
-          measure: currentBulb.modeOfUseLifetime,
+          measure: techCharacteristics[bulbCode].timeRate,
           unit: {
             id: '155',
             name: 'год',
           },
         },
       ],
-    };
-
-    const energyEfficiencyIndicators = {
+    });
+    metrics.push({
       id: '0200',
       title: 'Показники енергоефективності',
       observations: [
@@ -229,40 +240,43 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           measure: currentBulb.eeClass,
         },
       ],
-    };
+    });
 
-    const economicIndicators =
-      bulbCode !== bulbTypeNeed
-        ? {
-            id: '0300',
-            title: 'Економічні показники',
-            observations: [
-              {
-                id: '0301',
-                notes: 'Економія електроенергії',
-                measure: currentBulb.energyEconomy ?? 'Інформацію не представлено',
-                unit: {
-                  id: '332',
-                  name: 'кВт*год',
-                },
-              },
-              {
-                id: '0302',
-                notes: 'Фінансова економія',
-                value: {
-                  amount: (currentBulb.financeEconomy as number) ?? 'Інформацію не представлено',
-                  currency: currentBulb.financeEconomy ? ('грн' as 'UAH') : ('' as 'UAH'),
-                },
-              },
-            ],
-          }
-        : undefined;
+    if (currentBulb.energyEconomy) {
+      const observations = [];
+
+      observations.push({
+        id: '0301',
+        notes: 'Економія електроенергії',
+        measure: currentBulb.energyEconomy,
+        unit: {
+          id: '332',
+          name: 'кВт*год',
+        },
+      });
+
+      if (currentBulb.energyEconomy) {
+        observations.push({
+          id: '0302',
+          notes: 'Фінансова економія',
+          value: {
+            amount: (currentBulb.financeEconomy as number) ?? 'Інформацію не представлено',
+            currency: currentBulb.financeEconomy ? ('грн' as 'UAH') : ('' as 'UAH'),
+          },
+        });
+      }
+      metrics.push({
+        id: '0300',
+        title: 'Економічні показники',
+        observations,
+      });
+    }
 
     return {
-      id: `${String(index + 1).padStart(2, '0')}`,
+      id: uuid(),
       relatedItem: bulbCode,
       quantity,
-      metrics: [technicalIndicators, economicIndicators, energyEfficiencyIndicators].filter(Boolean),
+      metrics,
       avgValue: {
         amount: 0,
         currency: 'UAH',
@@ -278,9 +292,10 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       availableVariants.find((variant) => variant.relatedItem === bulbTypeNeed) as AvailableVariant,
       ...availableVariants
         .filter((variant) => variant.relatedItem !== bulbTypeNeed)
-        .sort((bulbA, bulbB) => {
+        .sort((variantA, variantB) => {
           return (
-            (bulbA.metrics[2].observations[0].measure as number) - (bulbB.metrics[2].observations[0].measure as number)
+            (variantA.metrics[1].observations[0].measure as number) -
+            (variantB.metrics[1].observations[0].measure as number)
           );
         }),
     ],
