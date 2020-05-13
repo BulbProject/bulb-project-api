@@ -1,5 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
+import { RequirementResponse } from 'ts4ocds/extensions/requirements';
+
 import errorBuilder from 'lib/error-builder';
 
 import type { AlgorithmEngine } from 'types/algorithm-engine';
@@ -8,6 +10,12 @@ import { AvailableVariant } from 'types/transactions';
 import { calculateEnergyEfficiencyClass, techCharacteristics, weeksInYear } from './directories';
 
 import { BulbTypes, Calculation } from './types';
+
+const getValueFromResponse = (responses: RequirementResponse[], requirementId: string): unknown => {
+  return responses.find(({ requirement: { id } }) => {
+    return id === requirementId;
+  })?.value as unknown;
+};
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
@@ -146,7 +154,67 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     });
   }
 
-  // 1.3) Calculation custom
+  // 1.3) Calculation custom light project
+  if (typeOfNeedResponses[0].requirement.id.slice(2, 4) === '03') {
+    const requirementIdForRoomArea = '0103010000';
+    const requirementIdForLightLevel = '0103020000';
+    const requirementIdForQuantity = '0103030000';
+
+    const roomArea = typeOfNeedResponses.find(({ requirement: { id } }) => {
+      return id === requirementIdForRoomArea;
+    })?.value as unknown;
+
+    if (!roomArea || typeof roomArea !== 'number' || roomArea <= 0) {
+      throw errorBuilder(400, `Not provides correct value for room area for calculation custom light project.`);
+    }
+
+    const lightLevel = getValueFromResponse(typeOfNeedResponses, requirementIdForLightLevel);
+
+    if (typeof lightLevel !== 'string' || !/low|regular|high|intensive/.test(lightLevel)) {
+      throw errorBuilder(400, `Not provides correct value for light lever for calculation custom light project.`);
+    }
+
+    const lightRateInLum = conversions
+      .find(({ relatedItem }) => relatedItem === requirementIdForLightLevel)
+      // @TODO Need fix coefficient.value type, must be string | number | boolean
+      ?.coefficients?.find(({ value }) => ((value as unknown) as string) === lightLevel)?.coefficient;
+
+    if (!lightRateInLum) {
+      throw errorBuilder(400, `Can't find lumen value for this type of room - ${lightLevel}.`);
+    }
+
+    const bulbsQuantity = getValueFromResponse(typeOfNeedResponses, requirementIdForQuantity);
+
+    if (!bulbsQuantity || typeof bulbsQuantity !== 'number' || bulbsQuantity <= 0) {
+      throw errorBuilder(400, `Not provided correct value for bulbs quantity for calculation light project.`);
+    }
+
+    quantity = bulbsQuantity;
+
+    const lightRateLux = lightRateInLum * roomArea;
+
+    Object.keys(calculation).forEach((_) => {
+      const bulbCode = _ as BulbTypes;
+      const currentBulb = calculation[bulbCode];
+
+      const calculationPower = lightRateLux / bulbsQuantity / techCharacteristics[bulbCode].lumPerWatt;
+
+      currentBulb.power =
+        techCharacteristics[bulbCode].availablePowers.find(
+          (availablePower: number) => availablePower >= calculationPower
+          // @TODO need clarification
+        ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
+
+      currentBulb.lum = currentBulb.power * techCharacteristics[bulbCode].lumPerWatt;
+
+      currentBulb.pRef =
+        currentBulb.lum >= 1300
+          ? 0.07341 * currentBulb.lum
+          : 0.88 * Math.sqrt(currentBulb.lum + 0.49 * currentBulb.lum);
+
+      currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
+    });
+  }
 
   // 2) Type of lamps/fittings
   const bulbTypeNeed = requirementResponses.find(({ requirement: { id } }) => /^02/.test(id))?.value as BulbTypes;
