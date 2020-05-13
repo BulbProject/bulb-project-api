@@ -384,15 +384,17 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           },
         });
 
-        observations.push({
-          id: 'energyPerYear',
-          notes: 'Енерговитрати однієї лампи на рік ',
-          measure: currentBulb.powerPerYear,
-          unit: {
-            id: '332',
-            name: 'кВт*год/рік',
-          },
-        });
+        if (currentBulb.powerPerYear) {
+          observations.push({
+            id: 'energyPerYear',
+            notes: 'Енерговитрати однієї лампи на рік ',
+            measure: currentBulb.powerPerYear,
+            unit: {
+              id: '332',
+              name: 'кВт*год/рік',
+            },
+          });
+        }
       }
 
       metrics.push({
