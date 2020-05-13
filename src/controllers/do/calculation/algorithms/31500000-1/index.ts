@@ -358,6 +358,15 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           notes: 'Клас енергоефективності',
           measure: currentBulb.eeClass,
         },
+        {
+          id: 'energyPerYear',
+          notes: 'Енерговитрати однієї лампи на рік',
+          measure: currentBulb.powerPerYear,
+          unit: {
+            id: '332',
+            name: 'кВт*год/рік',
+          },
+        },
       ],
     });
 
@@ -383,18 +392,6 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
             currency: currentBulb.financeEconomy ? ('грн' as 'UAH') : ('' as 'UAH'),
           },
         });
-
-        if (currentBulb.powerPerYear) {
-          observations.push({
-            id: 'energyPerYear',
-            notes: 'Енерговитрати однієї лампи на рік ',
-            measure: currentBulb.powerPerYear,
-            unit: {
-              id: '332',
-              name: 'кВт*год/рік',
-            },
-          });
-        }
       }
 
       metrics.push({
