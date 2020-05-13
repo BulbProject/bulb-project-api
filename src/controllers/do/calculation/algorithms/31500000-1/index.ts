@@ -5,7 +5,7 @@ import errorBuilder from 'lib/error-builder';
 import type { AlgorithmEngine } from 'types/algorithm-engine';
 import { AvailableVariant } from 'types/transactions';
 
-import { weeksInYear, techCharacteristics, calculateEnergyEfficiencyClass } from './directories';
+import { calculateEnergyEfficiencyClass, techCharacteristics, weeksInYear } from './directories';
 
 import { BulbTypes, Calculation } from './types';
 
@@ -36,12 +36,56 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     );
   }
 
-  // 1.2) Calculation light project
-  const requirementIdForTypeOfRoom = '0102010000';
-  const requirementIdForRoomArea = '0102020000';
-  const requirementIdForQuantity = '0102030000';
+  // 1.1) Calculation concrete bulb
+  if (typeOfNeedResponses[0].requirement.id.slice(2, 4) === '01') {
+    const requirementIdForBulbPower = '0101010000';
+    const requirementIdForBulbQuantity = '0101020000';
 
+    const providedPower = typeOfNeedResponses.find(({ requirement: { id } }) => {
+      return id === requirementIdForBulbPower;
+    })?.value as unknown;
+
+    if (typeof providedPower !== 'number' || providedPower <= 0) {
+      throw errorBuilder(400, `Not provides correct value for bulb power for calculation concrete bulb.`);
+    }
+
+    const providedQuantity = typeOfNeedResponses.find(({ requirement: { id } }) => {
+      return id === requirementIdForBulbQuantity;
+    })?.value as unknown;
+
+    if (typeof providedQuantity !== 'number' || providedPower <= 0) {
+      throw errorBuilder(400, `Not provides correct value for bulbs quantity for calculation concrete bulb.`);
+    }
+
+    quantity = providedQuantity;
+
+    Object.keys(calculation).forEach((_) => {
+      const bulbCode = _ as BulbTypes;
+      const currentBulb = calculation[bulbCode];
+
+      currentBulb.power =
+        techCharacteristics[bulbCode].availablePowers.find(
+          (availablePower: number) => availablePower >= providedPower
+          // @TODO need clarification
+        ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
+
+      currentBulb.lum = currentBulb.power * techCharacteristics[bulbCode].lumPerWatt;
+
+      currentBulb.pRef =
+        currentBulb.lum >= 1300
+          ? 0.07341 * currentBulb.lum
+          : 0.88 * Math.sqrt(currentBulb.lum + 0.49 * currentBulb.lum);
+
+      currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
+    });
+  }
+
+  // 1.2) Calculation light project
   if (typeOfNeedResponses[0].requirement.id.slice(2, 4) === '02') {
+    const requirementIdForTypeOfRoom = '0102010000';
+    const requirementIdForRoomArea = '0102020000';
+    const requirementIdForQuantity = '0102030000';
+
     const typeOfRoom = typeOfNeedResponses.find(({ requirement: { id } }) => {
       return id === requirementIdForTypeOfRoom;
     })?.value as unknown;
@@ -91,7 +135,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           // @TODO need clarification
         ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
 
-      currentBulb.lum = calculationPower * techCharacteristics[bulbCode].lumPerWatt;
+      currentBulb.lum = currentBulb.power * techCharacteristics[bulbCode].lumPerWatt;
 
       currentBulb.pRef =
         currentBulb.lum >= 1300
@@ -101,6 +145,8 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
     });
   }
+
+  // 1.3) Calculation custom
 
   // 2) Type of lamps/fittings
   const bulbTypeNeed = requirementResponses.find(({ requirement: { id } }) => /^02/.test(id))?.value as BulbTypes;
@@ -126,6 +172,10 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       return _availableBulbTypes;
     }
   }, {} as Calculation);
+
+  if (!Object.keys(availableBulbTypes).length) {
+    throw errorBuilder(400, 'Not provided correct type of need.');
+  }
 
   // 3) Bulb lifetime
   const modeOfUseResponses = requirementResponses.filter(({ requirement: { id } }) => /^03/.test(id));
