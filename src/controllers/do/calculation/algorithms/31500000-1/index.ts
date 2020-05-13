@@ -386,7 +386,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
 
         observations.push({
           id: 'energyPerYear',
-          notes: 'Витрати енергії за рік одної лампи',
+          notes: 'Енерговитрати однієї лампи на рік ',
           measure: currentBulb.powerPerYear,
           unit: {
             id: '332',
