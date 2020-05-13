@@ -301,6 +301,9 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           (availableBulbTypes[bulbCode].workingHoursInYear as number)
         ).toFixed(2);
       }
+
+      availableBulbTypes[bulbCode].powerPerYear =
+        availableBulbTypes[bulbCode].power * (availableBulbTypes[bulbCode].workingHoursInYear as number);
     }
   });
 
@@ -351,7 +354,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           measure: currentBulb.eei,
         },
         {
-          id: '0202',
+          id: 'energyEfficiencyClass',
           notes: 'Клас енергоефективності',
           measure: currentBulb.eeClass,
         },
@@ -373,11 +376,21 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
 
       if (currentBulb.energyEconomy) {
         observations.push({
-          id: '0302',
+          id: '0303',
           notes: 'Фінансова економія на рік',
           value: {
             amount: (currentBulb.financeEconomy as number) ?? 'Інформацію не представлено',
             currency: currentBulb.financeEconomy ? ('грн' as 'UAH') : ('' as 'UAH'),
+          },
+        });
+
+        observations.push({
+          id: 'energyPerYear',
+          notes: 'Витрати енергії за рік одної лампи',
+          measure: currentBulb.powerPerYear,
+          unit: {
+            id: '332',
+            name: 'кВт*год/рік',
           },
         });
       }
