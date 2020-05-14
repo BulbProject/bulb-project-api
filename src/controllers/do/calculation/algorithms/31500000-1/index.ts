@@ -10,6 +10,7 @@ import { AvailableVariant } from 'types/transactions';
 import { calculateEnergyEfficiencyClass, techCharacteristics, weeksInYear } from './directories';
 
 import { BulbTypes, Calculation } from './types';
+import { Metric } from 'ts4ocds/extensions/metrics';
 
 const getValueFromResponse = (responses: RequirementResponse[], requirementId: string): unknown => {
   return responses.find(({ requirement: { id } }) => {
@@ -318,7 +319,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     const bulbCode = _ as BulbTypes;
     const currentBulb = availableBulbTypes[bulbCode];
 
-    const metrics = [];
+    const metrics: Metric[] = [];
 
     metrics.push({
       id: '0100',
@@ -344,6 +345,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
         },
       ],
     });
+
     metrics.push({
       id: '0200',
       title: 'Показники енергоефективності',
@@ -370,35 +372,45 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       ],
     });
 
-    if (currentBulb.energyEconomy) {
-      const observations = [];
-
-      observations.push({
-        id: '0301',
-        notes: 'Економія електроенергії на рік',
-        measure: currentBulb.energyEconomy,
-        unit: {
-          id: '332',
-          name: 'кВт*год',
-        },
-      });
-
-      if (currentBulb.financeEconomy) {
-        observations.push({
-          id: '0303',
-          notes: 'Фінансова економія на рік',
-          value: {
-            amount: currentBulb.financeEconomy as number,
-            currency: 'грн' as 'UAH',
-          },
-        });
-      }
-
+    if (bulbCode !== bulbTypeNeed) {
       metrics.push({
         id: 'economy',
         title: 'Економічні показники',
-        observations,
+        observations: [
+          {
+            id: '0301',
+            notes: 'Термін служби',
+            measure: (techCharacteristics[bulbCode].timeRate / techCharacteristics[bulbTypeNeed].timeRate).toFixed(0),
+          },
+        ],
       });
+
+      if (currentBulb.energyEconomy) {
+        const observations = [];
+
+        observations.push({
+          id: '0302',
+          notes: 'Економія електроенергії на рік',
+          measure: currentBulb.energyEconomy.toFixed(0),
+          unit: {
+            id: '332',
+            name: 'кВт*год',
+          },
+        });
+
+        if (currentBulb.financeEconomy) {
+          observations.push({
+            id: '0303',
+            notes: 'Фінансова економія на рік',
+            value: {
+              amount: +(currentBulb.financeEconomy as number).toFixed(0),
+              currency: 'грн' as 'UAH',
+            },
+          });
+        }
+
+        metrics.find((metric) => metric.id === 'economy')?.observations.push(...observations);
+      }
     }
 
     return {
