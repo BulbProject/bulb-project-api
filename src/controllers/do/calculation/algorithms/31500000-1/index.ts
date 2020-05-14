@@ -383,13 +383,13 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
         },
       });
 
-      if (currentBulb.energyEconomy) {
+      if (currentBulb.financeEconomy) {
         observations.push({
           id: '0303',
           notes: 'Фінансова економія на рік',
           value: {
-            amount: (currentBulb.financeEconomy as number) ?? 'Інформацію не представлено',
-            currency: currentBulb.financeEconomy ? ('грн' as 'UAH') : ('' as 'UAH'),
+            amount: currentBulb.financeEconomy as number,
+            currency: 'грн' as 'UAH',
           },
         });
       }
@@ -413,6 +413,8 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       relatedProducts: ['https://prozorro.gov.ua/ProzorroMarket'],
     };
   });
+
+  console.log(availableVariants);
 
   return {
     category: id,
