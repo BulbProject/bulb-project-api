@@ -19,6 +19,7 @@ const categoryVersionSchema = new Schema(
     _id: String,
     version: String,
     date: String,
+    status: String,
     category: {
       id: {
         type: String,

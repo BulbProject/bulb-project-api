@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 
-import { addCategory, updateCategory } from 'controllers/manage';
+import { addCategory, updateCategory, activateCategory } from 'controllers/manage';
 
 import handleAuthorization from 'middleware/authorization';
 
@@ -12,6 +12,7 @@ import { generateSchemaForError, errorsMap } from 'utils';
 const tags = ['Manage'];
 const params = {
   categoryId: string({ description: 'Category ID' }),
+  version: string({ description: 'Category version' }),
 };
 const security = [{ baseAuth: [] }];
 const successfulResponseSchema = object({
@@ -25,7 +26,7 @@ const successfulResponseSchema = object({
 
 export const manageRoute = (app: fastify.FastifyInstance): void => {
   app.post(
-    '/manage/categories/:categoryId',
+    '/manage/add/categories/:categoryId',
     {
       onRequest: handleAuthorization,
       schema: {
@@ -49,7 +50,7 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
   );
 
   app.put(
-    '/manage/categories/:categoryId',
+    '/manage/update/categories/:categoryId',
     {
       onRequest: handleAuthorization,
       schema: {
@@ -71,5 +72,28 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
       },
     },
     updateCategory
+  );
+
+  app.patch(
+    '/manage/activate/categories/:categoryId/:version',
+    {
+      onRequest: handleAuthorization,
+      schema: {
+        tags,
+        summary: 'Activate category version',
+        security,
+        params,
+        body: undefined,
+        response: {
+          200: successfulResponseSchema,
+          400: generateSchemaForError(errorsMap[400], 'Validation error'),
+          401: generateSchemaForError(errorsMap[401], 'Credentials was not received'),
+          403: generateSchemaForError(errorsMap[403], 'Credentials are not valid'),
+          404: generateSchemaForError(errorsMap[404], 'Not found category or version for activate'),
+          500: generateSchemaForError(errorsMap[500], 'Server error'),
+        },
+      },
+    },
+    activateCategory
   );
 };
