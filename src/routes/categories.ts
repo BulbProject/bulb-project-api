@@ -97,10 +97,11 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
         response: {
           200: object({
             description: 'Successful response',
-            required: ['date', 'version', 'category'],
+            required: ['date', 'version', 'status', 'category'],
             properties: {
               version: string(),
               date: string({ format: 'date-time' }),
+              status: string({ enum: ['active', 'pending'] }),
               category,
             },
           }),

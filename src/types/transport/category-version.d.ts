@@ -14,6 +14,10 @@ export interface CategoryVersion {
    */
   date: string;
   /**
+   * Category status
+   */
+  status: 'active' | 'pending';
+  /**
    * A specific category of goods presented by its particular version.
    */
   category: Category;

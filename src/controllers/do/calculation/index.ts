@@ -16,7 +16,11 @@ export const calculation: TypedRequestHandler<{ categoryId: string; version: str
 
   const result = await categoriesVersions.getOne(categoryId, version);
 
-  if (!result) throw errorBuilder(404, `Version - '${version}' for category with id - '${categoryId}' not found`);
+  if (!result) throw errorBuilder(404, `Version - '${version}' for category with id - '${categoryId}' not found.`);
+
+  if (result.status !== 'active') {
+    throw errorBuilder(400, `Category with id - '${categoryId}' and version - '${version}' not activated.`);
+  }
 
   return algorithms[categoryId]({ category: result.category, version, requestedNeed });
 };

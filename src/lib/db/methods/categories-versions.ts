@@ -12,6 +12,7 @@ const add = async (
     _id: `${category.id}-${version}`,
     version,
     date: publishedDate,
+    status: 'pending',
     category,
   };
 
@@ -37,4 +38,13 @@ const getAllWithId = async (categoryId: string): Promise<{ _id: string }[]> => {
   return CategoryVersionModel.find({ 'category.id': categoryId });
 };
 
-export default { add, getOne, getAllWithId };
+const updateOne = async (categoryId: string, version: string): Promise<{ id: string; version: string }> => {
+  await CategoryVersionModel.findOneAndUpdate({ 'category.id': categoryId, version }, { status: 'active' });
+
+  return {
+    id: categoryId,
+    version,
+  };
+};
+
+export default { add, getOne, getAllWithId, updateOne };
