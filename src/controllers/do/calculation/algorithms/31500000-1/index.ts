@@ -303,7 +303,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       }
 
       availableBulbTypes[bulbCode].powerPerYear =
-        availableBulbTypes[bulbCode].power * (availableBulbTypes[bulbCode].workingHoursInYear as number);
+        (availableBulbTypes[bulbCode].power * (availableBulbTypes[bulbCode].workingHoursInYear as number)) / 1000;
     }
   });
 
