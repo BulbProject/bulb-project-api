@@ -395,7 +395,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       }
 
       metrics.push({
-        id: '0300',
+        id: 'economy',
         title: 'Економічні показники',
         observations,
       });
