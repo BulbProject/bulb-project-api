@@ -390,7 +390,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
 
         observations.push({
           id: '0302',
-          notes: 'Економія електроенергії на рік',
+          notes: 'Менше енергії',
           measure: currentBulb.energyEconomy.toFixed(0),
           unit: {
             id: '332',
@@ -401,7 +401,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
         if (currentBulb.financeEconomy) {
           observations.push({
             id: '0303',
-            notes: 'Фінансова економія на рік',
+            notes: 'Фінансової економії',
             value: {
               amount: +(currentBulb.financeEconomy as number).toFixed(0),
               currency: 'грн' as 'UAH',
