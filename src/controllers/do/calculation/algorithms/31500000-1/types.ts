@@ -21,7 +21,6 @@ export type Calculation = {
     eei: number;
     workingHoursInYear: number | undefined;
     modeOfUseLifetime: number;
-    powerPerYear?: number;
     energyEconomy: number | undefined;
     financeEconomy: number | undefined;
     eeClass: string;

@@ -302,9 +302,6 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           (availableBulbTypes[bulbCode].workingHoursInYear as number)
         ).toFixed(2);
       }
-
-      availableBulbTypes[bulbCode].powerPerYear =
-        (availableBulbTypes[bulbCode].power * (availableBulbTypes[bulbCode].workingHoursInYear as number)) / 1000;
     }
   });
 
@@ -360,25 +357,16 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           notes: 'Клас енергоефективності',
           measure: currentBulb.eeClass,
         },
-        {
-          id: 'energyPerYear',
-          notes: 'Енерговитрати однієї лампи на рік',
-          measure: currentBulb.powerPerYear,
-          unit: {
-            id: '332',
-            name: 'кВт*год/рік',
-          },
-        },
       ],
     });
 
     if (bulbCode !== bulbTypeNeed) {
       metrics.push({
-        id: 'economy',
+        id: '0300',
         title: 'Економічні показники',
         observations: [
           {
-            id: '0301',
+            id: 'serviceLife',
             notes: 'Термін служби',
             measure: (techCharacteristics[bulbCode].timeRate / techCharacteristics[bulbTypeNeed].timeRate).toFixed(0),
           },
@@ -389,7 +377,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
         const observations = [];
 
         observations.push({
-          id: '0302',
+          id: 'energyEconomy',
           notes: 'Менше енергії',
           measure: currentBulb.energyEconomy.toFixed(0),
           unit: {
@@ -400,7 +388,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
 
         if (currentBulb.financeEconomy) {
           observations.push({
-            id: '0303',
+            id: 'financeEconomy',
             notes: 'Фінансової економії',
             value: {
               amount: +(currentBulb.financeEconomy as number).toFixed(0),
