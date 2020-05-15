@@ -397,7 +397,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           });
         }
 
-        metrics.find((metric) => metric.id === 'economy')?.observations.push(...observations);
+        metrics.find((metric) => metric.id === '0300')?.observations.push(...observations);
       }
     }
 
@@ -413,8 +413,6 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       relatedProducts: ['https://prozorro.gov.ua/ProzorroMarket'],
     };
   });
-
-  console.log(availableVariants);
 
   return {
     category: id,
