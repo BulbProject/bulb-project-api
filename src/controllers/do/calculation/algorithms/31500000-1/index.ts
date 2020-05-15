@@ -11,6 +11,7 @@ import { calculateEnergyEfficiencyClass, techCharacteristics, weeksInYear } from
 
 import { BulbTypes, Calculation } from './types';
 import { Metric } from 'ts4ocds/extensions/metrics';
+import { Option } from 'ts4ocds/extensions/options';
 
 const getValueFromResponse = (responses: RequirementResponse[], requirementId: string): unknown => {
   return responses.find(({ requirement: { id } }) => {
@@ -20,7 +21,7 @@ const getValueFromResponse = (responses: RequirementResponse[], requirementId: s
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
-  category: { id, items, conversions },
+  category: { id, items, criteria, conversions },
   version,
   requestedNeed: {
     requestedNeed: { requirementResponses },
@@ -236,6 +237,22 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     const bulbCode = _ as BulbTypes;
 
     if (calculation[bulbCode].eei <= eeiOfBulbTypeNeed) {
+      const bulbTypes = criteria
+        .flatMap((criterion) => criterion.requirementGroups)
+        .find(
+          (requirementGroup) =>
+            requirementGroup.id ===
+            requirementResponses
+              .find(({ requirement: { id } }) => /^02/.test(id))
+              ?.requirement.id?.replace(/[0-9]{6}$/, '000000')
+        )
+        // @ts-ignore @TODO need fix OptionDetails union type in ts4ocds
+        ?.requirements[0]?.optionDetails?.optionGroups[0].options.flatMap((option: Option) => option.value);
+
+      if (!bulbTypes.find((bulbType: string) => bulbType === bulbCode)) {
+        return _availableBulbTypes;
+      }
+
       return Object.assign({}, { [bulbCode]: calculation[bulbCode] }, _availableBulbTypes);
     } else {
       return _availableBulbTypes;
