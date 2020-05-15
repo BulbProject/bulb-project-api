@@ -368,7 +368,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           {
             id: 'serviceLife',
             notes: 'Термін служби',
-            measure: (techCharacteristics[bulbCode].timeRate / techCharacteristics[bulbTypeNeed].timeRate).toFixed(0),
+            measure: (techCharacteristics[bulbCode].timeRate / techCharacteristics[bulbTypeNeed].timeRate).toFixed(1),
           },
         ],
       });
