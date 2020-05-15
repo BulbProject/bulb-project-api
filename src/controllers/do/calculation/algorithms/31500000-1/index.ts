@@ -399,7 +399,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           measure: currentBulb.energyEconomy.toFixed(0),
           unit: {
             id: '332',
-            name: 'кВт*год',
+            name: 'кВт*год/рік',
           },
         });
 
@@ -409,7 +409,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
             notes: 'Фінансової економії',
             value: {
               amount: +(currentBulb.financeEconomy as number).toFixed(0),
-              currency: 'грн' as 'UAH',
+              currency: 'грн/рік' as 'UAH',
             },
           });
         }
