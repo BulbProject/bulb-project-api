@@ -32,6 +32,18 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
   }, {} as Calculation);
   let quantity = 0;
 
+  const bulbTypeNeed = requirementResponses.find(({ requirement: { id } }) => /^02/.test(id))?.value as BulbTypes;
+
+  if (!bulbTypeNeed || typeof bulbTypeNeed !== 'string') {
+    throw errorBuilder(400, `Not provided type of lamp.`);
+  }
+
+  const bulbTypeNeedIsPresent = items.some((item) => item.id === bulbTypeNeed);
+
+  if (!bulbTypeNeedIsPresent) {
+    throw errorBuilder(400, `Haven't item in category with id - ${bulbTypeNeed}.`);
+  }
+
   // 1) Type of need
   const typeOfNeedResponses = requirementResponses.filter(({ requirement: { id } }) => /^01/.test(id));
 
@@ -59,6 +71,15 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       throw errorBuilder(400, `Not provides correct value for bulb power for calculation concrete bulb.`);
     }
 
+    const directoryPower =
+      techCharacteristics[bulbTypeNeed].availablePowers.find(
+        (availablePower: number) => availablePower >= providedPower
+        // @TODO need clarification
+      ) ||
+      techCharacteristics[bulbTypeNeed].availablePowers[techCharacteristics[bulbTypeNeed].availablePowers.length - 1];
+
+    const lumPerWatt = directoryPower * techCharacteristics[bulbTypeNeed].lumPerWatt;
+
     const providedQuantity = typeOfNeedResponses.find(({ requirement: { id } }) => {
       return id === requirementIdForBulbQuantity;
     })?.value as unknown;
@@ -73,11 +94,15 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
       const bulbCode = _ as BulbTypes;
       const currentBulb = calculation[bulbCode];
 
-      currentBulb.power =
-        techCharacteristics[bulbCode].availablePowers.find(
-          (availablePower: number) => availablePower >= providedPower
-          // @TODO need clarification
-        ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
+      if (bulbCode !== bulbTypeNeed) {
+        currentBulb.power =
+          techCharacteristics[bulbCode].availablePowers.find(
+            (availablePower: number) => availablePower >= lumPerWatt / techCharacteristics[bulbCode].lumPerWatt
+            // @TODO need clarification
+          ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
+      } else {
+        currentBulb.power = directoryPower;
+      }
 
       currentBulb.lum = currentBulb.power * techCharacteristics[bulbCode].lumPerWatt;
 
@@ -219,18 +244,6 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
   }
 
   // 2) Type of lamps/fittings
-  const bulbTypeNeed = requirementResponses.find(({ requirement: { id } }) => /^02/.test(id))?.value as BulbTypes;
-
-  if (!bulbTypeNeed || typeof bulbTypeNeed !== 'string') {
-    throw errorBuilder(400, `Not provided type of lamp.`);
-  }
-
-  const bulbTypeNeedIsPresent = items.some((item) => item.id === bulbTypeNeed);
-
-  if (!bulbTypeNeedIsPresent) {
-    throw errorBuilder(400, `Haven't item in category with id - ${bulbTypeNeed}.`);
-  }
-
   const eeiOfBulbTypeNeed = calculation[bulbTypeNeed].eei;
 
   const availableBulbTypes = Object.keys(calculation).reduce((_availableBulbTypes, _) => {
