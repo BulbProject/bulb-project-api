@@ -8,15 +8,15 @@ export const techCharacteristics: TechCharacteristics = {
     timeRate: 1375,
     availablePowers: [30, 40, 60, 80, 100, 120, 200],
   },
-  [BulbTypes.Fluorescent]: {
-    lumPerWatt: 20,
-    timeRate: 30000,
-    availablePowers: [30, 40, 60, 80, 100, 120, 200],
-  },
   [BulbTypes.Halogen]: {
-    lumPerWatt: 60,
+    lumPerWatt: 20,
     timeRate: 3000,
     availablePowers: [3, 7, 10, 15, 20, 45, 60, 75],
+  },
+  [BulbTypes.Fluorescent]: {
+    lumPerWatt: 60,
+    timeRate: 30000,
+    availablePowers: [30, 40, 60, 80, 100, 120, 200],
   },
   [BulbTypes.LED]: {
     lumPerWatt: 90,
