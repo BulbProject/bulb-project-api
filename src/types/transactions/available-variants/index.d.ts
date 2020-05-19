@@ -6,8 +6,7 @@ interface AvailableVariant {
   id: string;
   relatedItem: string;
   quantity: number;
-  forecasts: Metric[];
-  targets: Metric[];
+  metrics: Metric[];
   avgValue: Value;
   relatedProducts: string[];
 }

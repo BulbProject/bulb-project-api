@@ -15,8 +15,7 @@ export const availableVariants = object({
           id: string(),
           relatedItem: string(),
           quantity: numeric(),
-          forecasts: metrics,
-          targets: metrics,
+          metrics: metrics,
           avgValue: object({
             required: ['amount', 'currency'],
             properties: {
