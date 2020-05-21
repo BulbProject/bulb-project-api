@@ -1,4 +1,4 @@
-import { string, numeric, object } from './primitives';
+import { string, numeric, object } from '../primitives';
 
 export const period = object({
   properties: {

@@ -31,7 +31,7 @@ export interface Category {
    * that the Procuring Entity intends to purchase.
    * Array according to [ocds_requirements_extension](https://github.com/open-contracting-extensions/ocds_requirements_extension)
    */
-  criteria: Criterion<RequirementGroup<Requirement & { unit: Unit; optionDetails: OptionDetails }>>[];
+  criteria: Criterion<RequirementGroup<Requirement & { unit?: Unit; optionDetails?: OptionDetails }>>[];
   /**
    * Conversions needed to run a calculation of available valiants once Procuring Entities' need is captured.
    * Array according to [eOCDS-conversions](https://github.com/eOCDS-Extensions/eOCDS-conversions).

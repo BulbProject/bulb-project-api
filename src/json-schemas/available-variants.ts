@@ -1,6 +1,6 @@
-import { array, object, string, numeric } from './primitives';
+import { array, numeric, object, string } from './primitives';
 
-import { metrics } from './metrics';
+import { criteria, metrics } from './parts';
 
 export const availableVariants = object({
   required: ['category', 'version', 'availableVariants'],
@@ -10,12 +10,12 @@ export const availableVariants = object({
     availableVariants: array({
       minItems: 1,
       items: object({
-        required: [],
+        required: ['id', 'relatedItem', 'quantity', 'metrics', 'avgValue', 'relatedProducts'],
         properties: {
           id: string(),
           relatedItem: string(),
           quantity: numeric(),
-          metrics: metrics,
+          metrics,
           avgValue: object({
             required: ['amount', 'currency'],
             properties: {
@@ -27,6 +27,7 @@ export const availableVariants = object({
             minItems: 1,
             items: string(),
           }),
+          criteria,
         },
       }),
     }),

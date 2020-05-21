@@ -1,9 +1,10 @@
 type Property = Record<string, any>;
 
 interface ObjectProps {
+  type?: 'object';
   title?: string;
   description?: string;
-  properties: Property;
+  properties?: Property;
   required?: string[];
   propertyNames?: {
     pattern: string;
@@ -12,6 +13,7 @@ interface ObjectProps {
   maxProperties?: number;
   dependencies?: Property;
   patternProperties?: Property;
+  oneOf?: ObjectProps[];
 }
 
 export const object = (args: ObjectProps) => {

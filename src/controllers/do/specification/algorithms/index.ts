@@ -1,9 +1,9 @@
 import LightingEquipmentAndElectricLamps from './31500000-1';
 
-import type { CalculationEngine } from '../types';
+import type { SpecificationEngine } from '../types';
 
 const algorithmsMap: {
-  [cpvCode: string]: CalculationEngine;
+  [cpvCode: string]: SpecificationEngine;
 } = {
   '31500000-1': LightingEquipmentAndElectricLamps,
 };

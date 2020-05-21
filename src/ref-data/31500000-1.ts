@@ -1,24 +1,27 @@
-import { BulbTypes, TechCharacteristics } from './types';
+export enum BulbVariants {
+  Incandescent = '31519100-8',
+  Halogen = '31512000-8',
+  Fluorescent = '31532900-3',
+  LED = '31712341-2',
+}
 
-export const weeksInYear = 52;
-
-export const techCharacteristics: TechCharacteristics = {
-  [BulbTypes.Incandescent]: {
+const techChars = {
+  [BulbVariants.Incandescent]: {
     lumPerWatt: 15,
     timeRate: 1375,
     availablePowers: [30, 40, 60, 80, 100, 120, 200],
   },
-  [BulbTypes.Halogen]: {
+  [BulbVariants.Halogen]: {
     lumPerWatt: 20,
     timeRate: 3000,
     availablePowers: [3, 7, 10, 15, 20, 45, 60, 75],
   },
-  [BulbTypes.Fluorescent]: {
+  [BulbVariants.Fluorescent]: {
     lumPerWatt: 60,
     timeRate: 30000,
     availablePowers: [30, 40, 60, 80, 100, 120, 200],
   },
-  [BulbTypes.LED]: {
+  [BulbVariants.LED]: {
     lumPerWatt: 90,
     timeRate: 42000,
     availablePowers: [3, 7, 10, 15, 20, 45, 60, 75],
@@ -41,4 +44,9 @@ export const calculateEnergyEfficiencyClass = (eei: number) => {
   } else {
     return 'E';
   }
+};
+
+export default {
+  techChars,
+  calculateEnergyEfficiencyClass,
 };
