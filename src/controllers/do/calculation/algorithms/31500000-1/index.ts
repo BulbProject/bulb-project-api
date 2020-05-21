@@ -444,6 +444,37 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
         currency: 'UAH',
       },
       relatedProducts: ['https://prozorro.gov.ua/ProzorroMarket'],
+      criteria: [
+        {
+          id: '0100000000',
+          title: 'Додаткова інформація',
+          description: 'Оберіть варіант освітлення',
+          requirementGroups: [
+            {
+              id: '0101000000',
+              requirements: [
+                {
+                  id: '0101010000',
+                  title: 'Спрямоване освітлення',
+                  dataType: 'boolean',
+                  expectedValue: true,
+                },
+              ],
+            },
+            {
+              id: '0102000000',
+              requirements: [
+                {
+                  id: '0102010000',
+                  title: 'Розсіяне освітлення',
+                  dataType: 'boolean',
+                  expectedValue: true,
+                },
+              ],
+            },
+          ],
+        },
+      ],
     };
   });
 
@@ -460,37 +491,6 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
             (variantB.metrics[1].observations[0].measure as number)
           );
         }),
-    ],
-    criteria: [
-      {
-        id: '0100000000',
-        title: 'Додаткова інформація',
-        description: 'Оберіть варіант освітлення',
-        requirementGroups: [
-          {
-            id: '0101000000',
-            requirements: [
-              {
-                id: '0101010000',
-                title: 'Спрямоване освітлення',
-                dataType: 'boolean',
-                expectedValue: true,
-              },
-            ],
-          },
-          {
-            id: '0102000000',
-            requirements: [
-              {
-                id: '0102010000',
-                title: 'Розсіяне освітлення',
-                dataType: 'boolean',
-                expectedValue: true,
-              },
-            ],
-          },
-        ],
-      },
     ],
   } as AvailableVariants;
 };
