@@ -11,4 +11,4 @@ export type SpecificationEngine = ({
   selectedVariant: SelectedVariant;
   egp: string;
   mode: Mode;
-}) => Criterion[] | undefined;
+}) => Criterion[] | string;

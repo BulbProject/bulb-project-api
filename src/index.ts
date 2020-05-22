@@ -14,7 +14,7 @@ const app = fastify({ logger: loggerOptions, ignoreTrailingSlash: true });
 
 swagger.register(app);
 
-app.register(cors);
+app.register(cors, { exposedHeaders: 'Content-Disposition' });
 
 routes.forEach((route) => route(app));
 

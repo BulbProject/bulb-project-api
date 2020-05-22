@@ -11,9 +11,7 @@ export const specification: TypedRequestHandler<
   { categoryId: string; version: string },
   SelectedVariant,
   { egp: string; mode: Mode }
-> = async ({ params: { categoryId, version }, body: selectedVariant, query: { egp, mode } }) => {
-  console.log(egp, mode);
-
+> = async ({ params: { categoryId, version }, body: selectedVariant, query: { egp, mode } }, reply) => {
   if (!egp || !mode) {
     throw errorBuilder(400, `Not provided 'egp' or 'mode' parameter.`);
   }
@@ -22,5 +20,13 @@ export const specification: TypedRequestHandler<
     throw errorBuilder(400, `Can't make a specification for the category with id - '${categoryId}'. Unknown category.`);
   }
 
-  return algorithms[categoryId]({ selectedVariant, egp, mode });
+  const result = algorithms[categoryId]({ selectedVariant, egp, mode });
+
+  if (mode === 'json') {
+    return result;
+  }
+
+  if (mode === 'rtf') {
+    reply.header('Content-Disposition', 'attachment; filename="specification.rtf"').send(result);
+  }
 };

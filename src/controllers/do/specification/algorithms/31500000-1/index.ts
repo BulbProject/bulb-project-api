@@ -1,3 +1,6 @@
+//@ts-ignore
+import htmlToRtf from 'html-to-rtf';
+
 import refData, { BulbVariants } from 'ref-data';
 
 import errorBuilder from 'lib/error-builder';
@@ -6,6 +9,33 @@ import { Criterion, RequirementGroup } from 'types/parts';
 import { SpecificationEngine } from '../../types';
 
 const categoryId = '31500000-1';
+
+const html = `
+<h1>Title <span style="color:rgb(255,0,0);">with</span> tag h1<h1>
+<div>
+	<p style="color:#333; margin:5px;" class="test" align="center">
+	    text of paragraph <b>text with bold <i>text with italic and bold</i></b><i>text with italic</i>
+	</p>
+	<p style="color:rgb(255,0,0);" align="right">red paragraph => right with tag</p>
+	<p style="color:rgb(0,0,255); text-align:center;">blue paragraph => center with style</p>
+	<table>
+		<tbody>
+			<tr>
+                <td><mark>column 1</mark></td>
+                <td>column 2</td>
+				<td><mark>column 3</mark></td>
+				<td>column 4</td>
+			</tr>
+			<tr>
+				<td>content 1</td>
+				<td>content 2<br></td>
+				<td>content 3<br></td>
+				<td>content 4<br></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+`;
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
@@ -651,8 +681,14 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
     requirementGroups: [functionallyRequirementsGroup],
   };
 
-  if (egp === 'prozorro' || mode === 'json') {
-    return [efficacyCriterion, functionallyCriterion];
+  if (egp === 'prozorro') {
+    if (mode === 'json') {
+      return [efficacyCriterion, functionallyCriterion];
+    }
+
+    if (mode === 'rtf') {
+      return htmlToRtf.convertHtmlToRtf(html);
+    }
   }
 };
 

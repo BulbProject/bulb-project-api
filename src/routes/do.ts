@@ -50,7 +50,7 @@ export const doRoute = (app: fastify.FastifyInstance): void => {
         },
         body: selectedVariant,
         response: {
-          200: criteria,
+          // 200: criteria,
           400: generateSchemaForError(errorsMap[400], 'Validation error'),
           404: generateSchemaForError(errorsMap[404], 'Category or version not found'),
         },
