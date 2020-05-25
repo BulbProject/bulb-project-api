@@ -1,5 +1,3 @@
-import { v4 as uuid } from 'uuid';
-
 import algorithms from './algorithms';
 
 import { categoriesVersions } from 'lib/db/methods';
@@ -19,6 +17,10 @@ export const specification: TypedRequestHandler<
     throw errorBuilder(400, `Not provided 'egp' or 'mode' parameter.`);
   }
 
+  if (mode !== 'json' && mode !== 'docx') {
+    throw errorBuilder(400, `Parameter 'mode' must be or 'json' of 'docx'.`);
+  }
+
   if (!(categoryId in algorithms)) {
     throw errorBuilder(400, `Can't make a specification for the category with id - '${categoryId}'. Unknown category.`);
   }
@@ -29,16 +31,23 @@ export const specification: TypedRequestHandler<
     throw errorBuilder(404, `Version - '${version}' for category with id - '${categoryId}' not found.`);
   }
 
-  const result = algorithms[categoryId]({ category: categoryRecord.category, version, selectedVariant, egp, mode });
+  const result = await algorithms[categoryId]({
+    category: categoryRecord.category,
+    version,
+    selectedVariant,
+    egp,
+    mode,
+  });
 
   if (mode === 'json') {
     return result;
   }
 
-  if (mode === 'rtf') {
+  if (mode === 'docx') {
     reply
-      .header('Content-Disposition', 'attachment; filename="specification.rtf"')
-      .type('application/rtf; charset=utf-8')
-      .send(result);
+      .header('Content-Disposition', 'attachment;filename="specification.docx"')
+      .header('Content-Description', 'File Transfer')
+      .header('Content-Transfer-Encoding', 'binary')
+      .send(new Buffer(result as Buffer));
   }
 };

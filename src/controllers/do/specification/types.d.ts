@@ -1,8 +1,7 @@
 import { Category } from 'types/data/category';
 import type { SelectedVariant } from 'types/transactions/selected-variant';
-import type { Criterion } from 'types/parts';
 
-export type Mode = 'json' | 'rtf';
+export type Mode = 'json' | 'docx';
 
 export type SpecificationEngine = ({
   category,
@@ -16,4 +15,4 @@ export type SpecificationEngine = ({
   selectedVariant: SelectedVariant;
   egp: string;
   mode: Mode;
-}) => Criterion[] | string;
+}) => Promise<{ id: string } | Buffer>;

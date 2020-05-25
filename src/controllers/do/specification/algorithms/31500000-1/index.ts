@@ -1,20 +1,17 @@
-//@ts-ignore
-import htmlToRtf from 'html-to-rtf';
-
 import refData, { BulbVariants } from 'ref-data';
 import type { Criterion, RequirementGroup } from 'types/parts';
 import { specifications } from 'lib/db/methods';
 
 import errorBuilder from 'lib/error-builder';
 
-import { generateTemplate } from './specification-template';
+import { generateDocument } from './document-generator';
 
 import type { SpecificationEngine } from '../../types';
 
 const categoryId = '31500000-1';
 
 // Name of the function is a name of current CPV code
-const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
+const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
   category,
   version,
   selectedVariant: { selectedVariant },
@@ -63,7 +60,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
 
   efficacyRequirementsGroup.requirements.push({
     id: '010101',
-    title: 'Maximum rated power (Pmax) for a given rated luminous flux (Φ)',
+    title: 'Максимальна номінальна потужність (Pmax)',
     expectedValue: +(0.6 * (0.88 * Math.sqrt(lightFlowValue) + 0.049 * lightFlowValue) * PmaxCor).toFixed(2),
     unit: {
       id: '',
@@ -71,9 +68,15 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
     },
   });
 
+  efficacyRequirementsGroup.requirements.push({
+    id: '010102',
+    title: 'Коефіцієнт коригування Pmax',
+    expectedValue: +PmaxCor,
+  });
+
   const efficacyCriterion: Criterion = {
     id: '010000',
-    title: 'Efficacy Requirements',
+    title: 'Вимоги до ефективності',
     requirementGroups: [efficacyRequirementsGroup],
   };
 
@@ -655,7 +658,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
 
   const functionallyCriterion: Criterion = {
     id: '',
-    title: 'Functionality Requirements',
+    title: 'Вимоги до функціональності',
     requirementGroups: [functionallyRequirementsGroup],
   };
 
@@ -666,10 +669,12 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
       return specifications.add(categoryId, version, criteria);
     }
 
-    if (mode === 'rtf') {
-      return htmlToRtf.convertHtmlToRtf(generateTemplate(category, criteria));
+    if (mode === 'docx') {
+      return generateDocument(category, selectedVariant, criteria);
     }
   }
+
+  throw errorBuilder(400, 'Something wrong...');
 };
 
 export default LightingEquipmentAndElectricLamps;
