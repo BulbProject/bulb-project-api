@@ -117,7 +117,7 @@ export const generateDocument = async (
     });
   };
 
-  const ecoDesign = Media.addImage(document, Buffer.from(ecoDesignData), 100, 100);
+  const ecoDesign = Media.addImage(document, Buffer.from(ecoDesignData, 'base64'), 100, 100);
 
   document.addSection({
     children: [
