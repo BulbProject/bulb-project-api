@@ -46,7 +46,7 @@ export const doRoute = (app: fastify.FastifyInstance): void => {
         params,
         querystring: {
           egp: string({ enum: ['prozorro'] }),
-          mode: string({ enum: ['json', 'rtf'] }),
+          mode: string({ enum: ['json', 'docx'] }),
         },
         body: selectedVariant,
         response: {

@@ -17,10 +17,6 @@ export const specification: TypedRequestHandler<
     throw errorBuilder(400, `Not provided 'egp' or 'mode' parameter.`);
   }
 
-  if (mode !== 'json' && mode !== 'docx') {
-    throw errorBuilder(400, `Parameter 'mode' must be or 'json' of 'docx'.`);
-  }
-
   if (!(categoryId in algorithms)) {
     throw errorBuilder(400, `Can't make a specification for the category with id - '${categoryId}'. Unknown category.`);
   }
