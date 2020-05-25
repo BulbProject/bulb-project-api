@@ -2,7 +2,7 @@ import fastify from 'fastify';
 import { getSpecification } from '../controllers/specifications';
 
 export const specificationRoute = (app: fastify.FastifyInstance): void => {
-  app.get('/specifications/:categoryId/:version/:specificationId', { schema: { hide: true } }, getSpecification);
+  app.get('/specifications/:categoryId/:version/:specificationId', {}, getSpecification);
 
   app.get('/specification/:categoryId/:version/:calculationId/:variantId', { schema: { hide: true } }, async (req) => {
     return `Specification for specific good from category chosen for:

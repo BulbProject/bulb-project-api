@@ -32,9 +32,7 @@ export const specification: TypedRequestHandler<
   const result = algorithms[categoryId]({ category: categoryRecord.category, version, selectedVariant, egp, mode });
 
   if (mode === 'json') {
-    return {
-      specificationId: result,
-    };
+    return result;
   }
 
   if (mode === 'rtf') {

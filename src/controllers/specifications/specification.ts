@@ -10,7 +10,7 @@ export const getSpecification: RequestHandler<
   { categoryId: string; version: string; specificationId: string }
 > = async ({ params: { categoryId, version, specificationId } }) => {
   try {
-    const result = await specifications.getOne(categoryId, version, specificationId);
+    const result = await specifications.getOne(specificationId);
 
     if (!result)
       throw errorBuilder(

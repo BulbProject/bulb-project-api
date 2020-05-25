@@ -8,6 +8,7 @@ const add = async (categoryId: string, version: string, criteria: Criterion[]): 
   const specificationId = uuid();
 
   await new SpecificationModel({
+    _id: specificationId,
     id: specificationId,
     categoryId,
     version,
@@ -19,12 +20,10 @@ const add = async (categoryId: string, version: string, criteria: Criterion[]): 
   };
 };
 
-const getOne = async (categoryId: string, version: string, specificationId: string): Promise<Specification | null> => {
+const getOne = async (specificationId: string): Promise<Specification | null> => {
   return SpecificationModel.findOne(
     {
-      categoryId,
-      version,
-      id: specificationId,
+      _id: specificationId,
     },
     { _id: 0 }
   );
