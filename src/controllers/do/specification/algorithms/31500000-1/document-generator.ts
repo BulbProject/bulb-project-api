@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import {
   AlignmentType,
   BorderStyle,
@@ -17,12 +20,12 @@ import {
   VerticalAlign,
 } from 'docx';
 
+import { ecoDesignData } from './images-data';
+
 import type { Item } from 'ts4ocds';
 import type { Category } from 'types/data/category';
 import type { Criterion } from 'types/parts';
 import type { SelectedVariant } from 'types/transactions/selected-variant';
-import * as fs from 'fs';
-import path from 'path';
 
 export const generateDocument = async (
   category: Category,
@@ -117,7 +120,7 @@ export const generateDocument = async (
     });
   };
 
-  const ecoDesign = Media.addImage(document, fs.readFileSync(path.resolve(__dirname, 'ecodesign.jpg')), 100, 100);
+  const ecoDesign = Media.addImage(document, Buffer.from(ecoDesignData), 100, 100);
 
   document.addSection({
     children: [
