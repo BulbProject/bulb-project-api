@@ -6,11 +6,13 @@ export type Mode = 'json' | 'rtf';
 
 export type SpecificationEngine = ({
   category,
+  version,
   selectedVariant,
   egp,
   mode,
 }: {
   category: Category;
+  version: string;
   selectedVariant: SelectedVariant;
   egp: string;
   mode: Mode;

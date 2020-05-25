@@ -29,13 +29,12 @@ export const specification: TypedRequestHandler<
     throw errorBuilder(404, `Version - '${version}' for category with id - '${categoryId}' not found.`);
   }
 
-  const result = algorithms[categoryId]({ category: categoryRecord.category, selectedVariant, egp, mode });
+  const result = algorithms[categoryId]({ category: categoryRecord.category, version, selectedVariant, egp, mode });
 
   if (mode === 'json') {
     return {
-      specificationId: uuid(),
+      specificationId: result,
     };
-    // return result;
   }
 
   if (mode === 'rtf') {

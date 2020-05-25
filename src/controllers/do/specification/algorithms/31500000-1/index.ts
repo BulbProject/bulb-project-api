@@ -2,19 +2,21 @@
 import htmlToRtf from 'html-to-rtf';
 
 import refData, { BulbVariants } from 'ref-data';
+import type { Criterion, RequirementGroup } from 'types/parts';
+import { specifications } from 'lib/db/methods';
 
 import errorBuilder from 'lib/error-builder';
 
 import { generateTemplate } from './specification-template';
 
-import { Criterion, RequirementGroup } from 'types/parts';
-import { SpecificationEngine } from '../../types';
+import type { SpecificationEngine } from '../../types';
 
 const categoryId = '31500000-1';
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
   category,
+  version,
   selectedVariant: { selectedVariant },
   egp,
   mode,
@@ -661,7 +663,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = ({
 
   if (egp === 'prozorro') {
     if (mode === 'json') {
-      return criteria;
+      return specifications.add(categoryId, version, criteria);
     }
 
     if (mode === 'rtf') {

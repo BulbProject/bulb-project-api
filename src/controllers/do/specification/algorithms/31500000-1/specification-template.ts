@@ -1,7 +1,7 @@
 import { Category } from 'types/data/category';
 import { Criterion } from 'types/parts';
 
-export const generateTemplate = (category: Category, creteria: Criterion[]): string => {
+export const generateTemplate = (category: Category, criteria: Criterion[]): string => {
   return `
     <html>
       <head>
