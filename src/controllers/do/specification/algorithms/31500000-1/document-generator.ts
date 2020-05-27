@@ -17,7 +17,7 @@ import {
   VerticalAlign,
 } from 'docx';
 
-import { ecoDesignData } from './images-data';
+import { ecoDesignData, greenProcurementData } from './images-data';
 
 import type { Item } from 'ts4ocds';
 import type { Category } from 'types/data/category';
@@ -118,6 +118,7 @@ export const generateDocument = async (
   };
 
   const ecoDesign = Media.addImage(document, Buffer.from(ecoDesignData, 'base64'), 100, 100);
+  const greenProcurement = Media.addImage(document, Buffer.from(greenProcurementData, 'base64'), 100, 100);
 
   document.addSection({
     children: [
@@ -280,6 +281,52 @@ export const generateDocument = async (
           ];
         })
         .flat(),
+
+      new Paragraph({
+        pageBreakBefore: true,
+      }),
+
+      new Table({
+        columnWidths: [7000, 2000],
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                borders,
+                verticalAlign: VerticalAlign.CENTER,
+                children: [
+                  new Paragraph({
+                    heading: HeadingLevel.HEADING_3,
+                    spacing: {
+                      after: 200,
+                    },
+                    children: [
+                      new TextRun({
+                        text: 'Мінімальні значення вимог зелених закупівель',
+                        color: '000000',
+                        size: 36,
+                        font: {
+                          name: 'Arial',
+                        },
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+
+              new TableCell({
+                borders,
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    children: [ecoDesign],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }),
     ],
   });
 
