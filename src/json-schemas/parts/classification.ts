@@ -1,4 +1,4 @@
-import { object, string } from './primitives';
+import { object, string } from '../primitives';
 
 export const classification = object({
   required: ['scheme', 'id'],

@@ -1,17 +1,15 @@
 import { v4 as uuid } from 'uuid';
 
-import { RequirementResponse } from 'ts4ocds/extensions/requirements';
-
 import errorBuilder from 'lib/error-builder';
 
-import type { AlgorithmEngine } from 'types/algorithm-engine';
-import { AvailableVariant } from 'types/transactions';
+import refData, { weeksInYear, BulbVariants } from 'ref-data';
 
-import { calculateEnergyEfficiencyClass, techCharacteristics, weeksInYear } from './directories';
-
-import { BulbTypes, Calculation } from './types';
-import { Metric } from 'ts4ocds/extensions/metrics';
-import { Option } from 'ts4ocds/extensions/options';
+import type { Metric } from 'ts4ocds/extensions/metrics';
+import type { Option } from 'ts4ocds/extensions/options';
+import type { RequirementResponse } from 'ts4ocds/extensions/requirements';
+import type { AvailableVariants } from 'types/transactions/available-variants';
+import type { CalculationEngine } from '../../types';
+import { Calculation } from './types';
 
 const getValueFromResponse = (responses: RequirementResponse[], requirementId: string): unknown => {
   return responses.find(({ requirement: { id } }) => {
@@ -20,19 +18,21 @@ const getValueFromResponse = (responses: RequirementResponse[], requirementId: s
 };
 
 // Name of the function is a name of current CPV code
-const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
+const LightingEquipmentAndElectricLamps: CalculationEngine = ({
   category: { id, items, criteria, conversions },
   version,
   requestedNeed: {
     requestedNeed: { requirementResponses },
   },
 }) => {
-  const calculation = Object.values(BulbTypes).reduceRight((_calculation, bulbCode) => {
+  const categoryId = '31500000-1';
+
+  const calculation = Object.values(BulbVariants).reduceRight((_calculation, bulbCode) => {
     return Object.assign({}, { [bulbCode]: {} }, _calculation);
   }, {} as Calculation);
   let quantity = 0;
 
-  const bulbTypeNeed = requirementResponses.find(({ requirement: { id } }) => /^02/.test(id))?.value as BulbTypes;
+  const bulbTypeNeed = requirementResponses.find(({ requirement: { id } }) => /^02/.test(id))?.value as BulbVariants;
 
   if (!bulbTypeNeed || typeof bulbTypeNeed !== 'string') {
     throw errorBuilder(400, `Not provided type of lamp.`);
@@ -43,6 +43,9 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
   if (!bulbTypeNeedIsPresent) {
     throw errorBuilder(400, `Haven't item in category with id - ${bulbTypeNeed}.`);
   }
+
+  const techCharacteristics = refData[categoryId].techChars;
+  const calculateEnergyEfficiencyClass = refData[categoryId].calculateEnergyEfficiencyClass;
 
   // 1) Type of need
   const typeOfNeedResponses = requirementResponses.filter(({ requirement: { id } }) => /^01/.test(id));
@@ -91,7 +94,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     quantity = providedQuantity;
 
     Object.keys(calculation).forEach((_) => {
-      const bulbCode = _ as BulbTypes;
+      const bulbCode = _ as BulbVariants;
       const currentBulb = calculation[bulbCode];
 
       if (bulbCode !== bulbTypeNeed) {
@@ -159,7 +162,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     const lightRateLux = lightRateInLum * roomArea;
 
     Object.keys(calculation).forEach((_) => {
-      const bulbCode = _ as BulbTypes;
+      const bulbCode = _ as BulbVariants;
       const currentBulb = calculation[bulbCode];
 
       const calculationPower = lightRateLux / bulbsQuantity / techCharacteristics[bulbCode].lumPerWatt;
@@ -221,7 +224,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     const lightRateLux = lightRateInLum * roomArea;
 
     Object.keys(calculation).forEach((_) => {
-      const bulbCode = _ as BulbTypes;
+      const bulbCode = _ as BulbVariants;
       const currentBulb = calculation[bulbCode];
 
       const calculationPower = lightRateLux / bulbsQuantity / techCharacteristics[bulbCode].lumPerWatt;
@@ -247,7 +250,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
   const eeiOfBulbTypeNeed = calculation[bulbTypeNeed].eei;
 
   const availableBulbTypes = Object.keys(calculation).reduce((_availableBulbTypes, _) => {
-    const bulbCode = _ as BulbTypes;
+    const bulbCode = _ as BulbVariants;
 
     if (calculation[bulbCode].eei <= eeiOfBulbTypeNeed) {
       const bulbTypes = criteria
@@ -296,7 +299,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
 
   if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
     Object.keys(availableBulbTypes).forEach((_) => {
-      const bulbCode = _ as BulbTypes;
+      const bulbCode = _ as BulbVariants;
 
       const workingHoursInWeek = (modeOfUseResponses[0].value as number) * (modeOfUseResponses[1].value as number);
       const workingHoursInYear = workingHoursInWeek * weeksInYear;
@@ -317,7 +320,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
   }
 
   Object.keys(availableBulbTypes).forEach((_) => {
-    const bulbCode = _ as BulbTypes;
+    const bulbCode = _ as BulbVariants;
 
     if (availableBulbTypes[bulbCode].workingHoursInYear) {
       availableBulbTypes[bulbCode].energyEconomy =
@@ -337,13 +340,13 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
 
   // 5) Efficiency
   Object.keys(availableBulbTypes).forEach((_) => {
-    const bulbCode = _ as BulbTypes;
+    const bulbCode = _ as BulbVariants;
 
     availableBulbTypes[bulbCode].eeClass = calculateEnergyEfficiencyClass(availableBulbTypes[bulbCode].eei);
   });
 
-  const availableVariants: AvailableVariant[] = Object.keys(availableBulbTypes).map((_) => {
-    const bulbCode = _ as BulbTypes;
+  const availableVariants = Object.keys(availableBulbTypes).map((_) => {
+    const bulbCode = _ as BulbVariants;
     const currentBulb = availableBulbTypes[bulbCode];
 
     const metrics: Metric[] = [];
@@ -441,6 +444,37 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
         currency: 'UAH',
       },
       relatedProducts: ['https://prozorro.gov.ua/ProzorroMarket'],
+      criteria: [
+        {
+          id: '0100000000',
+          title: 'Додаткова інформація',
+          description: 'Оберіть варіант освітлення',
+          requirementGroups: [
+            {
+              id: '0101000000',
+              requirements: [
+                {
+                  id: '0101010000',
+                  title: 'Спрямоване освітлення',
+                  dataType: 'boolean',
+                  expectedValue: true,
+                },
+              ],
+            },
+            {
+              id: '0102000000',
+              requirements: [
+                {
+                  id: '0102010000',
+                  title: 'Розсіяне освітлення',
+                  dataType: 'boolean',
+                  expectedValue: true,
+                },
+              ],
+            },
+          ],
+        },
+      ],
     };
   });
 
@@ -448,7 +482,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
     category: id,
     version,
     availableVariants: [
-      availableVariants.find((variant) => variant.relatedItem === bulbTypeNeed) as AvailableVariant,
+      availableVariants.find((variant) => variant.relatedItem === bulbTypeNeed),
       ...availableVariants
         .filter((variant) => variant.relatedItem !== bulbTypeNeed)
         .sort((variantA, variantB) => {
@@ -458,7 +492,7 @@ const LightingEquipmentAndElectricLamps: AlgorithmEngine = ({
           );
         }),
     ],
-  };
+  } as AvailableVariants;
 };
 
 export default LightingEquipmentAndElectricLamps;

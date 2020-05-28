@@ -1,4 +1,4 @@
-import { array, object, string } from './primitives';
+import { array, object, string } from '../primitives';
 
 import { observations } from './observations';
 

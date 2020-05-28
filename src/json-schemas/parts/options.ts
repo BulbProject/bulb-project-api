@@ -1,4 +1,4 @@
-import { string, mixed, object, array } from './primitives';
+import { string, mixed, object, array } from '../primitives';
 
 export const options = array({
   minItems: 1,

@@ -1,23 +1,16 @@
-import { array, mixed, object, string } from './primitives';
+import { requirementResponses } from './parts';
+
+import { object, string } from './primitives';
 
 export const requestedNeed = object({
-  required: ['id', 'requirementResponses'],
+  required: ['requestedNeed'],
   properties: {
-    id: string(),
-    requirementResponses: array({
-      items: object({
-        required: ['id', 'value', 'requirement'],
-        properties: {
-          id: string(),
-          value: mixed(['boolean', 'string', 'number', 'integer']),
-          requirement: object({
-            required: ['id'],
-            properties: {
-              id: string(),
-            },
-          }),
-        },
-      }),
+    requestedNeed: object({
+      required: ['id', 'requirementResponses'],
+      properties: {
+        id: string(),
+        requirementResponses,
+      },
     }),
   },
 });
