@@ -39,6 +39,7 @@ const categoryVersionSchema = new Schema(
       ],
       documents: [
         {
+          _id: false,
           id: String,
           documentType: String,
           title: String,

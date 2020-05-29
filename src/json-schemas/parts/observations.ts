@@ -1,4 +1,5 @@
-import { array, mixed, numeric, object, string } from '../primitives';
+import { array, mixed, object, string } from '../primitives';
+import { value } from './value';
 
 export const observations = array({
   minItems: 1,
@@ -7,14 +8,8 @@ export const observations = array({
     properties: {
       id: string(),
       notes: string(),
-      measure: mixed(['string', 'number', 'integer']),
-      value: object({
-        required: ['amount', 'currency'],
-        properties: {
-          amount: numeric(),
-          currency: string(),
-        },
-      }),
+      measure: mixed({ type: ['string', 'number', 'integer'] }),
+      value,
       unit: object({
         required: ['id', 'name'],
         properties: {

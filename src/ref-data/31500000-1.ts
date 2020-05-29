@@ -1,4 +1,4 @@
-export enum BulbVariants {
+export enum Variants {
   Incandescent = '31519100-8',
   Halogen = '31512000-8',
   Fluorescent = '31532900-3',
@@ -6,29 +6,29 @@ export enum BulbVariants {
 }
 
 const techChars = {
-  [BulbVariants.Incandescent]: {
+  [Variants.Incandescent]: {
     lumPerWatt: 15,
     timeRate: 1375,
     availablePowers: [30, 40, 60, 80, 100, 120, 200],
   },
-  [BulbVariants.Halogen]: {
+  [Variants.Halogen]: {
     lumPerWatt: 20,
     timeRate: 3000,
     availablePowers: [3, 7, 10, 15, 20, 45, 60, 75],
   },
-  [BulbVariants.Fluorescent]: {
+  [Variants.Fluorescent]: {
     lumPerWatt: 60,
     timeRate: 30000,
     availablePowers: [30, 40, 60, 80, 100, 120, 200],
   },
-  [BulbVariants.LED]: {
+  [Variants.LED]: {
     lumPerWatt: 90,
     timeRate: 42000,
     availablePowers: [3, 7, 10, 15, 20, 45, 60, 75],
   },
 };
 
-export const calculateEnergyEfficiencyClass = (eei: number) => {
+const calculateEnergyEfficiencyClass = (eei: number) => {
   if (eei <= 0.13) {
     return 'A++';
   } else if (eei > 0.13 && eei <= 0.18) {

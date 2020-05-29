@@ -25,7 +25,7 @@ export interface Category {
    * List of the types of goods available under this category.
    */
   items: Item[];
-  documents?: (Document & { relatesTo: 'item'; relatedItem: string })[];
+  documents?: (Document & { relatesTo?: string; relatedItem?: string })[];
   /**
    * Criteria describe the sequence of related questions, where answers are needed to reflect the specific needs
    * that the Procuring Entity intends to purchase.

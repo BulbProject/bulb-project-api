@@ -3,7 +3,6 @@ import fastify from 'fastify';
 import { calculation, specification } from 'controllers/do';
 
 import { availableVariants, selectedVariant, requestedNeed } from 'json-schemas';
-import { criteria } from 'json-schemas/parts';
 import { string } from 'json-schemas/primitives';
 
 import { errorsMap, generateSchemaForError } from 'utils';

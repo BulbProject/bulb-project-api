@@ -4,7 +4,6 @@ interface ArrayProps {
   title?: string;
   description?: string;
   items: Items;
-  contains?: object;
   minItems?: number;
   maxItems?: number;
   uniqueItems?: boolean;

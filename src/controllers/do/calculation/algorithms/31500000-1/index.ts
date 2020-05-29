@@ -1,51 +1,45 @@
-import { v4 as uuid } from 'uuid';
-
 import errorBuilder from 'lib/error-builder';
 
-import refData, { weeksInYear, BulbVariants } from 'ref-data';
+import { weeksInYear } from 'ref-data';
+import { Variants } from 'ref-data/31500000-1';
 
-import type { Metric } from 'ts4ocds/extensions/metrics';
+import {
+  techChars,
+  calculateEnergyEfficiencyClass,
+  generateAvailableVariants,
+  getDirectoryPower,
+  getPowerRef,
+  getValueFromResponse,
+} from './utils';
+
 import type { Option } from 'ts4ocds/extensions/options';
-import type { RequirementResponse } from 'ts4ocds/extensions/requirements';
-import type { AvailableVariants } from 'types/transactions/available-variants';
 import type { CalculationEngine } from '../../types';
-import { Calculation } from './types';
-
-const getValueFromResponse = (responses: RequirementResponse[], requirementId: string): unknown => {
-  return responses.find(({ requirement: { id } }) => {
-    return id === requirementId;
-  })?.value as unknown;
-};
+import type { Calculation } from './types';
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: CalculationEngine = ({
   category: { id, items, criteria, conversions },
   version,
-  requestedNeed: {
-    requestedNeed: { requirementResponses },
-  },
+  requestedNeed: { requirementResponses },
 }) => {
-  const categoryId = '31500000-1';
-
-  const calculation = Object.values(BulbVariants).reduceRight((_calculation, bulbCode) => {
-    return Object.assign({}, { [bulbCode]: {} }, _calculation);
+  const calculationDraft = Object.values(Variants).reduce((_calculation, bulbCode: Variants) => {
+    return {
+      ..._calculation,
+      [bulbCode]: {},
+    };
   }, {} as Calculation);
-  let quantity = 0;
 
-  const bulbTypeNeed = requirementResponses.find(({ requirement: { id } }) => /^02/.test(id))?.value as BulbVariants;
+  const selectedBulbType = requirementResponses.find(({ requirement: { id } }) => /^02/.test(id))?.value as Variants;
 
-  if (!bulbTypeNeed || typeof bulbTypeNeed !== 'string') {
-    throw errorBuilder(400, `Not provided type of lamp.`);
+  if (!selectedBulbType || typeof selectedBulbType !== 'string') {
+    throw errorBuilder(400, `Incorrect lamp type was provided.`);
   }
 
-  const bulbTypeNeedIsPresent = items.some((item) => item.id === bulbTypeNeed);
+  const bulbTypeNeedIsPresent = items.some((item) => item.id === selectedBulbType);
 
   if (!bulbTypeNeedIsPresent) {
-    throw errorBuilder(400, `Haven't item in category with id - ${bulbTypeNeed}.`);
+    throw errorBuilder(400, `Provided bulb type - '${selectedBulbType}' not in category items.`);
   }
-
-  const techCharacteristics = refData[categoryId].techChars;
-  const calculateEnergyEfficiencyClass = refData[categoryId].calculateEnergyEfficiencyClass;
 
   // 1) Type of need
   const typeOfNeedResponses = requirementResponses.filter(({ requirement: { id } }) => /^01/.test(id));
@@ -61,59 +55,40 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     );
   }
 
-  // 1.1) Calculation concrete bulb
+  // 1.1) Calculation specific bulb
   if (typeOfNeedResponses[0].requirement.id.slice(2, 4) === '01') {
     const requirementIdForBulbPower = '0101010000';
     const requirementIdForBulbQuantity = '0101020000';
 
-    const providedPower = typeOfNeedResponses.find(({ requirement: { id } }) => {
-      return id === requirementIdForBulbPower;
-    })?.value as unknown;
+    const providedPower = getValueFromResponse(typeOfNeedResponses, requirementIdForBulbPower);
 
     if (typeof providedPower !== 'number' || providedPower <= 0) {
       throw errorBuilder(400, `Not provides correct value for bulb power for calculation concrete bulb.`);
     }
 
-    const directoryPower =
-      techCharacteristics[bulbTypeNeed].availablePowers.find(
-        (availablePower: number) => availablePower >= providedPower
-        // @TODO need clarification
-      ) ||
-      techCharacteristics[bulbTypeNeed].availablePowers[techCharacteristics[bulbTypeNeed].availablePowers.length - 1];
+    const directoryPower = getDirectoryPower(selectedBulbType, providedPower);
 
-    const lumPerWatt = directoryPower * techCharacteristics[bulbTypeNeed].lumPerWatt;
+    const lumPerWatt = directoryPower * techChars[selectedBulbType].lumPerWatt;
 
-    const providedQuantity = typeOfNeedResponses.find(({ requirement: { id } }) => {
-      return id === requirementIdForBulbQuantity;
-    })?.value as unknown;
+    const providedQuantity = getValueFromResponse(typeOfNeedResponses, requirementIdForBulbQuantity);
 
     if (typeof providedQuantity !== 'number' || providedPower <= 0) {
-      throw errorBuilder(400, `Not provides correct value for bulbs quantity for calculation concrete bulb.`);
+      throw errorBuilder(400, `Not provides correct value for bulbs quantity for calculationDraft concrete bulb.`);
     }
 
-    quantity = providedQuantity;
+    (Object.keys(calculationDraft) as Variants[]).forEach((bulbType) => {
+      const currentBulb = calculationDraft[bulbType];
 
-    Object.keys(calculation).forEach((_) => {
-      const bulbCode = _ as BulbVariants;
-      const currentBulb = calculation[bulbCode];
+      currentBulb.quantity = providedQuantity;
 
-      if (bulbCode !== bulbTypeNeed) {
-        currentBulb.power =
-          techCharacteristics[bulbCode].availablePowers.find(
-            (availablePower: number) => availablePower >= lumPerWatt / techCharacteristics[bulbCode].lumPerWatt
-            // @TODO need clarification
-          ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
+      if (bulbType !== selectedBulbType) {
+        currentBulb.power = getDirectoryPower(bulbType, lumPerWatt / techChars[bulbType].lumPerWatt);
       } else {
         currentBulb.power = directoryPower;
       }
 
-      currentBulb.lum = currentBulb.power * techCharacteristics[bulbCode].lumPerWatt;
-
-      currentBulb.pRef =
-        currentBulb.lum >= 1300
-          ? 0.07341 * currentBulb.lum
-          : 0.88 * Math.sqrt(currentBulb.lum + 0.49 * currentBulb.lum);
-
+      currentBulb.lum = currentBulb.power * techChars[bulbType].lumPerWatt;
+      currentBulb.pRef = getPowerRef(currentBulb.lum);
       currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
     });
   }
@@ -124,11 +99,9 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     const requirementIdForRoomArea = '0102020000';
     const requirementIdForQuantity = '0102030000';
 
-    const typeOfRoom = typeOfNeedResponses.find(({ requirement: { id } }) => {
-      return id === requirementIdForTypeOfRoom;
-    })?.value as unknown;
+    const typeOfRoom = getValueFromResponse(typeOfNeedResponses, requirementIdForTypeOfRoom);
 
-    if (!typeOfRoom || typeof typeOfRoom !== 'string' || !typeOfRoom.length) {
+    if (!typeOfRoom || typeof typeOfRoom !== 'string') {
       throw errorBuilder(400, `Not provided correct value for type of room for calculation light project.`);
     }
 
@@ -141,45 +114,29 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
       throw errorBuilder(400, `Can't find lumen value for this type of room - ${typeOfRoom}.`);
     }
 
-    const roomArea = typeOfNeedResponses.find(({ requirement: { id } }) => {
-      return id === requirementIdForRoomArea;
-    })?.value;
+    const roomArea = getValueFromResponse(typeOfNeedResponses, requirementIdForRoomArea);
 
     if (!roomArea || typeof roomArea !== 'number' || roomArea <= 0) {
       throw errorBuilder(400, `Not provides correct value for room area for calculation light project.`);
     }
 
-    const bulbsQuantity = typeOfNeedResponses.find(({ requirement: { id } }) => {
-      return id === requirementIdForQuantity;
-    })?.value as unknown;
+    const bulbsQuantity = getValueFromResponse(typeOfNeedResponses, requirementIdForQuantity);
 
     if (!bulbsQuantity || typeof bulbsQuantity !== 'number' || bulbsQuantity <= 0) {
       throw errorBuilder(400, `Not provided correct value for bulbs quantity for calculation light project.`);
     }
 
-    quantity = bulbsQuantity;
-
     const lightRateLux = lightRateInLum * roomArea;
 
-    Object.keys(calculation).forEach((_) => {
-      const bulbCode = _ as BulbVariants;
-      const currentBulb = calculation[bulbCode];
+    (Object.keys(calculationDraft) as Variants[]).forEach((bulbType) => {
+      const currentBulb = calculationDraft[bulbType];
 
-      const calculationPower = lightRateLux / bulbsQuantity / techCharacteristics[bulbCode].lumPerWatt;
+      const calculationPower = lightRateLux / bulbsQuantity / techChars[bulbType].lumPerWatt;
 
-      currentBulb.power =
-        techCharacteristics[bulbCode].availablePowers.find(
-          (availablePower: number) => availablePower >= calculationPower
-          // @TODO need clarification
-        ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
-
-      currentBulb.lum = currentBulb.power * techCharacteristics[bulbCode].lumPerWatt;
-
-      currentBulb.pRef =
-        currentBulb.lum >= 1300
-          ? 0.07341 * currentBulb.lum
-          : 0.88 * Math.sqrt(currentBulb.lum + 0.49 * currentBulb.lum);
-
+      currentBulb.quantity = bulbsQuantity;
+      currentBulb.power = getDirectoryPower(bulbType, calculationPower);
+      currentBulb.lum = currentBulb.power * techChars[bulbType].lumPerWatt;
+      currentBulb.pRef = getPowerRef(currentBulb.lum);
       currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
     });
   }
@@ -190,9 +147,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     const requirementIdForLightLevel = '0103020000';
     const requirementIdForQuantity = '0103030000';
 
-    const roomArea = typeOfNeedResponses.find(({ requirement: { id } }) => {
-      return id === requirementIdForRoomArea;
-    })?.value as unknown;
+    const roomArea = getValueFromResponse(typeOfNeedResponses, requirementIdForRoomArea);
 
     if (!roomArea || typeof roomArea !== 'number' || roomArea <= 0) {
       throw errorBuilder(400, `Not provides correct value for room area for calculation custom light project.`);
@@ -219,61 +174,57 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
       throw errorBuilder(400, `Not provided correct value for bulbs quantity for calculation light project.`);
     }
 
-    quantity = bulbsQuantity;
-
     const lightRateLux = lightRateInLum * roomArea;
 
-    Object.keys(calculation).forEach((_) => {
-      const bulbCode = _ as BulbVariants;
-      const currentBulb = calculation[bulbCode];
+    (Object.keys(calculationDraft) as Variants[]).forEach((bulbType) => {
+      const currentBulb = calculationDraft[bulbType];
 
-      const calculationPower = lightRateLux / bulbsQuantity / techCharacteristics[bulbCode].lumPerWatt;
+      const calculationPower = lightRateLux / bulbsQuantity / techChars[bulbType].lumPerWatt;
 
-      currentBulb.power =
-        techCharacteristics[bulbCode].availablePowers.find(
-          (availablePower: number) => availablePower >= calculationPower
-          // @TODO need clarification
-        ) || techCharacteristics[bulbCode].availablePowers[techCharacteristics[bulbCode].availablePowers.length - 1];
-
-      currentBulb.lum = currentBulb.power * techCharacteristics[bulbCode].lumPerWatt;
-
-      currentBulb.pRef =
-        currentBulb.lum >= 1300
-          ? 0.07341 * currentBulb.lum
-          : 0.88 * Math.sqrt(currentBulb.lum + 0.49 * currentBulb.lum);
-
+      currentBulb.quantity = bulbsQuantity;
+      currentBulb.power = getDirectoryPower(bulbType, calculationPower);
+      currentBulb.lum = currentBulb.power * techChars[bulbType].lumPerWatt;
+      currentBulb.pRef = getPowerRef(currentBulb.lum);
       currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
     });
   }
 
-  // 2) Type of lamps/fittings
-  const eeiOfBulbTypeNeed = calculation[bulbTypeNeed].eei;
+  // 2) Selecting more effective bulbs
+  const eeiOfBulbTypeNeed = calculationDraft[selectedBulbType].eei;
 
-  const availableBulbTypes = Object.keys(calculation).reduce((_availableBulbTypes, _) => {
-    const bulbCode = _ as BulbVariants;
-
-    if (calculation[bulbCode].eei <= eeiOfBulbTypeNeed) {
-      const bulbTypes = criteria
-        .flatMap((criterion) => criterion.requirementGroups)
-        .find(
-          (requirementGroup) =>
+  const availableBulbTypes = (Object.keys(calculationDraft) as Variants[]).reduce(
+    (_availableBulbTypes, bulbType: Variants) => {
+      if (calculationDraft[bulbType].eei <= eeiOfBulbTypeNeed) {
+        const requirementGroups = criteria.flatMap((criterion) => criterion.requirementGroups);
+        const bulbTypeRequirementGroup = requirementGroups.find((requirementGroup) => {
+          return (
             requirementGroup.id ===
             requirementResponses
               .find(({ requirement: { id } }) => /^02/.test(id))
               ?.requirement.id?.replace(/[0-9]{6}$/, '000000')
-        )
-        // @ts-ignore @TODO need fix OptionDetails union type in ts4ocds
-        ?.requirements[0]?.optionDetails?.optionGroups[0].options.flatMap((option: Option) => option.value);
+          );
+        });
 
-      if (!bulbTypes.find((bulbType: string) => bulbType === bulbCode)) {
+        // @TODO need fix OptionDetails union type in ts4ocds
+        // @ts-ignore
+        const bulbTypes = bulbTypeRequirementGroup?.requirements[0]?.optionDetails?.optionGroups[0].options.flatMap(
+          (option: Option) => option.value
+        );
+
+        if (!bulbTypes.find((categoryBulbType: string) => categoryBulbType === bulbType)) {
+          return _availableBulbTypes;
+        }
+
+        return {
+          ..._availableBulbTypes,
+          [bulbType]: calculationDraft[bulbType],
+        };
+      } else {
         return _availableBulbTypes;
       }
-
-      return Object.assign({}, { [bulbCode]: calculation[bulbCode] }, _availableBulbTypes);
-    } else {
-      return _availableBulbTypes;
-    }
-  }, {} as Calculation);
+    },
+    {} as Calculation
+  );
 
   if (!Object.keys(availableBulbTypes).length) {
     throw errorBuilder(400, 'Not provided correct type of need.');
@@ -298,17 +249,23 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
   }
 
   if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
-    Object.keys(availableBulbTypes).forEach((_) => {
-      const bulbCode = _ as BulbVariants;
+    const hoursInDay = modeOfUseResponses[0].value as unknown;
+    const daysInWeek = modeOfUseResponses[1].value as unknown;
 
-      const workingHoursInWeek = (modeOfUseResponses[0].value as number) * (modeOfUseResponses[1].value as number);
+    if (typeof hoursInDay !== 'number' || (hoursInDay <= 0 && hoursInDay > 24)) {
+      throw errorBuilder(400, 'Incorrect provided working hours per day.');
+    }
+
+    if (typeof daysInWeek !== 'number' || (daysInWeek <= 0 && daysInWeek > 7)) {
+      throw errorBuilder(400, 'Incorrect provided working days per week.');
+    }
+
+    (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
+      const workingHoursInWeek = (hoursInDay as number) * (daysInWeek as number);
       const workingHoursInYear = workingHoursInWeek * weeksInYear;
 
-      availableBulbTypes[bulbCode].workingHoursInYear = workingHoursInYear;
-
-      availableBulbTypes[bulbCode].modeOfUseLifetime = +(
-        techCharacteristics[bulbCode].timeRate / workingHoursInYear
-      ).toFixed(2);
+      availableBulbTypes[bulbType].workingHoursInYear = workingHoursInYear;
+      availableBulbTypes[bulbType].modeOfUseLifetime = +(techChars[bulbType].timeRate / workingHoursInYear).toFixed(2);
     });
   }
 
@@ -319,180 +276,36 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     throw errorBuilder(400, `Not correct provided information about tariffs.`);
   }
 
-  Object.keys(availableBulbTypes).forEach((_) => {
-    const bulbCode = _ as BulbVariants;
+  (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
+    const { quantity, power, workingHoursInYear } = availableBulbTypes[bulbType];
 
-    if (availableBulbTypes[bulbCode].workingHoursInYear) {
-      availableBulbTypes[bulbCode].energyEconomy =
-        ((availableBulbTypes[bulbTypeNeed].power * quantity - availableBulbTypes[bulbCode].power * quantity) *
-          (availableBulbTypes[bulbCode].workingHoursInYear as number)) /
-        1000;
+    if (workingHoursInYear) {
+      availableBulbTypes[bulbType].energyEconomy =
+        ((availableBulbTypes[selectedBulbType].power * quantity - power * quantity) * workingHoursInYear) / 1000;
 
-      if (typeof tariffsRequirements[0].value === 'number' && tariffsRequirements[0].value > 0) {
-        availableBulbTypes[bulbCode].financeEconomy = +(
-          (availableBulbTypes[bulbTypeNeed].power * quantity * tariffsRequirements[0].value * 0.001 -
-            availableBulbTypes[bulbCode].power * quantity * tariffsRequirements[0].value * 0.001) *
-          (availableBulbTypes[bulbCode].workingHoursInYear as number)
+      const tariff = tariffsRequirements[0].value;
+
+      if (typeof tariff === 'number' && tariff > 0) {
+        const summaryElectricPrice = (power: number) => power * 0.001 * quantity * tariff;
+
+        availableBulbTypes[bulbType].financeEconomy = +(
+          (summaryElectricPrice(availableBulbTypes[selectedBulbType].power) - summaryElectricPrice(power)) *
+          workingHoursInYear
         ).toFixed(2);
       }
     }
   });
 
   // 5) Efficiency
-  Object.keys(availableBulbTypes).forEach((_) => {
-    const bulbCode = _ as BulbVariants;
-
-    availableBulbTypes[bulbCode].eeClass = calculateEnergyEfficiencyClass(availableBulbTypes[bulbCode].eei);
-  });
-
-  const availableVariants = Object.keys(availableBulbTypes).map((_) => {
-    const bulbCode = _ as BulbVariants;
-    const currentBulb = availableBulbTypes[bulbCode];
-
-    const metrics: Metric[] = [];
-
-    metrics.push({
-      id: '0100',
-      title: 'Технічні показники',
-      observations: [
-        {
-          id: '0101',
-          notes: 'Потужність',
-          measure: currentBulb.power,
-          unit: {
-            id: '345',
-            name: 'Вт',
-          },
-        },
-        {
-          id: '0102',
-          notes: 'Термін експлуатації',
-          measure: techCharacteristics[bulbCode].timeRate,
-          unit: {
-            id: '155',
-            name: 'год',
-          },
-        },
-      ],
-    });
-
-    metrics.push({
-      id: '0200',
-      title: 'Показники енергоефективності',
-      observations: [
-        {
-          id: '0201',
-          notes: 'Індекс енергоефективності',
-          measure: currentBulb.eei,
-        },
-        {
-          id: 'energyEfficiencyClass',
-          notes: 'Клас енергоефективності',
-          measure: currentBulb.eeClass,
-        },
-      ],
-    });
-
-    if (bulbCode !== bulbTypeNeed) {
-      metrics.push({
-        id: '0300',
-        title: 'Економічні показники',
-        observations: [
-          {
-            id: 'serviceLife',
-            notes: 'Термін служби',
-            measure: (techCharacteristics[bulbCode].timeRate / techCharacteristics[bulbTypeNeed].timeRate).toFixed(1),
-          },
-        ],
-      });
-
-      if (currentBulb.energyEconomy) {
-        const observations = [];
-
-        observations.push({
-          id: 'energyEconomy',
-          notes: 'Менше енергії',
-          measure: currentBulb.energyEconomy.toFixed(0),
-          unit: {
-            id: '332',
-            name: 'кВт*год/рік',
-          },
-        });
-
-        if (currentBulb.financeEconomy) {
-          observations.push({
-            id: 'financeEconomy',
-            notes: 'Фінансової економії',
-            value: {
-              amount: +(currentBulb.financeEconomy as number).toFixed(0),
-              currency: 'грн/рік' as 'UAH',
-            },
-          });
-        }
-
-        metrics.find((metric) => metric.id === '0300')?.observations.push(...observations);
-      }
-    }
-
-    return {
-      id: uuid(),
-      relatedItem: bulbCode,
-      quantity,
-      metrics,
-      avgValue: {
-        amount: 0,
-        currency: 'UAH',
-      },
-      relatedProducts: ['https://prozorro.gov.ua/ProzorroMarket'],
-      criteria: [
-        {
-          id: '0100000000',
-          title: 'Додаткова інформація',
-          description: 'Оберіть варіант освітлення',
-          requirementGroups: [
-            {
-              id: '0101000000',
-              requirements: [
-                {
-                  id: '0101010000',
-                  title: 'Спрямоване освітлення',
-                  dataType: 'boolean',
-                  expectedValue: true,
-                },
-              ],
-            },
-            {
-              id: '0102000000',
-              requirements: [
-                {
-                  id: '0102010000',
-                  title: 'Розсіяне освітлення',
-                  dataType: 'boolean',
-                  expectedValue: true,
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
+  (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
+    availableBulbTypes[bulbType].eeClass = calculateEnergyEfficiencyClass(availableBulbTypes[bulbType].eei);
   });
 
   return {
     category: id,
     version,
-    availableVariants: [
-      availableVariants.find((variant) => variant.relatedItem === bulbTypeNeed),
-      ...availableVariants
-        .filter((variant) => variant.relatedItem !== bulbTypeNeed)
-        .sort((variantA, variantB) => {
-          return (
-            (variantA.metrics[1].observations[0].measure as number) -
-            (variantB.metrics[1].observations[0].measure as number)
-          );
-        }),
-    ],
-  } as AvailableVariants;
+    availableVariants: generateAvailableVariants(availableBulbTypes, selectedBulbType),
+  };
 };
 
 export default LightingEquipmentAndElectricLamps;
