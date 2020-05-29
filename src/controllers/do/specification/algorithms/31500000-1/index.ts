@@ -1,4 +1,5 @@
-import refData, { BulbVariants } from 'ref-data';
+import refData from 'ref-data';
+import { Variants } from 'ref-data/31500000-1';
 import type { Criterion, RequirementGroup } from 'types/parts';
 import { specifications } from 'lib/db/methods';
 
@@ -25,7 +26,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     );
   }
 
-  const relatedItem: BulbVariants = selectedVariant.relatedItem as BulbVariants;
+  const relatedItem: Variants = selectedVariant.relatedItem as Variants;
   const techChars = refData[categoryId].techChars;
 
   const directionalLightFlowResponses = selectedVariant.requirementResponses.filter(({ requirement: { id } }) => {
@@ -85,7 +86,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     requirements: [],
   };
 
-  if (relatedItem === BulbVariants.Incandescent) {
+  if (relatedItem === Variants.Incandescent) {
     if (lightFlowType === 'non-directional') {
       functionallyRequirementsGroup.requirements.push(
         ...[
@@ -113,7 +114,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
             id: '020103',
             title: 'Switching cycle before failure times then rated lifitime expressed in hours',
             dataType: 'integer' as const,
-            minValue: 4 * techChars[BulbVariants.Incandescent].timeRate,
+            minValue: 4 * techChars[Variants.Incandescent].timeRate,
           },
           {
             id: '020104',
@@ -182,7 +183,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
             id: '020103',
             title: 'Switching cycle before failure times then rated lifitime expressed in hours',
             dataType: 'integer' as const,
-            minValue: 4 * techChars[BulbVariants.Incandescent].timeRate,
+            minValue: 4 * techChars[Variants.Incandescent].timeRate,
           },
           {
             id: '020104',
@@ -225,7 +226,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     }
   }
 
-  if (relatedItem === BulbVariants.Halogen) {
+  if (relatedItem === Variants.Halogen) {
     if (lightFlowType === 'non-directional') {
       functionallyRequirementsGroup.requirements.push(
         ...[
@@ -253,7 +254,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
             id: '020103',
             title: 'Switching cycle before failure times then rated lifitime expressed in hours',
             dataType: 'integer' as const,
-            minValue: 4 * techChars[BulbVariants.Halogen].timeRate,
+            minValue: 4 * techChars[Variants.Halogen].timeRate,
           },
           {
             id: '020104',
@@ -322,7 +323,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
             id: '020103',
             title: 'Switching cycle before failure times then rated lifitime expressed in hours',
             dataType: 'integer' as const,
-            minValue: 4 * techChars[BulbVariants.Halogen].timeRate,
+            minValue: 4 * techChars[Variants.Halogen].timeRate,
           },
           {
             id: '020104',
@@ -365,7 +366,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     }
   }
 
-  if (relatedItem === BulbVariants.Fluorescent) {
+  if (relatedItem === Variants.Fluorescent) {
     if (lightFlowType === 'non-directional') {
       functionallyRequirementsGroup.requirements.push(
         ...[
@@ -573,7 +574,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     }
   }
 
-  if (relatedItem === BulbVariants.LED) {
+  if (relatedItem === Variants.LED) {
     functionallyRequirementsGroup.requirements.push(
       ...[
         {
