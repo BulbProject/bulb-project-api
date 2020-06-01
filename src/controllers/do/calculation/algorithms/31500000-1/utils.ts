@@ -29,7 +29,7 @@ export const getDirectoryPower = (bulbType: Variants, providedPower: number): nu
 };
 
 export const getPowerRef = (lum: number): number => {
-  if (lum >= 1300) return 0.07341;
+  if (lum >= 1300) return 0.07341 * lum;
 
   return 0.88 * Math.sqrt(lum + 0.49 * lum);
 };
