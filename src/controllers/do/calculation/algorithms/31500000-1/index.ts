@@ -9,7 +9,7 @@ import {
   generateAvailableVariants,
   getDirectoryPower,
   getPowerRef,
-  getValueFromResponse,
+  getValueFromResponses,
 } from './utils';
 
 import type { Option } from 'ts4ocds/extensions/options';
@@ -60,7 +60,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     const requirementIdForBulbPower = '0101010000';
     const requirementIdForBulbQuantity = '0101020000';
 
-    const providedPower = getValueFromResponse(typeOfNeedResponses, requirementIdForBulbPower);
+    const providedPower = getValueFromResponses(typeOfNeedResponses, requirementIdForBulbPower);
 
     if (typeof providedPower !== 'number' || providedPower <= 0) {
       throw errorBuilder(400, `Not provides correct value for bulb power for calculation concrete bulb.`);
@@ -70,7 +70,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
 
     const lumPerWatt = directoryPower * techChars[selectedBulbType].lumPerWatt;
 
-    const providedQuantity = getValueFromResponse(typeOfNeedResponses, requirementIdForBulbQuantity);
+    const providedQuantity = getValueFromResponses(typeOfNeedResponses, requirementIdForBulbQuantity);
 
     if (typeof providedQuantity !== 'number' || providedPower <= 0) {
       throw errorBuilder(400, `Not provides correct value for bulbs quantity for calculationDraft concrete bulb.`);
@@ -99,7 +99,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     const requirementIdForRoomArea = '0102020000';
     const requirementIdForQuantity = '0102030000';
 
-    const typeOfRoom = getValueFromResponse(typeOfNeedResponses, requirementIdForTypeOfRoom);
+    const typeOfRoom = getValueFromResponses(typeOfNeedResponses, requirementIdForTypeOfRoom);
 
     if (!typeOfRoom || typeof typeOfRoom !== 'string') {
       throw errorBuilder(400, `Not provided correct value for type of room for calculation light project.`);
@@ -114,13 +114,13 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
       throw errorBuilder(400, `Can't find lumen value for this type of room - ${typeOfRoom}.`);
     }
 
-    const roomArea = getValueFromResponse(typeOfNeedResponses, requirementIdForRoomArea);
+    const roomArea = getValueFromResponses(typeOfNeedResponses, requirementIdForRoomArea);
 
     if (!roomArea || typeof roomArea !== 'number' || roomArea <= 0) {
       throw errorBuilder(400, `Not provides correct value for room area for calculation light project.`);
     }
 
-    const bulbsQuantity = getValueFromResponse(typeOfNeedResponses, requirementIdForQuantity);
+    const bulbsQuantity = getValueFromResponses(typeOfNeedResponses, requirementIdForQuantity);
 
     if (!bulbsQuantity || typeof bulbsQuantity !== 'number' || bulbsQuantity <= 0) {
       throw errorBuilder(400, `Not provided correct value for bulbs quantity for calculation light project.`);
@@ -147,13 +147,13 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     const requirementIdForLightLevel = '0103020000';
     const requirementIdForQuantity = '0103030000';
 
-    const roomArea = getValueFromResponse(typeOfNeedResponses, requirementIdForRoomArea);
+    const roomArea = getValueFromResponses(typeOfNeedResponses, requirementIdForRoomArea);
 
     if (!roomArea || typeof roomArea !== 'number' || roomArea <= 0) {
       throw errorBuilder(400, `Not provides correct value for room area for calculation custom light project.`);
     }
 
-    const lightLevel = getValueFromResponse(typeOfNeedResponses, requirementIdForLightLevel);
+    const lightLevel = getValueFromResponses(typeOfNeedResponses, requirementIdForLightLevel);
 
     if (typeof lightLevel !== 'string' || !/low|regular|high|intensive/.test(lightLevel)) {
       throw errorBuilder(400, `Not provides correct value for light lever for calculation custom light project.`);
@@ -168,7 +168,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
       throw errorBuilder(400, `Can't find lumen value for this type of room - ${lightLevel}.`);
     }
 
-    const bulbsQuantity = getValueFromResponse(typeOfNeedResponses, requirementIdForQuantity);
+    const bulbsQuantity = getValueFromResponses(typeOfNeedResponses, requirementIdForQuantity);
 
     if (!bulbsQuantity || typeof bulbsQuantity !== 'number' || bulbsQuantity <= 0) {
       throw errorBuilder(400, `Not provided correct value for bulbs quantity for calculation light project.`);

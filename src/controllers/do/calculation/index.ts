@@ -1,12 +1,12 @@
 import type { TypedRequestHandler } from 'types/request-data';
-import type { RequestedNeed } from 'types/transactions';
+import type { DoRequestedNeed } from 'types/transport';
 
 import algorithms from './algorithms';
 
 import { categoriesVersions } from 'lib/db/methods';
 import errorBuilder from 'lib/error-builder';
 
-export const calculation: TypedRequestHandler<{ categoryId: string; version: string }, RequestedNeed> = async ({
+export const calculation: TypedRequestHandler<{ categoryId: string; version: string }, DoRequestedNeed> = async ({
   body,
   params: { categoryId, version },
 }) => {

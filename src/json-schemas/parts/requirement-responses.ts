@@ -6,9 +6,8 @@ export const requirementResponses = array({
     required: ['id', 'value', 'requirement'],
     properties: {
       id: string(),
-      value: mixed({
+      value: mixed(['boolean', 'string', 'number', 'integer'], {
         title: 'May be "boolean" | "string" | "number" | "integer" type',
-        type: ['boolean', 'string', 'number', 'integer'],
       }),
       requirement: object({
         required: ['id'],

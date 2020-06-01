@@ -12,9 +12,3 @@ export interface AvailableVariant {
   relatedProducts: string[];
   criteria?: Criterion[];
 }
-
-export interface AvailableVariants {
-  category: string;
-  version: string;
-  availableVariants: AvailableVariant[];
-}

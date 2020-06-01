@@ -8,7 +8,7 @@ export const observations = array({
     properties: {
       id: string(),
       notes: string(),
-      measure: mixed({ type: ['string', 'number', 'integer'] }),
+      measure: mixed(['string', 'number', 'integer']),
       value,
       unit: object({
         required: ['id', 'name'],

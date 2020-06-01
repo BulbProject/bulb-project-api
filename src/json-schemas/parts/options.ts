@@ -7,7 +7,7 @@ export const options = array({
     properties: {
       id: string(),
       description: string(),
-      value: mixed({ type: ['string', 'number', 'integer'] }),
+      value: mixed(['string', 'number', 'integer']),
     },
   }),
 });

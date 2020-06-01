@@ -24,9 +24,9 @@ export const criteria = array({
                   title: string(),
                   description: string(),
                   dataType: string({ enum: ['boolean', 'string', 'number', 'integer'] }),
-                  expectedValue: mixed({ type: ['boolean', 'string', 'number', 'integer'] }),
-                  minValue: mixed({ type: ['number', 'integer'] }),
-                  maxValue: mixed({ type: ['number', 'integer'] }),
+                  expectedValue: mixed(['boolean', 'string', 'number', 'integer']),
+                  minValue: mixed(['number', 'integer']),
+                  maxValue: mixed(['number', 'integer']),
                   unit: object({
                     required: ['id', 'name'],
                     properties: {

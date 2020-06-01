@@ -8,5 +8,5 @@ export type CalculationEngine = ({
 }: {
   category: Category;
   version: string;
-  requestedNeed: RequestedNeed['requestedNeed'];
+  requestedNeed: RequestedNeed;
 }) => AvailableVariants;
