@@ -17,7 +17,7 @@ import {
   VerticalAlign,
 } from 'docx';
 
-import { ecoDesignData, greenProcurementData } from './images-data';
+import { ecoDesignData, greenProcurementData } from './images-data.json';
 
 import type { Item } from 'ts4ocds';
 import type { Category } from 'types/data/category';
