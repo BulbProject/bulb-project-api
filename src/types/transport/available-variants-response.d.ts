@@ -1,6 +1,6 @@
 import { AvailableVariant } from '../transactions';
 
-export interface AvailableVariants {
+export interface AvailableVariantsResponse {
   category: string;
   version: string;
   availableVariants: AvailableVariant[];

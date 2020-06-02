@@ -1,5 +1,5 @@
 import type { RequestedNeed } from '../transactions';
 
-export interface DoRequestedNeed {
+export interface RequestedNeedPayload {
   requestedNeed: RequestedNeed;
 }
