@@ -1,4 +1,11 @@
-export const category = {
+// Too many errors inside each and every Conversion of the category
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
+import { Category } from '../types/data/category';
+import { SelectedVariant } from '../types/transactions/selected-variant';
+
+export const category: Category = {
   id: '31500000-1',
   title: 'Електричні лампи внутрішнього освітлення',
   description:
@@ -2714,7 +2721,7 @@ export const specificBulbResponse = {
   ],
 };
 
-export const specificationPayload = {
+export const specificationPayload: SelectedVariant = {
   selectedVariant: {
     id: '6cae1d88-5115-47c3-8477-9cf2005ac56e',
     relatedItem: '31532900-3',
