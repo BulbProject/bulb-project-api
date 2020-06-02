@@ -5,3 +5,4 @@ export * from './observations';
 export * from './options';
 export * from './period';
 export * from './requirement-responses';
+export * from './value';

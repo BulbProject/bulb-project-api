@@ -1,6 +1,6 @@
 import { array, numeric, object, string } from './primitives';
 
-import { criteria, metrics } from './parts';
+import { criteria, metrics, value } from './parts';
 
 export const availableVariants = object({
   required: ['category', 'version', 'availableVariants'],
@@ -10,19 +10,13 @@ export const availableVariants = object({
     availableVariants: array({
       minItems: 1,
       items: object({
-        required: ['id', 'relatedItem', 'quantity', 'metrics', 'avgValue', 'relatedProducts'],
+        required: ['id', 'relatedItem', 'quantity', 'metrics'],
         properties: {
           id: string(),
           relatedItem: string(),
           quantity: numeric(),
           metrics,
-          avgValue: object({
-            required: ['amount', 'currency'],
-            properties: {
-              amount: numeric(),
-              currency: string(),
-            },
-          }),
+          avgValue: value,
           relatedProducts: array({
             minItems: 1,
             items: string(),

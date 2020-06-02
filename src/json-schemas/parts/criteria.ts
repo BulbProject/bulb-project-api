@@ -3,7 +3,7 @@ import { array, object, string, mixed } from '../primitives';
 export const criteria = array({
   minItems: 1,
   items: object({
-    required: [],
+    required: ['id', 'title', 'requirementGroups'],
     properties: {
       id: string(),
       title: string(),
@@ -11,13 +11,14 @@ export const criteria = array({
       requirementGroups: array({
         minItems: 1,
         items: object({
-          required: [],
+          required: ['id', 'requirements'],
           properties: {
+            id: string(),
             description: string(),
             requirements: array({
               minItems: 1,
               items: object({
-                required: [],
+                required: ['id', 'title'],
                 properties: {
                   id: string(),
                   title: string(),

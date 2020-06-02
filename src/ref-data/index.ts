@@ -7,5 +7,3 @@ const refData = {
 export const weeksInYear = 52;
 
 export default refData;
-
-export * from './31500000-1';

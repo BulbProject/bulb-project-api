@@ -5,7 +5,7 @@ import { observations } from './observations';
 export const metrics = array({
   minItems: 1,
   items: object({
-    required: [],
+    required: ['id', 'title', 'observations'],
     properties: {
       id: string(),
       title: string(),

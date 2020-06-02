@@ -10,25 +10,25 @@
     "build": "yarn clear && tsc --diagnostics && renamer --find src --replace app ./build/*",
     "start": "yarn build && cross-env NODE_PATH=./build/app NODE_ENV=production node build/app/index.js",
     "clear": "rimraf build",
-    "autofix": "eslint --fix --quiet -c .eslintrc.json --ext .ts src/",
-    "autoformat": "prettier --write \"src/**/*.ts\""
+    "autofix": "eslint --fix -c .eslintrc.json --ext .ts src/",
+    "autoformat": "prettier --write \"src/**/*.ts\"",
+    "test": "jest --watch --config jest.config.js"
   },
   "dependencies": {
     "@types/atob": "^2.1.2",
     "@types/mongoose": "^5.7.15",
-    "@types/node": "^13.13.5",
+    "@types/node": "^14.0.5",
     "@types/pino": "^6.0.0",
-    "@types/uuid": "^7.0.3",
-    "@types/yup": "^0.28.0",
+    "@types/uuid": "^8.0.0",
+    "@types/yup": "^0.29.0",
     "atob": "^2.1.2",
     "cross-env": "^7.0.2",
-    "dayjs": "^1.8.26",
-    "docx": "^5.0.2",
+    "dayjs": "^1.8.28",
+    "docx": "^5.1.1",
     "dotenv": "^8.2.0",
     "fastify": "^2.14.0",
     "fastify-cors": "^3.0.3",
-    "fastify-swagger": "^2.5.0",
-    "html-to-rtf": "^1.3.3",
+    "fastify-swagger": "^2.6.0",
     "mongoose": "^5.9.12",
     "pino-pretty": "^4.0.0",
     "renamer": "^2.0.0",
@@ -36,27 +36,29 @@
     "ts4ocds": "^1.0.0-rc.1",
     "typescript": "^3.8.3",
     "uuid": "^8.0.0",
-    "yup": "^0.28.5"
+    "yup": "^0.29.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.31.0",
-    "@typescript-eslint/parser": "^2.31.0",
-    "eslint": "^6.8.0",
+    "@types/jest": "^25.2.3",
+    "@typescript-eslint/eslint-plugin": "^3.0.2",
+    "@typescript-eslint/parser": "^3.0.2",
+    "eslint": "^7.1.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-prettier": "^3.1.3",
     "husky": "^4.2.5",
+    "jest": "^26.0.1",
     "lint-staged": "^10.2.2",
     "nodemon": "^2.0.3",
     "prettier": "^2.0.5",
-    "ts-node": "^8.10.1"
+    "ts-jest": "^26.0.0",
+    "ts-node": "^8.10.2"
   },
   "lint-staged": {
     "src/**/*.ts": [
       "yarn autofix",
-      "yarn autoformat",
-      "git add"
+      "yarn autoformat"
     ]
   },
   "husky": {
