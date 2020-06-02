@@ -1,5 +1,5 @@
 import fastify from 'fastify';
-import { getSpecification } from '../controllers/specifications';
+import { getSpecification } from 'controllers/specifications';
 
 export const specificationRoute = (app: fastify.FastifyInstance): void => {
   app.get('/specifications/:categoryId/:version/:specificationId', {}, getSpecification);
