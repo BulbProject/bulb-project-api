@@ -1,16 +1,18 @@
+import { basename } from 'path';
+
 import refData from 'ref-data';
 import { Variants } from 'ref-data/31500000-1';
-import type { Criterion, RequirementGroup } from 'types/parts';
-import { specifications } from 'lib/db/methods';
+import type { Criterion, Requirement, RequirementGroup } from 'types/parts';
 
+import { specifications } from 'lib/db/methods';
 import errorBuilder from 'lib/error-builder';
-import { generateId } from '../../../../../utils';
+import { generateId } from 'utils';
 
 import { generateDocument } from './generate-document';
 
 import type { SpecificationEngine } from '../../types';
 
-const categoryId = '31500000-1';
+const categoryId = basename(__filename, '.ts') as keyof typeof refData;
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
@@ -38,14 +40,18 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     throw errorBuilder(400, `Not correct provided information about directional light.`);
   }
 
+  const efficacyRequirementsBaseId = '0101';
+  const functionalityRequirementsBaseId = '0201';
+
   const lightFlowType =
-    /^0101/.test(directionalLightFlowResponses[0].requirement.id) && directionalLightFlowResponses[0].value
+    new RegExp(`^${efficacyRequirementsBaseId}`).test(directionalLightFlowResponses[0].requirement.id) &&
+    directionalLightFlowResponses[0].value
       ? 'directional'
       : 'non-directional';
 
   const power = selectedVariant.metrics
     .find((metric) => metric.id === '0100')
-    ?.observations.find((observation) => observation.id === '0101')?.measure;
+    ?.observations.find((observation) => observation.id === efficacyRequirementsBaseId)?.measure;
 
   if (typeof power !== 'number' || power <= 0) {
     throw errorBuilder(400, `Power of bulb not transferred or it value 0 or less.`);
@@ -56,7 +62,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
   const PmaxCor = lightFlowValue >= 60 && lightFlowValue <= 450 ? 1.84 : 1;
 
   const efficacyRequirementsGroup: RequirementGroup = {
-    id: '010100',
+    id: `${efficacyRequirementsBaseId}00`,
     requirements: [],
   };
 
@@ -74,7 +80,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
         title: 'Коефіцієнт коригування Pmax',
         expectedValue: +PmaxCor,
       },
-    ].map(generateId('0101'))
+    ].map(generateId(efficacyRequirementsBaseId))
   );
 
   const efficacyCriterion: Criterion = {
@@ -84,7 +90,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
   };
 
   const functionalityRequirementsGroup: RequirementGroup = {
-    id: '020100',
+    id: `${functionalityRequirementsBaseId}00`,
     requirements: [],
   };
 
@@ -93,10 +99,10 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
       switch (lightFlowType) {
         case 'non-directional': {
           functionalityRequirementsGroup.requirements.push(
-            ...[
+            ...([
               {
                 title: 'Rated lifetime',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 2000,
                 unit: {
                   id: '',
@@ -105,7 +111,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Lumen maintenance at 75% of rated average lifetime',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 85,
                 unit: {
                   id: '',
@@ -114,12 +120,12 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Switching cycle before failure times then rated lifitime expressed in hours',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 4 * techChars[Variants.Incandescent].timeRate,
               },
               {
                 title: 'Starting time',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 0.2,
                 unit: {
                   id: '',
@@ -128,7 +134,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Warm up to 60% of lumenus flux',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 1,
                 unit: {
                   id: '',
@@ -137,7 +143,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Premature failure rate at 200 h',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 5,
                 unit: {
                   id: '',
@@ -146,10 +152,10 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Power factor',
-                dataType: 'number' as const,
+                dataType: 'number',
                 minValue: 0.95,
               },
-            ].map(generateId('0201'))
+            ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
           );
 
           break;
@@ -158,10 +164,10 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
         case 'directional':
         default: {
           functionalityRequirementsGroup.requirements.push(
-            ...[
+            ...([
               {
                 title: 'Rated lifetime',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 2000,
                 unit: {
                   id: '',
@@ -170,7 +176,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Lumen maintenance at 75% of rated average lifetime',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 80,
                 unit: {
                   id: '',
@@ -179,12 +185,12 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Switching cycle before failure times then rated lifitime expressed in hours',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 4 * techChars[Variants.Incandescent].timeRate,
               },
               {
                 title: 'Starting time',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 0.2,
                 unit: {
                   id: '',
@@ -193,7 +199,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Warm up to 60% of lumenus flux',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 1,
                 unit: {
                   id: '',
@@ -202,7 +208,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Premature failure rate at 200 h',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 5,
                 unit: {
                   id: '',
@@ -211,10 +217,10 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Power factor',
-                dataType: 'number' as const,
+                dataType: 'number',
                 minValue: power <= 25 ? 0.5 : 0.95,
               },
-            ].map(generateId('0201'))
+            ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
           );
         }
       }
@@ -226,10 +232,10 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
       switch (lightFlowType) {
         case 'non-directional': {
           functionalityRequirementsGroup.requirements.push(
-            ...[
+            ...([
               {
                 title: 'Rated lifetime',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 2000,
                 unit: {
                   id: '',
@@ -238,7 +244,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Lumen maintenance at 75% of rated average lifetime',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 85,
                 unit: {
                   id: '',
@@ -247,12 +253,12 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Switching cycle before failure times then rated lifitime expressed in hours',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 4 * techChars[Variants.Halogen].timeRate,
               },
               {
                 title: 'Starting time',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 0.2,
                 unit: {
                   id: '',
@@ -261,7 +267,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Warm up to 60% of lumenus flux',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 1,
                 unit: {
                   id: '',
@@ -270,7 +276,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Premature failure rate at 200 h',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 5,
                 unit: {
                   id: '',
@@ -279,10 +285,10 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Power factor',
-                dataType: 'number' as const,
+                dataType: 'number',
                 minValue: 0.95,
               },
-            ].map(generateId('0201'))
+            ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
           );
 
           break;
@@ -291,10 +297,10 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
         case 'directional':
         default: {
           functionalityRequirementsGroup.requirements.push(
-            ...[
+            ...([
               {
                 title: 'Rated lifetime',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 2000,
                 unit: {
                   id: '',
@@ -303,7 +309,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Lumen maintenance at 75% of rated average lifetime',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 80,
                 unit: {
                   id: '',
@@ -312,12 +318,12 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Switching cycle before failure times then rated lifitime expressed in hours',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 4 * techChars[Variants.Halogen].timeRate,
               },
               {
                 title: 'Starting time',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 0.2,
                 unit: {
                   id: '',
@@ -326,7 +332,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Warm up to 60% of lumenus flux',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 1,
                 unit: {
                   id: '',
@@ -335,7 +341,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Premature failure rate at 200 h',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 5,
                 unit: {
                   id: '',
@@ -344,10 +350,10 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Power factor',
-                dataType: 'number' as const,
+                dataType: 'number',
                 minValue: power <= 25 ? 0.5 : 0.95,
               },
-            ].map(generateId('0201'))
+            ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
           );
         }
       }
@@ -359,15 +365,15 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
       switch (lightFlowType) {
         case 'non-directional': {
           functionalityRequirementsGroup.requirements.push(
-            ...[
+            ...([
               {
                 title: 'Survival factor at 6000 h',
-                dataType: 'number' as const,
+                dataType: 'number',
                 minValue: 0.7,
               },
               {
                 title: 'Lumen maintenance at 2000 h',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 88,
                 unit: {
                   id: '',
@@ -376,7 +382,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Lumen maintenance at 6000 h',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 70,
                 unit: {
                   id: '',
@@ -385,7 +391,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Switching cycle before failure',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 0,
                 unit: {
                   id: '',
@@ -394,7 +400,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Starting time',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: power >= 10 ? 1 : 1.5,
                 unit: {
                   id: '',
@@ -403,7 +409,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Warm up to 60% of lumenus flux',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 maxValue: 40,
                 unit: {
                   id: '',
@@ -412,7 +418,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Premature failure rate at 400 h',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 maxValue: 2,
                 unit: {
                   id: '',
@@ -421,7 +427,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'UVA + UVB radiation',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 maxValue: 2,
                 unit: {
                   id: '',
@@ -430,7 +436,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'UVC radiation',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: 0.01,
                 unit: {
                   id: '',
@@ -439,7 +445,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Power factor',
-                dataType: 'number' as const,
+                dataType: 'number',
                 minValue: power <= 25 ? 0.55 : 0.9,
                 unit: {
                   id: '',
@@ -448,14 +454,14 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Colour rendering (Ra)',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 maxValue: 80,
                 unit: {
                   id: '',
                   name: 'Ra',
                 },
               },
-            ].map(generateId('0201'))
+            ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
           );
 
           break;
@@ -464,15 +470,15 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
         case 'directional':
         default: {
           functionalityRequirementsGroup.requirements.push(
-            ...[
+            ...([
               {
                 title: 'Survival factor at 6000 h',
-                dataType: 'number' as const,
+                dataType: 'number',
                 minValue: 0.7,
               },
               {
                 title: 'Lumen maintenance at 2000 h',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 83,
                 unit: {
                   id: '',
@@ -481,7 +487,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Lumen maintenance at 6000 h',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 70,
                 unit: {
                   id: '',
@@ -490,7 +496,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Switching cycle before failure',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 minValue: 0,
                 unit: {
                   id: '',
@@ -499,7 +505,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Starting time',
-                dataType: 'number' as const,
+                dataType: 'number',
                 maxValue: power >= 10 ? 1 : 1.5,
                 unit: {
                   id: '',
@@ -508,7 +514,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Warm up to 60% of lumenus flux',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 maxValue: 40,
                 unit: {
                   id: '',
@@ -517,7 +523,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Premature failure rate at  1000 h',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 maxValue: 5,
                 unit: {
                   id: '',
@@ -526,7 +532,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Power factor',
-                dataType: 'number' as const,
+                dataType: 'number',
                 minValue: power <= 25 ? 0.55 : 0.9,
                 unit: {
                   id: '',
@@ -535,14 +541,14 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
               },
               {
                 title: 'Colour rendering (Ra)',
-                dataType: 'integer' as const,
+                dataType: 'integer',
                 maxValue: 80,
                 unit: {
                   id: '',
                   name: 'Ra',
                 },
               },
-            ].map(generateId('0201'))
+            ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
           );
         }
       }
@@ -553,15 +559,15 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     case Variants.LED:
     default: {
       functionalityRequirementsGroup.requirements.push(
-        ...[
+        ...([
           {
             title: 'Survival factor at 6000 h',
-            dataType: 'number' as const,
+            dataType: 'number',
             minValue: 0.9,
           },
           {
             title: 'Lumen maintenance at 6000 h',
-            dataType: 'integer' as const,
+            dataType: 'integer',
             minValue: 80,
             unit: {
               id: '',
@@ -570,7 +576,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
           },
           {
             title: 'Switching cycle before failure',
-            dataType: 'integer' as const,
+            dataType: 'integer',
             minValue: 0,
             unit: {
               id: '',
@@ -579,7 +585,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
           },
           {
             title: 'Starting time',
-            dataType: 'number' as const,
+            dataType: 'number',
             maxValue: 0.5,
             unit: {
               id: '',
@@ -588,7 +594,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
           },
           {
             title: 'Warm up to 95% of lumenus flux',
-            dataType: 'number' as const,
+            dataType: 'number',
             maxValue: 2,
             unit: {
               id: '',
@@ -597,7 +603,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
           },
           {
             title: 'Premature failure rate at 1000 h',
-            dataType: 'integer' as const,
+            dataType: 'integer',
             maxValue: 5,
             unit: {
               id: '',
@@ -606,7 +612,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
           },
           {
             title: 'Power factor',
-            dataType: 'number' as const,
+            dataType: 'number',
             minValue: (power >= 2 && power <= 5 ? 0.4 : power > 5 && power <= 25 ? 0.5 : power > 25 && 0.9) as number,
             unit: {
               id: '',
@@ -615,14 +621,14 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
           },
           {
             title: 'Colour rendering (Ra)',
-            dataType: 'integer' as const,
+            dataType: 'integer',
             minValue: 80,
             unit: {
               id: '',
               name: 'Ra',
             },
           },
-        ].map(generateId('0201'))
+        ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
       );
     }
   }
