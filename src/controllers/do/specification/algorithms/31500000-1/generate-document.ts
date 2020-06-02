@@ -28,7 +28,7 @@ export const generateDocument = async (
   category: Category,
   selectedVariant: SelectedVariant['selectedVariant'],
   criteria: Criterion[]
-) => {
+): Promise<Buffer> => {
   const currentItem = category.items.find((item) => item.id === selectedVariant.relatedItem) || ({} as Item);
 
   const document = new Document({
@@ -41,16 +41,34 @@ export const generateDocument = async (
     },
   });
 
-  const borders = ['start', 'top', 'bottom', 'left', 'right'].reduce((_borders, direction) => {
-    return {
-      ..._borders,
-      [direction]: {
+  const borders = Object.fromEntries(
+    ['start', 'top', 'bottom', 'left', 'right'].map((direction) => [
+      direction,
+      {
         color: 'ffffff',
         size: 0,
         style: BorderStyle.NONE,
       },
-    };
-  }, {});
+    ])
+  );
+
+  const tableCellStyles = {
+    borders,
+    verticalAlign: VerticalAlign.CENTER,
+  };
+
+  const text = (text: string, size?: number) => ({
+    text,
+    size,
+    font: {
+      name: 'Arial',
+    },
+  });
+
+  const indentation = (multiplier = 1) => 100 * multiplier;
+
+  const equalColumns = [indentation(45), indentation(45)];
+  const differentColumns = [indentation(70), indentation(20)];
 
   const generateRow = (title: string, value: string | number, shadingPresent?: boolean) => {
     const shading = {
@@ -59,43 +77,34 @@ export const generateDocument = async (
     };
 
     const margins = {
-      top: 100,
-      bottom: 100,
+      top: indentation(),
+      bottom: indentation(),
     };
 
     const indent = {
-      end: 100,
+      end: indentation(),
     };
 
     return new TableRow({
       height: {
-        height: 400,
+        height: indentation(4),
         rule: HeightRule.AUTO,
       },
       children: [
         new TableCell({
-          borders,
+          ...tableCellStyles,
           shading,
-          verticalAlign: VerticalAlign.CENTER,
           margins,
           children: [
             new Paragraph({
               indent,
-              children: [
-                new TextRun({
-                  text: ` ${title}`,
-                  font: {
-                    name: 'Arial',
-                  },
-                }),
-              ],
+              children: [new TextRun(text(` ${title}`))],
             }),
           ],
         }),
         new TableCell({
-          borders,
+          ...tableCellStyles,
           shading,
-          verticalAlign: VerticalAlign.CENTER,
           margins,
           children: [
             new Paragraph({
@@ -103,11 +112,8 @@ export const generateDocument = async (
               indent,
               children: [
                 new TextRun({
-                  text: `${value}`,
+                  ...text(`${value}`),
                   bold: true,
-                  font: {
-                    name: 'Arial',
-                  },
                 }),
               ],
             }),
@@ -117,30 +123,46 @@ export const generateDocument = async (
     });
   };
 
-  const ecoDesign = Media.addImage(document, Buffer.from(ecoDesignData, 'base64'), 100, 100);
-  const greenProcurement = Media.addImage(document, Buffer.from(greenProcurementData, 'base64'), 100, 100);
+  const ecoDesign = Media.addImage(document, Buffer.from(ecoDesignData, 'base64'), indentation(), indentation());
+  const greenProcurement = Media.addImage(
+    document,
+    Buffer.from(greenProcurementData, 'base64'),
+    indentation(),
+    indentation()
+  );
+
+  const subLetterHeading = (title: string) => {
+    return new Paragraph({
+      heading: HeadingLevel.HEADING_3,
+      spacing: {
+        after: indentation(2),
+      },
+      children: [
+        new TextRun({
+          ...text(title, 36),
+          color: '000000',
+        }),
+      ],
+    });
+  };
 
   document.addSection({
     children: [
       new Paragraph({
         heading: HeadingLevel.HEADING_1,
         spacing: {
-          after: 250,
+          after: indentation(2.5),
         },
         children: [
           new TextRun({
-            text: 'Специфікація на товар / послугу',
+            ...text('Специфікація на товар / послугу', 48),
             color: '000000',
-            size: 48,
-            font: {
-              name: 'Arial',
-            },
           }),
         ],
       }),
 
       new Table({
-        columnWidths: [4500, 4500],
+        columnWidths: equalColumns,
         rows: [
           generateRow('Конкретна назва предмету закупівлі', category.title, true),
           generateRow('Деталізований код за ДК: 021-2015', currentItem.classification?.id as string),
@@ -151,17 +173,13 @@ export const generateDocument = async (
       new Paragraph({
         heading: HeadingLevel.HEADING_3,
         spacing: {
-          before: 400,
-          after: 200,
+          before: indentation(4),
+          after: indentation(2),
         },
         children: [
           new TextRun({
-            text: 'Технічні, якісні та кількісні показники',
+            ...text('Технічні, якісні та кількісні показники', 36),
             color: '000000',
-            size: 36,
-            font: {
-              name: 'Arial',
-            },
           }),
         ],
       }),
@@ -192,30 +210,14 @@ export const generateDocument = async (
       }),
 
       new Table({
-        columnWidths: [7000, 2000],
+        columnWidths: differentColumns,
         rows: [
           new TableRow({
             children: [
               new TableCell({
-                borders,
-                verticalAlign: VerticalAlign.CENTER,
+                ...tableCellStyles,
                 children: [
-                  new Paragraph({
-                    heading: HeadingLevel.HEADING_3,
-                    spacing: {
-                      after: 200,
-                    },
-                    children: [
-                      new TextRun({
-                        text: 'Мінімальні значення вимог з екодизайну',
-                        color: '000000',
-                        size: 36,
-                        font: {
-                          name: 'Arial',
-                        },
-                      }),
-                    ],
-                  }),
+                  subLetterHeading('Мінімальні значення вимог з екодизайну'),
 
                   new Paragraph({
                     children: [
@@ -248,24 +250,20 @@ export const generateDocument = async (
           return [
             new Paragraph({
               spacing: {
-                before: 350,
-                after: 175,
+                before: indentation(3.5),
+                after: indentation(1.75),
               },
               children: [
                 new TextRun({
-                  text: criterion.title,
+                  ...text(criterion.title as string, 24),
                   color: '000000',
                   bold: true,
-                  size: 24,
-                  font: {
-                    name: 'Arial',
-                  },
                 }),
               ],
             }),
 
             new Table({
-              columnWidths: [4500, 4500],
+              columnWidths: equalColumns,
               rows: criterion.requirementGroups
                 .flatMap((requirementGroup) => requirementGroup.requirements)
                 .map((requirement, index) => {
@@ -287,31 +285,13 @@ export const generateDocument = async (
       }),
 
       new Table({
-        columnWidths: [7000, 2000],
+        columnWidths: differentColumns,
         rows: [
           new TableRow({
             children: [
               new TableCell({
-                borders,
-                verticalAlign: VerticalAlign.CENTER,
-                children: [
-                  new Paragraph({
-                    heading: HeadingLevel.HEADING_3,
-                    spacing: {
-                      after: 200,
-                    },
-                    children: [
-                      new TextRun({
-                        text: 'Мінімальні значення вимог зелених закупівель',
-                        color: '000000',
-                        size: 36,
-                        font: {
-                          name: 'Arial',
-                        },
-                      }),
-                    ],
-                  }),
-                ],
+                ...tableCellStyles,
+                children: [subLetterHeading('Мінімальні значення вимог зелених закупівель')],
               }),
 
               new TableCell({
