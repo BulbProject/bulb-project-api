@@ -3,7 +3,7 @@ import { Variants } from 'ref-data/31500000-1';
 import type { Criterion, Requirement, RequirementGroup } from 'types/parts';
 
 import { specifications } from 'lib/db/methods';
-import errorBuilder from 'lib/error-builder';
+import RequestError from 'lib/request-error';
 import { generateId, getAlgorithmId } from 'utils';
 
 import { generateDocument } from './generate-document';
@@ -21,7 +21,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
   mode,
 }) => {
   if (!(categoryId in refData)) {
-    throw errorBuilder(
+    throw new RequestError(
       400,
       `Can't make a specification for the item with id - '${selectedVariant.relatedItem}'. No reference data.`
     );
@@ -35,7 +35,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
   });
 
   if (directionalLightFlowResponses.length !== 1 || typeof directionalLightFlowResponses[0].value !== 'boolean') {
-    throw errorBuilder(400, `Not correct provided information about directional light.`);
+    throw new RequestError(400, `Not correct provided information about directional light.`);
   }
 
   const efficacyRequirementsBaseId = '0101';
@@ -52,7 +52,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     ?.observations.find((observation) => observation.id === efficacyRequirementsBaseId)?.measure;
 
   if (typeof power !== 'number' || power <= 0) {
-    throw errorBuilder(400, `Power of bulb not transferred or it value 0 or less.`);
+    throw new RequestError(400, `Power of bulb not transferred or it value 0 or less.`);
   }
 
   const lightFlowValue = power * techChars[relatedItem]?.lumPerWatt;
@@ -654,7 +654,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     }
   }
 
-  throw errorBuilder(400, 'Something wrong...');
+  throw new RequestError(400, 'Something wrong...');
 };
 
 export default LightingEquipmentAndElectricLamps;

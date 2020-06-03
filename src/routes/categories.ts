@@ -5,7 +5,7 @@ import { getCategoriesList, getVersionsPackage, getCategoryVersion } from 'contr
 import { category } from 'json-schemas';
 import { object, string, array } from 'json-schemas/primitives';
 
-import { generateSchemaForError, errorsMap } from 'utils';
+import { createErrorSchema, errorsMap } from 'utils';
 
 const tags = ['Categories'];
 const params = {
@@ -38,7 +38,7 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
               },
             }),
           }),
-          500: generateSchemaForError(errorsMap[500], 'Server error'),
+          500: createErrorSchema(errorsMap[500], 'Server error'),
         },
       },
     },
@@ -76,8 +76,8 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
               }),
             },
           }),
-          404: generateSchemaForError(errorsMap[404], 'Versions package not found'),
-          500: generateSchemaForError(errorsMap[500], 'Server error'),
+          404: createErrorSchema(errorsMap[404], 'Versions package not found'),
+          500: createErrorSchema(errorsMap[500], 'Server error'),
         },
       },
     },
@@ -105,8 +105,8 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
               category,
             },
           }),
-          404: generateSchemaForError(errorsMap[404], 'Version not found'),
-          500: generateSchemaForError(errorsMap[404], 'Server error'),
+          404: createErrorSchema(errorsMap[404], 'Version not found'),
+          500: createErrorSchema(errorsMap[404], 'Server error'),
         },
       },
     },

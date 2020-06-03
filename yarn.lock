@@ -219,6 +219,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.0"
 
+"@babel/runtime@^7.10.2":
+  version "7.10.2"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.10.2.tgz#d103f21f2602497d38348a32e008637d506db839"
+  integrity sha512-6sF3uQw2ivImfVIl62RZ7MXhO2tap69WeWK57vAaimT6AZbE4FbqjdEJIN1UqoD6wI6B+1n9UiagafH1sxjOtg==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/runtime@^7.9.6":
   version "7.10.1"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.10.1.tgz#b6eb75cac279588d3100baecd1b9894ea2840822"
@@ -1179,6 +1186,15 @@ buffer-from@1.x, buffer-from@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
   integrity sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A==
+
+buid@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/buid/-/buid-0.3.0.tgz#2eb3f5650051b4a9db31238112f7eb9d910245bf"
+  integrity sha512-yjWY/3wwX9gmEF8saHOU/c0cs92/XUeikHXmUW4FClTUcgmieo6vvmruzCFkLPqHQPOIyzcBryMxzimpXrlnVw==
+  dependencies:
+    "@babel/runtime" "^7.10.2"
+    chalk "^4.0.0"
+    yargs "^15.3.1"
 
 cache-base@^1.0.1:
   version "1.0.1"
