@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
+import { basename } from 'path';
 
 import utc from 'dayjs/plugin/utc';
 
 import { string, numeric, object } from 'json-schemas/primitives';
+import refData from './ref-data';
 
 dayjs.extend(utc);
 
@@ -27,6 +29,20 @@ export const generateSchemaForError = (
       message: string(),
     },
   });
+
+export const generateId = <O extends Record<string, unknown>>(initialId = '') => (
+  object: O,
+  index: number
+): O & { id: string } => {
+  return {
+    ...object,
+    id: `${initialId}${index + 1 < 10 ? `0${index + 1}` : index + 1}`,
+  };
+};
+
+export const getAlgorithmId = <S extends string = keyof typeof refData>(fileName: string): S => {
+  return basename(fileName, '.ts') as S;
+};
 
 export const errorsMap = {
   400: {

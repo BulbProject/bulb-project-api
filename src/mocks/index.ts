@@ -1,6 +1,11 @@
-import algorithm from './index';
+// Too many errors inside each and every Conversion of the category
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 
-const category = {
+import { Category } from '../types/data/category';
+import { SelectedVariant } from '../types/transactions/selected-variant';
+
+export const category: Category = {
   id: '31500000-1',
   title: 'Електричні лампи внутрішнього освітлення',
   description:
@@ -2483,7 +2488,8 @@ const category = {
     },
   ],
 };
-const specificBulbBody = {
+
+export const specificBulbBody = {
   requestedNeed: {
     id: '01fc98b0-57b8-4ce6-8588-8d88427f1096',
     requirementResponses: [
@@ -2496,7 +2502,8 @@ const specificBulbBody = {
     ],
   },
 };
-const specificBulbResponse = {
+
+export const specificBulbResponse = {
   category: '31500000-1',
   version: 'v6',
   availableVariants: [
@@ -2714,9 +2721,169 @@ const specificBulbResponse = {
   ],
 };
 
-test('Test specific bulb case', () => {
-  // @ts-ignore @TODO need fix types in ts4ocds dataType in requirement
-  expect(algorithm({ category, version: 'v6', requestedNeed: specificBulbBody.requestedNeed })).toEqual(
-    specificBulbResponse
-  );
-});
+export const specificationPayload: SelectedVariant = {
+  selectedVariant: {
+    id: '6cae1d88-5115-47c3-8477-9cf2005ac56e',
+    relatedItem: '31532900-3',
+    quantity: 14,
+    metrics: [
+      {
+        id: '0100',
+        title: 'Технічні показники',
+        observations: [
+          { id: '0101', notes: 'Потужність', measure: 30, unit: { id: '345', name: 'Вт' } },
+          { id: '0102', notes: 'Термін експлуатації', measure: 30000, unit: { id: '155', name: 'год' } },
+        ],
+      },
+      {
+        id: '0200',
+        title: 'Показники енергоефективності',
+        observations: [
+          { id: '0201', notes: 'Індекс енергоефективності', measure: 0.23 },
+          { id: 'energyEfficiencyClass', notes: 'Клас енергоефективності', measure: 'A' },
+        ],
+      },
+      {
+        id: '0300',
+        title: 'Економічні показники',
+        observations: [{ id: 'serviceLife', notes: 'Термін служби', measure: '10.0' }],
+      },
+    ],
+    avgValue: { amount: 0, currency: 'UAH' },
+    relatedProducts: ['https://prozorro.gov.ua/ProzorroMarket'],
+    requirementResponses: [
+      { id: '81cef856-579e-4fa9-be10-8ffb4b45c863', value: true, requirement: { id: '0101010000' } },
+    ],
+  },
+};
+
+export const specificationResponse = {
+  id: '51d15c03-5519-44c2-9b82-3cdcfdc8be47',
+  categoryId: '31500000-1',
+  version: 'v1',
+  criteria: [
+    {
+      requirementGroups: [
+        {
+          requirements: [
+            {
+              unit: {
+                id: '',
+                name: 'W',
+              },
+              id: '010101',
+              title: 'Максимальна номінальна потужність (Pmax)',
+              expectedValue: 75.32,
+            },
+            {
+              id: '010102',
+              title: 'Коефіцієнт коригування Pmax',
+              expectedValue: 1,
+            },
+          ],
+          id: '010100',
+        },
+      ],
+      id: '010000',
+      title: 'Вимоги до ефективності',
+    },
+    {
+      requirementGroups: [
+        {
+          requirements: [
+            {
+              id: '020101',
+              title: 'Survival factor at 6000 h',
+              dataType: 'number',
+              minValue: 0.7,
+            },
+            {
+              unit: {
+                id: '',
+                name: '%',
+              },
+              id: '020102',
+              title: 'Lumen maintenance at 2000 h',
+              dataType: 'integer',
+              minValue: 83,
+            },
+            {
+              unit: {
+                id: '',
+                name: '%',
+              },
+              id: '020103',
+              title: 'Lumen maintenance at 6000 h',
+              dataType: 'integer',
+              minValue: 70,
+            },
+            {
+              unit: {
+                id: '',
+                name: 'h',
+              },
+              id: '020104',
+              title: 'Switching cycle before failure',
+              dataType: 'integer',
+              minValue: 0,
+            },
+            {
+              unit: {
+                id: '',
+                name: 's',
+              },
+              id: '020105',
+              title: 'Starting time',
+              dataType: 'number',
+              maxValue: 1,
+            },
+            {
+              unit: {
+                id: '',
+                name: 's',
+              },
+              id: '020106',
+              title: 'Warm up to 60% of lumenus flux',
+              dataType: 'integer',
+              maxValue: 40,
+            },
+            {
+              unit: {
+                id: '',
+                name: '%',
+              },
+              id: '020107',
+              title: 'Premature failure rate at  1000 h',
+              dataType: 'integer',
+              maxValue: 5,
+            },
+            {
+              unit: {
+                id: '',
+                name: 'kW/klm',
+              },
+              id: '020108',
+              title: 'Power factor',
+              dataType: 'number',
+              minValue: 0.9,
+            },
+            {
+              unit: {
+                id: '',
+                name: 'Ra',
+              },
+              id: '020109',
+              title: 'Colour rendering (Ra)',
+              dataType: 'integer',
+              maxValue: 80,
+            },
+          ],
+          id: '020100',
+        },
+      ],
+      id: '',
+      title: 'Вимоги до функціональності',
+    },
+  ],
+  __v: 0,
+};
