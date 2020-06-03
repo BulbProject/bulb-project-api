@@ -3,7 +3,7 @@ import { basename } from 'path';
 
 import utc from 'dayjs/plugin/utc';
 
-import { string, numeric, object, array } from 'json-schemas/primitives';
+import { string, numeric, object } from 'json-schemas/primitives';
 import refData from './ref-data';
 
 dayjs.extend(utc);
