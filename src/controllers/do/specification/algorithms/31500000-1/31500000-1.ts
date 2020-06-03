@@ -1,18 +1,16 @@
-import { basename } from 'path';
-
 import refData from 'ref-data';
 import { Variants } from 'ref-data/31500000-1';
 import type { Criterion, Requirement, RequirementGroup } from 'types/parts';
 
 import { specifications } from 'lib/db/methods';
 import errorBuilder from 'lib/error-builder';
-import { generateId } from 'utils';
+import { generateId, getAlgorithmId } from 'utils';
 
 import { generateDocument } from './generate-document';
 
 import type { SpecificationEngine } from '../../types';
 
-const categoryId = basename(__filename, '.ts') as keyof typeof refData;
+const categoryId = getAlgorithmId(__filename);
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
