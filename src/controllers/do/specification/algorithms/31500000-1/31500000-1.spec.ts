@@ -31,7 +31,7 @@ describe('31500000-1 Algorithm Specification', () => {
     });
 
     it('Should generate correct criteria', () => {
-      expect(specifications.add).toHaveBeenCalledWith(...stringTuple, [...specificationResponse.criteria]);
+      expect(specifications.add).toHaveBeenCalledWith(...stringTuple, specificationResponse.criteria);
     });
   });
 });
