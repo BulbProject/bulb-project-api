@@ -119,12 +119,14 @@ export const categoryAddBodySchema = object()
                           is: (dataType) => dataType === 'integer',
                           then: number().integer(),
                         }),
-                      unit: object().shape({
-                        scheme: string(),
-                        id,
-                        name: string().required(),
-                        uri: string(),
-                      }),
+                      unit: object()
+                        .shape({
+                          scheme: string(),
+                          id,
+                          name: string().required(),
+                          uri: string(),
+                        })
+                        .default(undefined),
                       optionDetails: mixed()
                         .when('dataType', {
                           is: (dataType) => dataType === 'string',
