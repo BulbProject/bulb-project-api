@@ -1,11 +1,11 @@
 import sut from './31500000-1';
-import { category, specificationPayload, specificationResponse } from '../../../../../mocks';
+import { category, specificationPayload, specificationResponse } from 'mocks';
 
-import { specifications } from '../../../../../lib/db/methods';
+import { specifications } from 'lib/db/methods';
 
 jest.mock('lib/db/methods');
 
-describe('31500000-1 Specification', () => {
+describe('31500000-1 Algorithm Specification', () => {
   beforeEach(async () => {
     await sut({
       category,

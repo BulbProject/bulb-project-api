@@ -1,4 +1,4 @@
-import { category, specificBulbBody, specificBulbResponse } from '../../../../../mocks';
+import { category, specificBulbBody, specificBulbResponse } from 'mocks';
 import algorithm from './index';
 
 test('Test specific bulb case', () => {
