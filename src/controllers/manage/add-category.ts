@@ -1,10 +1,11 @@
 import { categoriesVersions, versionsPackages, categoriesList } from 'lib/db/methods';
-import errorBuilder from 'lib/error-builder';
+import RequestError from 'lib/request-error';
 
 import { formatDate } from 'utils';
 
-import type { ValidationError } from 'yup';
 import { categoryAddBodySchema } from 'validation-schemas';
+
+import buid from 'buid';
 
 import type { Category } from 'types/data';
 import type { TypedRequestHandler } from 'types/request-data';
@@ -15,18 +16,28 @@ export const addCategory: TypedRequestHandler<
   undefined,
   { authorization: string }
 > = async ({ params: { categoryId }, body }) => {
-  if (!categoryId) throw errorBuilder(400, 'Path parameter id category is missing');
+  if (!categoryId) throw new RequestError(400, 'Path parameter id category is missing');
 
   const version = 'v1';
   const publishedDate = formatDate(new Date());
 
   try {
-    categoryAddBodySchema.validate(body).catch((validationError: ValidationError) => {
-      throw errorBuilder(400, validationError.message);
-    });
+    try {
+      await categoryAddBodySchema.validate(body);
+    } catch ({ message }) {
+      throw new RequestError(400, message);
+    }
 
     if (categoryId !== body.id) {
-      throw errorBuilder(400, `Path parameter id category - '${categoryId}' is not equal to body.id - '${body.id}`);
+      throw new RequestError(400, `Path parameter id category - '${categoryId}' is not equal to body.id - '${body.id}`);
+    }
+
+    try {
+      await buid<Category>({
+        path: body,
+      });
+    } catch ({ message }) {
+      throw new RequestError(400, JSON.parse(message));
     }
 
     const response = await categoriesVersions.add(body, version, publishedDate);
@@ -37,7 +48,7 @@ export const addCategory: TypedRequestHandler<
 
     return response;
   } catch (error) {
-    if (!error.statusCode) return errorBuilder(500, error.message);
+    if (!error.statusCode) return new RequestError(500, error.message);
 
     return error;
   }

@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'fastify';
 
 import { specifications } from 'lib/db/methods';
-import errorBuilder from 'lib/error-builder';
+import RequestError from 'lib/request-error';
 
 export const getSpecification: RequestHandler<
   unknown,
@@ -13,14 +13,14 @@ export const getSpecification: RequestHandler<
     const result = await specifications.getOne(specificationId);
 
     if (!result)
-      throw errorBuilder(
+      throw new RequestError(
         404,
         `Specification - ${specificationId} for category with id - ${categoryId} of version ${version} not found`
       );
 
     return result;
   } catch (error) {
-    if (!error.statusCode) return errorBuilder(500, error.message);
+    if (!error.statusCode) return new RequestError(500, error.message);
 
     return error;
   }

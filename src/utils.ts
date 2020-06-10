@@ -16,7 +16,7 @@ export const getLastVersion = (versions: { _id: string }[]) => {
     .sort((versionA, versionB) => versionB - versionA)[0];
 };
 
-export const generateSchemaForError = (
+export const createErrorSchema = (
   { statusCode, error }: { statusCode: number; error?: string },
   description?: string
 ) =>

@@ -7,7 +7,7 @@ import handleAuthorization from 'middleware/authorization';
 import { category } from 'json-schemas';
 import { object, string } from 'json-schemas/primitives';
 
-import { generateSchemaForError, errorsMap } from 'utils';
+import { createErrorSchema, errorsMap } from 'utils';
 
 const tags = ['Manage'];
 const params = {
@@ -39,10 +39,10 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         body: category,
         response: {
           200: successfulResponseSchema,
-          400: generateSchemaForError(errorsMap[400], 'Validation error'),
-          401: generateSchemaForError(errorsMap[401], 'Credentials was not received'),
-          403: generateSchemaForError(errorsMap[403], 'Credentials are not valid'),
-          500: generateSchemaForError(errorsMap[500], 'Server error'),
+          400: createErrorSchema(errorsMap[400], 'Validation error'),
+          401: createErrorSchema(errorsMap[401], 'Credentials was not received'),
+          403: createErrorSchema(errorsMap[403], 'Credentials are not valid'),
+          500: createErrorSchema(errorsMap[500], 'Server error'),
         },
       },
     },
@@ -63,11 +63,11 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         body: category,
         response: {
           200: successfulResponseSchema,
-          400: generateSchemaForError(errorsMap[400], 'Validation error'),
-          401: generateSchemaForError(errorsMap[401], 'Credentials was not received'),
-          403: generateSchemaForError(errorsMap[403], 'Credentials are not valid'),
-          404: generateSchemaForError(errorsMap[404], 'Not found category for update'),
-          500: generateSchemaForError(errorsMap[500], 'Server error'),
+          400: createErrorSchema(errorsMap[400], 'Validation error'),
+          401: createErrorSchema(errorsMap[401], 'Credentials was not received'),
+          403: createErrorSchema(errorsMap[403], 'Credentials are not valid'),
+          404: createErrorSchema(errorsMap[404], 'Not found category for update'),
+          500: createErrorSchema(errorsMap[500], 'Server error'),
         },
       },
     },
@@ -86,11 +86,11 @@ export const manageRoute = (app: fastify.FastifyInstance): void => {
         body: undefined,
         response: {
           200: successfulResponseSchema,
-          400: generateSchemaForError(errorsMap[400], 'Validation error'),
-          401: generateSchemaForError(errorsMap[401], 'Credentials was not received'),
-          403: generateSchemaForError(errorsMap[403], 'Credentials are not valid'),
-          404: generateSchemaForError(errorsMap[404], 'Not found category or version for activate'),
-          500: generateSchemaForError(errorsMap[500], 'Server error'),
+          400: createErrorSchema(errorsMap[400], 'Validation error'),
+          401: createErrorSchema(errorsMap[401], 'Credentials was not received'),
+          403: createErrorSchema(errorsMap[403], 'Credentials are not valid'),
+          404: createErrorSchema(errorsMap[404], 'Not found category or version for activate'),
+          500: createErrorSchema(errorsMap[500], 'Server error'),
         },
       },
     },

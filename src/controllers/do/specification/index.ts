@@ -1,7 +1,7 @@
 import algorithms from './algorithms';
 
 import { categoriesVersions } from 'lib/db/methods';
-import errorBuilder from 'lib/error-builder';
+import RequestError from 'lib/request-error';
 
 import type { SelectedVariant } from 'types/transactions';
 import type { TypedRequestHandler } from 'types/request-data';
@@ -14,17 +14,20 @@ export const specification: TypedRequestHandler<
   { egp: string; mode: Mode }
 > = async ({ params: { categoryId, version }, body: selectedVariant, query: { egp, mode } }, reply) => {
   if (!egp || !mode) {
-    throw errorBuilder(400, `Not provided 'egp' or 'mode' parameter.`);
+    throw new RequestError(400, `Not provided 'egp' or 'mode' parameter.`);
   }
 
   if (!(categoryId in algorithms)) {
-    throw errorBuilder(400, `Can't make a specification for the category with id - '${categoryId}'. Unknown category.`);
+    throw new RequestError(
+      400,
+      `Can't make a specification for the category with id - '${categoryId}'. Unknown category.`
+    );
   }
 
   const categoryRecord = await categoriesVersions.getOne(categoryId, version);
 
   if (!categoryRecord) {
-    throw errorBuilder(404, `Version - '${version}' for category with id - '${categoryId}' not found.`);
+    throw new RequestError(404, `Version - '${version}' for category with id - '${categoryId}' not found.`);
   }
 
   const result = await algorithms[categoryId]({

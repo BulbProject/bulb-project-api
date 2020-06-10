@@ -5,7 +5,7 @@ import { calculation, specification } from 'controllers/do';
 import { availableVariants, selectedVariant, requestedNeed } from 'json-schemas';
 import { string } from 'json-schemas/primitives';
 
-import { errorsMap, generateSchemaForError } from 'utils';
+import { errorsMap, createErrorSchema } from 'utils';
 
 const tags = ['Calculation & Evaluation & Specification'];
 const params = {
@@ -24,8 +24,8 @@ export const doRoute = (app: fastify.FastifyInstance): void => {
         body: requestedNeed,
         response: {
           200: availableVariants,
-          400: generateSchemaForError(errorsMap[400], 'Validation error'),
-          404: generateSchemaForError(errorsMap[404], 'Category or version not found'),
+          400: createErrorSchema(errorsMap[400], 'Validation error'),
+          404: createErrorSchema(errorsMap[404], 'Category or version not found'),
         },
       },
     },
@@ -50,8 +50,8 @@ export const doRoute = (app: fastify.FastifyInstance): void => {
         body: selectedVariant,
         response: {
           // 200: criteria,
-          400: generateSchemaForError(errorsMap[400], 'Validation error'),
-          404: generateSchemaForError(errorsMap[404], 'Category or version not found'),
+          400: createErrorSchema(errorsMap[400], 'Validation error'),
+          404: createErrorSchema(errorsMap[404], 'Category or version not found'),
         },
       },
     },

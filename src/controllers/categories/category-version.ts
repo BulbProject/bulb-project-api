@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'fastify';
 
 import { categoriesVersions } from 'lib/db/methods';
-import errorBuilder from 'lib/error-builder';
+import RequestError from 'lib/request-error';
 
 export const getCategoryVersion: RequestHandler<
   unknown,
@@ -12,11 +12,11 @@ export const getCategoryVersion: RequestHandler<
   try {
     const result = await categoriesVersions.getOne(categoryId, version);
 
-    if (!result) throw errorBuilder(404, `Version - '${version}' for category with id - '${categoryId}' not found`);
+    if (!result) throw new RequestError(404, `Version - '${version}' for category with id - '${categoryId}' not found`);
 
     return result;
   } catch (error) {
-    if (!error.statusCode) return errorBuilder(500, error.message);
+    if (!error.statusCode) return new RequestError(500, error.message);
 
     return error;
   }
