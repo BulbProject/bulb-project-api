@@ -22,3 +22,8 @@ export const manageCred = {
   username: process.env.MANAGE_USERNAME || '',
   password: process.env.MANAGE_PASSWORD || '',
 };
+
+export const specificationCleanerConfig = {
+  runInterval: process.env.SC_RUN_INTERVAL || 1,
+  deleteThreshold: process.env.SC_DELETE_THRESHOLD || 7,
+};
