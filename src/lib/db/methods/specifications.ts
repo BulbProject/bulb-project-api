@@ -29,4 +29,8 @@ const getOne = async (specificationId: string): Promise<Specification | null> =>
   );
 };
 
-export default { add, getOne };
+const deleteMany = <P extends Record<string, unknown>>(predicate: P): void => {
+  SpecificationModel.deleteMany(predicate);
+};
+
+export default { add, getOne, deleteMany };

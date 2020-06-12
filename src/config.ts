@@ -24,6 +24,6 @@ export const manageCred = {
 };
 
 export const specificationCleanerConfig = {
-  runInterval: process.env.SC_RUN_INTERVAL || 1,
-  deleteThreshold: process.env.SC_DELETE_THRESHOLD || 7,
+  runInterval: +(process.env.SC_RUN_INTERVAL ?? 1),
+  deleteThreshold: +(process.env.SC_DELETE_THRESHOLD ?? 7),
 };
