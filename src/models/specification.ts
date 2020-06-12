@@ -3,7 +3,7 @@ import type { Document } from 'mongoose';
 
 import type { Specification } from 'types/data';
 
-type SpecificationModelType = Specification & Document;
+export type SpecificationModelType = Specification & Document;
 
 const specificationSchema = new Schema(
   {

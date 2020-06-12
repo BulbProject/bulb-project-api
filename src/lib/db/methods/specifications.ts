@@ -1,6 +1,7 @@
+import { MongooseFilterQuery, Query } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 
-import { SpecificationModel } from 'models';
+import { SpecificationModel, SpecificationModelType } from 'models';
 import type { Specification } from 'types/data';
 import type { Criterion } from 'types/parts';
 
@@ -29,8 +30,10 @@ const getOne = async (specificationId: string): Promise<Specification | null> =>
   );
 };
 
-const deleteMany = <P extends Record<string, unknown>>(predicate: P): void => {
-  SpecificationModel.deleteMany(predicate);
+const deleteMany = async (
+  predicate: MongooseFilterQuery<Pick<SpecificationModelType, '_id' | 'categoryId' | 'version' | 'criteria'>>
+): Promise<Query<{ deletedCount?: number }>> => {
+  return SpecificationModel.deleteMany(predicate);
 };
 
 export default { add, getOne, deleteMany };
