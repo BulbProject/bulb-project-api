@@ -1,1 +1,1 @@
-export { default as SpecificationCleaner } from './specification-cleaner.service';
+export { default as SpecificationCleaner } from './specification-cleaner';

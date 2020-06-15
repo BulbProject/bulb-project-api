@@ -1,6 +1,5 @@
 import dayjs, { OpUnitType } from 'dayjs';
 
-import { specificationCleanerConfig } from 'config';
 import { specifications } from 'lib/db/methods';
 import logger from 'lib/logger';
 
@@ -9,7 +8,7 @@ interface Config {
   deleteThreshold: number;
 }
 
-export class SpecificationCleaner {
+export default class SpecificationCleaner {
   private static instance: SpecificationCleaner;
 
   public readonly runInterval!: number;
@@ -34,14 +33,14 @@ export class SpecificationCleaner {
   public async start(): Promise<void> {
     logger.info('SpecificationCleaner has started.');
 
-    this.startedAt = dayjs().toDate();
-
     await this.clean();
 
     setInterval(() => this.clean(), this.runInterval * 1000 * 60 * 24);
   }
 
   public async clean(compareUnit: OpUnitType = 'day'): Promise<void> {
+    this.startedAt = dayjs().toDate();
+
     const { deleteThreshold, startedAt } = this;
 
     const { deletedCount } = await specifications.deleteMany({
@@ -53,5 +52,3 @@ export class SpecificationCleaner {
     logger.info(`SpecificationCleaner has deleted ${deletedCount} outdated specifications.`);
   }
 }
-
-export default SpecificationCleaner.create(specificationCleanerConfig);
