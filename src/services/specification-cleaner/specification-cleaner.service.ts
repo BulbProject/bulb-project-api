@@ -35,7 +35,7 @@ export default class SpecificationCleaner {
 
     await this.clean();
 
-    setInterval(() => this.clean(), this.runInterval * 1000 * 60 * 24);
+    setInterval(() => this.clean(), this.runInterval * 1000 * 60 * 60 * 24);
   }
 
   public async clean(compareUnit: OpUnitType = 'day'): Promise<void> {

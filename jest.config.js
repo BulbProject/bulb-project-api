@@ -22,6 +22,5 @@ module.exports = {
   moduleNameMapper: {
     '^/(.*)$': '<rootDir>/src/$1',
   },
-  testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/'],
-  testTimeout: 10 * 1000
+  testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/']
 };
