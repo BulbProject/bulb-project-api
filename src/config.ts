@@ -22,3 +22,12 @@ export const manageCred = {
   username: process.env.MANAGE_USERNAME || '',
   password: process.env.MANAGE_PASSWORD || '',
 };
+
+export const documentService = {
+  url: `https://udoc.eprocurement.systems`,
+  repo: {
+    owner: 'BulbProject',
+    name: 'bulb-project-api',
+    branch: 'new-formulas-workflow',
+  },
+};

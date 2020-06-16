@@ -24,7 +24,7 @@ const techChars = {
   [Variants.LED]: {
     lumPerWatt: 90,
     timeRate: 42000,
-    availablePowers: [3, 7, 10, 15, 20, 45, 60, 75],
+    availablePowers: [2, 3, 5, 7, 8, 9, 10, 12, 15, 18, 20],
   },
 };
 
