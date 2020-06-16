@@ -14,13 +14,15 @@ describe('SpecificationCleaner', () => {
   let sut: SpecificationCleaner;
   let specificationId: string;
 
+  beforeEach(async () => {
+    await connectToDb();
+
+    const { id } = await specifications.add('31500000-1', 'v2', category.criteria);
+    specificationId = id;
+  });
+
   describe('Cleaning outdated specifications', () => {
     beforeEach(async () => {
-      await connectToDb();
-
-      const { id } = await specifications.add('31500000-1', 'v2', category.criteria);
-      specificationId = id;
-
       sut = SpecificationCleaner.create({
         runInterval: 1,
         deleteThreshold: 1,
@@ -35,6 +37,23 @@ describe('SpecificationCleaner', () => {
 
     it('Should log count of deleted specifications', async () => {
       expect(logger.info).toHaveBeenLastCalledWith(`SpecificationCleaner has deleted 1 outdated specifications.`);
+    });
+  });
+
+  describe('Skipping up-to-date specifications', () => {
+    beforeEach(() => {
+      sut = SpecificationCleaner.create({
+        runInterval: 1,
+        deleteThreshold: 1000,
+      });
+    });
+
+    it('Should not clean up-to-date specifications', async () => {
+      jest.setTimeout(500);
+
+      await sut.clean('second');
+
+      expect(await specifications.getOne(specificationId)).not.toBe(null);
     });
   });
 });
