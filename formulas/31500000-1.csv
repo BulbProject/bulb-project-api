@@ -6,5 +6,5 @@ lightRateLux;lightRateInLum * roomArea
 P;lightRateLux / quantity / η
 workingHoursInWeek;hoursInDay * daysInWeek
 workingHoursInYear;workingHoursInWeek * weeksInYear
-energyEconomy;((Pselected * quantity - Pother * quantity) * quantity) * workingHoursInYear / 1000
+energyEconomy;((Pselected * quantity - Pother * quantity) * workingHoursInYear) / 1000
 financeEconomy;(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * workingHoursInYear
