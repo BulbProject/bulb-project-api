@@ -6,5 +6,5 @@ const { url, repo } = documentService;
 
 export const getFormulasTableConfig = (categoryId: string): AxiosRequestConfig => ({
   method: 'get',
-  url: `${url}/entries/${repo.owner}/${repo.name}/${repo.branch}/calculation-data/${categoryId}/formulas.csv`,
+  url: `${url}/entries/${repo.owner}/${repo.name}/${repo.branch}/calculation-data%2F${categoryId}/formulas.csv`,
 });
