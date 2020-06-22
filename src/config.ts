@@ -28,7 +28,7 @@ export const documentService = {
   repo: {
     owner: 'BulbProject',
     name: 'bulb-project-api',
-    branch: 'new-formulas-workflow',
+    branch: 'develop',
   },
 };
 
