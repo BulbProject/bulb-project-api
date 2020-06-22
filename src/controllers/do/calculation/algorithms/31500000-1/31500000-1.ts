@@ -182,7 +182,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
         η: techChars[bulbType].lumPerWatt,
       });
       currentBulb.pRef = evaluate(formulas.pRef, {
-        Φ: lum,
+        Φ: currentBulb.lum,
       });
       currentBulb.eei = +evaluate(formulas.eei, {
         P: currentBulb.power,
