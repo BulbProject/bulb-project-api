@@ -1,17 +1,15 @@
 import RequestError from 'lib/request-error';
 
-import { weeksInYear } from 'ref-data';
 import { Variants } from 'ref-data/31500000-1';
 
 import axios from 'axios';
-import { getFormulasTableConfig } from 'api';
+import { getFormulasTableConfig, getDirectoryTableConfig } from 'api';
 
 import * as csv from 'csv-string';
 
 import { evaluate } from 'mathjs';
 
 import {
-  techChars,
   calculateEnergyEfficiencyClass,
   generateAvailableVariants,
   getDirectoryPower,
@@ -21,6 +19,7 @@ import {
 import type { Option } from 'ts4ocds/extensions/options';
 import type { CalculationEngine } from '../../types';
 import type { Calculation } from './types';
+import type { TechCharacteristics } from 'ref-data/31500000-1';
 
 // Name of the function is a name of current CPV code
 const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
@@ -28,6 +27,39 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
   version,
   requestedNeed: { requirementResponses },
 }) => {
+  let directoryCsv = '';
+
+  try {
+    const { data } = await axios.request<{ content: string }>(getDirectoryTableConfig(id));
+
+    directoryCsv = data.content;
+  } catch (e) {
+    throw new RequestError(500, 'Failed to get reference data for calculation');
+  }
+
+  const directoryTable = csv.parse(directoryCsv);
+
+  const techChars = directoryTable.reduce((_techChars, row) => {
+    if (!/^.+\/.+$/.test(row[0])) return _techChars;
+
+    const bulbType = row[0].replace(/\/.+$/, '').replace('/', '') as Variants;
+    const techCharName = row[0].replace(/^.+\//, '').replace('/', '');
+
+    return {
+      ..._techChars,
+      [bulbType]: {
+        ...(_techChars[bulbType] || {}),
+        [techCharName]: techCharName === 'availablePowers' ? row[1].split(';') : +row[1],
+      },
+    };
+  }, {} as TechCharacteristics);
+
+  const weeksInYear = +(directoryTable.find((row) => row[0] === 'weeksInYear')?.[1] || 0);
+
+  if (!weeksInYear) {
+    throw new RequestError(500, 'No "weeksInYear" data in reference data');
+  }
+
   let formulasCsv: string;
 
   try {
@@ -113,7 +145,11 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
       throw new RequestError(400, `Not provides correct value for bulb power for calculation concrete bulb.`);
     }
 
-    const directoryPower = getDirectoryPower(selectedBulbType, providedPower);
+    const directoryPower = getDirectoryPower(
+      selectedBulbType,
+      providedPower,
+      techChars[selectedBulbType].availablePowers
+    );
 
     const lum = evaluate(formulas.lum, {
       P: directoryPower,
@@ -132,7 +168,11 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
       currentBulb.quantity = providedQuantity;
 
       if (bulbType !== selectedBulbType) {
-        currentBulb.power = getDirectoryPower(bulbType, lum / techChars[bulbType].lumPerWatt);
+        currentBulb.power = getDirectoryPower(
+          bulbType,
+          lum / techChars[bulbType].lumPerWatt,
+          techChars[bulbType].availablePowers
+        );
       } else {
         currentBulb.power = directoryPower;
       }
@@ -199,7 +239,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
       });
 
       currentBulb.quantity = bulbsQuantity;
-      currentBulb.power = getDirectoryPower(bulbType, calculationPower);
+      currentBulb.power = getDirectoryPower(bulbType, calculationPower, techChars[bulbType].availablePowers);
       currentBulb.lum = evaluate(formulas.lum, {
         P: currentBulb.power,
         η: techChars[bulbType].lumPerWatt,
@@ -262,7 +302,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
       });
 
       currentBulb.quantity = bulbsQuantity;
-      currentBulb.power = getDirectoryPower(bulbType, calculationPower);
+      currentBulb.power = getDirectoryPower(bulbType, calculationPower, techChars[bulbType].availablePowers);
       currentBulb.lum = evaluate(formulas.lum, {
         P: currentBulb.power,
         η: techChars[bulbType].lumPerWatt,
@@ -403,7 +443,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
   return {
     category: id,
     version,
-    availableVariants: generateAvailableVariants(availableBulbTypes, selectedBulbType),
+    availableVariants: generateAvailableVariants(availableBulbTypes, selectedBulbType, techChars),
   };
 };
 

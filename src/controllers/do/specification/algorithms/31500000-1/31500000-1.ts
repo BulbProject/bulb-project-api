@@ -2,6 +2,11 @@ import refData from 'ref-data';
 import { Variants } from 'ref-data/31500000-1';
 import type { Criterion, Requirement, RequirementGroup } from 'types/parts';
 
+import axios from 'axios';
+import { getDirectoryTableConfig } from 'api';
+
+import * as csv from 'csv-string';
+
 import { specifications } from 'lib/db/methods';
 import RequestError from 'lib/request-error';
 import { generateId, getAlgorithmId } from 'utils';
@@ -9,6 +14,7 @@ import { generateId, getAlgorithmId } from 'utils';
 import { generateDocument } from './generate-document';
 
 import type { SpecificationEngine } from '../../types';
+import type { TechCharacteristics } from 'ref-data/31500000-1';
 
 const categoryId = getAlgorithmId(__filename);
 
@@ -28,7 +34,33 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
   }
 
   const relatedItem = selectedVariant.relatedItem as Variants;
-  const { techChars } = refData[categoryId];
+
+  let directoryCsv = '';
+
+  try {
+    const { data } = await axios.request<{ content: string }>(getDirectoryTableConfig(categoryId));
+
+    directoryCsv = data.content;
+  } catch (e) {
+    throw new RequestError(500, 'Failed to get reference data for calculation');
+  }
+
+  const directoryTable = csv.parse(directoryCsv);
+
+  const techChars = directoryTable.reduce((_techChars, row) => {
+    if (!/^.+\/.+$/.test(row[0])) return _techChars;
+
+    const bulbType = row[0].replace(/\/.+$/, '').replace('/', '') as Variants;
+    const techCharName = row[0].replace(/^.+\//, '').replace('/', '');
+
+    return {
+      ..._techChars,
+      [bulbType]: {
+        ...(_techChars[bulbType] || {}),
+        [techCharName]: row[1],
+      },
+    };
+  }, {} as TechCharacteristics);
 
   const directionalLightFlowResponses = selectedVariant.requirementResponses.filter(({ requirement: { id } }) => {
     return /^01/.test(id);
