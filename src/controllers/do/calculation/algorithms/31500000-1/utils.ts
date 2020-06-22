@@ -7,9 +7,10 @@ import type { RequirementResponse } from 'ts4ocds/extensions/requirements';
 import type { Metric } from 'ts4ocds/extensions/metrics';
 import type { AvailableVariant } from 'types/transactions/available-variants';
 import type { Calculation } from './types';
+import type { TechCharacteristics } from 'ref-data/31500000-1';
 
 const categoryId = '31500000-1';
-export const { techChars, calculateEnergyEfficiencyClass } = refData[categoryId];
+export const { calculateEnergyEfficiencyClass } = refData[categoryId];
 
 export const getValueFromResponses = (responses: RequirementResponse[], requirementId: string): unknown => {
   return responses.find(({ requirement: { id } }) => {
@@ -17,26 +18,21 @@ export const getValueFromResponses = (responses: RequirementResponse[], requirem
   })?.value as unknown;
 };
 
-export const getDirectoryPower = (bulbType: Variants, providedPower: number): number => {
+export const getDirectoryPower = (bulbType: Variants, providedPower: number, availablePowers: number[]): number => {
   return (
-    techChars[bulbType].availablePowers.find(
+    availablePowers.find(
       (availablePower: number) => {
         return availablePower >= providedPower;
       }
       // @TODO need clarification
-    ) || Math.max(...techChars[bulbType].availablePowers)
+    ) || Math.max(...availablePowers)
   );
-};
-
-export const getPowerRef = (lum: number): number => {
-  if (lum >= 1300) return 0.07341 * lum;
-
-  return 0.88 * Math.sqrt(lum + 0.49 * lum);
 };
 
 export const generateAvailableVariants = (
   availableBulbTypes: Calculation,
-  selectedBulbType: Variants
+  selectedBulbType: Variants,
+  techCharacteristics: TechCharacteristics
 ): AvailableVariant[] => {
   const unsortedVariants: AvailableVariant[] = (Object.keys(availableBulbTypes) as Variants[]).map((bulbType) => {
     const currentBulb = availableBulbTypes[bulbType];
@@ -60,7 +56,7 @@ export const generateAvailableVariants = (
           {
             id: '0102',
             notes: 'Термін експлуатації',
-            measure: techChars[bulbType].timeRate,
+            measure: techCharacteristics[bulbType].timeRate,
             unit: {
               id: '155',
               name: 'год',
@@ -94,7 +90,9 @@ export const generateAvailableVariants = (
           {
             id: 'serviceLife',
             notes: 'Термін служби',
-            measure: (techChars[bulbType].timeRate / techChars[selectedBulbType].timeRate).toFixed(1),
+            measure: (techCharacteristics[bulbType].timeRate / techCharacteristics[selectedBulbType].timeRate).toFixed(
+              1
+            ),
           },
         ],
       });

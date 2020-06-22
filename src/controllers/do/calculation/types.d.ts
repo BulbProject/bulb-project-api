@@ -10,4 +10,4 @@ export type CalculationEngine = ({
   category: Category;
   version: string;
   requestedNeed: RequestedNeed;
-}) => AvailableVariantsResponse;
+}) => Promise<AvailableVariantsResponse>;

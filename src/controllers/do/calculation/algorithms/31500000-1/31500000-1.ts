@@ -1,27 +1,106 @@
 import RequestError from 'lib/request-error';
 
-import { weeksInYear } from 'ref-data';
 import { Variants } from 'ref-data/31500000-1';
 
+import axios from 'axios';
+import { getTableConfig } from 'api';
+
+import * as csv from 'csv-string';
+
+import { evaluate } from 'mathjs';
+
 import {
-  techChars,
   calculateEnergyEfficiencyClass,
   generateAvailableVariants,
   getDirectoryPower,
-  getPowerRef,
   getValueFromResponses,
 } from './utils';
 
 import type { Option } from 'ts4ocds/extensions/options';
 import type { CalculationEngine } from '../../types';
 import type { Calculation } from './types';
+import type { TechCharacteristics } from 'ref-data/31500000-1';
 
 // Name of the function is a name of current CPV code
-const LightingEquipmentAndElectricLamps: CalculationEngine = ({
+const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
   category: { id, items, criteria, conversions },
   version,
   requestedNeed: { requirementResponses },
 }) => {
+  let directoryCsv = '';
+
+  try {
+    const { data } = await axios.request<{ content: string }>(getTableConfig('directory', id));
+
+    directoryCsv = data.content;
+  } catch (e) {
+    throw new RequestError(500, 'Failed to get reference data for calculation');
+  }
+
+  const directoryTable = csv.parse(directoryCsv);
+
+  const techChars = directoryTable.reduce((_techChars, row) => {
+    if (!/^.+\/.+$/.test(row[0])) return _techChars;
+
+    const bulbType = row[0].replace(/\/.+$/, '').replace('/', '') as Variants;
+    const techCharName = row[0].replace(/^.+\//, '').replace('/', '');
+
+    return {
+      ..._techChars,
+      [bulbType]: {
+        ...(_techChars[bulbType] || {}),
+        [techCharName]: techCharName === 'availablePowers' ? row[1].split(';').map((p) => +p) : +row[1],
+      },
+    };
+  }, {} as TechCharacteristics);
+
+  const weeksInYear = +(directoryTable.find((row) => row[0] === 'weeksInYear')?.[1] || 0);
+
+  if (!weeksInYear) {
+    throw new RequestError(500, 'No "weeksInYear" data in reference data');
+  }
+
+  let formulasCsv: string;
+
+  try {
+    const { data } = await axios.request<{ content: string }>(getTableConfig('formulas', id));
+
+    formulasCsv = data.content;
+  } catch (error) {
+    throw new RequestError(500, 'Failed to get formulas for calculation');
+  }
+
+  const formulasTable = csv.parse(formulasCsv);
+
+  const calculatedValuesMap = {
+    Φ: 'lum',
+    Pref: 'pRef',
+    EEI: 'eei',
+    lightRateLux: 'lightRateLux',
+    P: 'power',
+    workingHoursInWeek: 'workingHoursInWeek',
+    workingHoursInYear: 'workingHoursInYear',
+    energyEconomy: 'energyEconomy',
+    financeEconomy: 'financeEconomy',
+  } as const;
+
+  type CalculatedKeys = keyof typeof calculatedValuesMap;
+  type CalculatedValues = typeof calculatedValuesMap[CalculatedKeys];
+  type Formulas = Record<CalculatedValues, string>;
+
+  const formulas: Formulas = Object.keys(calculatedValuesMap).reduce((_formulas, value) => {
+    const formula = formulasTable.find(([_value]) => _value === value)?.[1];
+
+    if (!formula) {
+      throw new RequestError(500, `There is no formula for calculating "${value}"`);
+    }
+
+    return {
+      ..._formulas,
+      [calculatedValuesMap[value as CalculatedKeys]]: formula,
+    };
+  }, {} as Formulas);
+
   const calculationDraft = Object.values(Variants).reduce((_calculation, bulbCode: Variants) => {
     return {
       ..._calculation,
@@ -66,9 +145,16 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
       throw new RequestError(400, `Not provides correct value for bulb power for calculation concrete bulb.`);
     }
 
-    const directoryPower = getDirectoryPower(selectedBulbType, providedPower);
+    const directoryPower = getDirectoryPower(
+      selectedBulbType,
+      providedPower,
+      techChars[selectedBulbType].availablePowers
+    );
 
-    const lumPerWatt = directoryPower * techChars[selectedBulbType].lumPerWatt;
+    const lum = evaluate(formulas.lum, {
+      P: directoryPower,
+      η: techChars[selectedBulbType].lumPerWatt,
+    });
 
     const providedQuantity = getValueFromResponses(typeOfNeedResponses, requirementIdForBulbQuantity);
 
@@ -82,14 +168,26 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
       currentBulb.quantity = providedQuantity;
 
       if (bulbType !== selectedBulbType) {
-        currentBulb.power = getDirectoryPower(bulbType, lumPerWatt / techChars[bulbType].lumPerWatt);
+        currentBulb.power = getDirectoryPower(
+          bulbType,
+          lum / techChars[bulbType].lumPerWatt,
+          techChars[bulbType].availablePowers
+        );
       } else {
         currentBulb.power = directoryPower;
       }
 
-      currentBulb.lum = currentBulb.power * techChars[bulbType].lumPerWatt;
-      currentBulb.pRef = getPowerRef(currentBulb.lum);
-      currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
+      currentBulb.lum = evaluate(formulas.lum, {
+        P: currentBulb.power,
+        η: techChars[bulbType].lumPerWatt,
+      });
+      currentBulb.pRef = evaluate(formulas.pRef, {
+        Φ: lum,
+      });
+      currentBulb.eei = +evaluate(formulas.eei, {
+        P: currentBulb.power,
+        Pref: currentBulb.pRef,
+      }).toFixed(2);
     });
   }
 
@@ -126,18 +224,33 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
       throw new RequestError(400, `Not provided correct value for bulbs quantity for calculation light project.`);
     }
 
-    const lightRateLux = lightRateInLum * roomArea;
+    const lightRateLux = evaluate(formulas.lightRateLux, {
+      lightRateInLum,
+      roomArea,
+    });
 
     (Object.keys(calculationDraft) as Variants[]).forEach((bulbType) => {
       const currentBulb = calculationDraft[bulbType];
 
-      const calculationPower = lightRateLux / bulbsQuantity / techChars[bulbType].lumPerWatt;
+      const calculationPower = evaluate(formulas.power, {
+        lightRateLux,
+        quantity: bulbsQuantity,
+        η: techChars[bulbType].lumPerWatt,
+      });
 
       currentBulb.quantity = bulbsQuantity;
-      currentBulb.power = getDirectoryPower(bulbType, calculationPower);
-      currentBulb.lum = currentBulb.power * techChars[bulbType].lumPerWatt;
-      currentBulb.pRef = getPowerRef(currentBulb.lum);
-      currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
+      currentBulb.power = getDirectoryPower(bulbType, calculationPower, techChars[bulbType].availablePowers);
+      currentBulb.lum = evaluate(formulas.lum, {
+        P: currentBulb.power,
+        η: techChars[bulbType].lumPerWatt,
+      });
+      currentBulb.pRef = evaluate(formulas.pRef, {
+        Φ: currentBulb.lum,
+      });
+      currentBulb.eei = +evaluate(formulas.eei, {
+        P: currentBulb.power,
+        Pref: currentBulb.pRef,
+      }).toFixed(2);
     });
   }
 
@@ -174,18 +287,33 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
       throw new RequestError(400, `Not provided correct value for bulbs quantity for calculation light project.`);
     }
 
-    const lightRateLux = lightRateInLum * roomArea;
+    const lightRateLux = evaluate(formulas.lightRateLux, {
+      lightRateInLum,
+      roomArea,
+    });
 
     (Object.keys(calculationDraft) as Variants[]).forEach((bulbType) => {
       const currentBulb = calculationDraft[bulbType];
 
-      const calculationPower = lightRateLux / bulbsQuantity / techChars[bulbType].lumPerWatt;
+      const calculationPower = evaluate(formulas.power, {
+        lightRateLux,
+        quantity: bulbsQuantity,
+        η: techChars[bulbType].lumPerWatt,
+      });
 
       currentBulb.quantity = bulbsQuantity;
-      currentBulb.power = getDirectoryPower(bulbType, calculationPower);
-      currentBulb.lum = currentBulb.power * techChars[bulbType].lumPerWatt;
-      currentBulb.pRef = getPowerRef(currentBulb.lum);
-      currentBulb.eei = +(currentBulb.power / currentBulb.pRef).toFixed(2);
+      currentBulb.power = getDirectoryPower(bulbType, calculationPower, techChars[bulbType].availablePowers);
+      currentBulb.lum = evaluate(formulas.lum, {
+        P: currentBulb.power,
+        η: techChars[bulbType].lumPerWatt,
+      });
+      currentBulb.pRef = evaluate(formulas.pRef, {
+        Φ: currentBulb.lum,
+      });
+      currentBulb.eei = +evaluate(formulas.eei, {
+        P: currentBulb.power,
+        Pref: currentBulb.pRef,
+      }).toFixed(2);
     });
   }
 
@@ -261,8 +389,14 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     }
 
     (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
-      const workingHoursInWeek = (hoursInDay as number) * (daysInWeek as number);
-      const workingHoursInYear = workingHoursInWeek * weeksInYear;
+      const workingHoursInWeek = evaluate(formulas.workingHoursInWeek, {
+        hoursInDay,
+        daysInWeek,
+      });
+      const workingHoursInYear = evaluate(formulas.workingHoursInYear, {
+        workingHoursInWeek,
+        weeksInYear,
+      });
 
       availableBulbTypes[bulbType].workingHoursInYear = workingHoursInYear;
       availableBulbTypes[bulbType].modeOfUseLifetime = +(techChars[bulbType].timeRate / workingHoursInYear).toFixed(2);
@@ -280,18 +414,23 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
     const { quantity, power, workingHoursInYear } = availableBulbTypes[bulbType];
 
     if (workingHoursInYear) {
-      availableBulbTypes[bulbType].energyEconomy =
-        ((availableBulbTypes[selectedBulbType].power * quantity - power * quantity) * workingHoursInYear) / 1000;
+      availableBulbTypes[bulbType].energyEconomy = evaluate(formulas.energyEconomy, {
+        Pselected: availableBulbTypes[selectedBulbType].power,
+        quantity,
+        Pother: power,
+        workingHoursInYear,
+      });
 
       const tariff = tariffsRequirements[0].value;
 
       if (typeof tariff === 'number' && tariff > 0) {
-        const summaryElectricPrice = (power: number) => power * 0.001 * quantity * tariff;
-
-        availableBulbTypes[bulbType].financeEconomy = +(
-          (summaryElectricPrice(availableBulbTypes[selectedBulbType].power) - summaryElectricPrice(power)) *
-          workingHoursInYear
-        ).toFixed(2);
+        availableBulbTypes[bulbType].financeEconomy = +evaluate(formulas.financeEconomy, {
+          Pselected: availableBulbTypes[selectedBulbType].power,
+          quantity,
+          tariff,
+          Pother: power,
+          workingHoursInYear,
+        }).toFixed(2);
       }
     }
   });
@@ -304,7 +443,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = ({
   return {
     category: id,
     version,
-    availableVariants: generateAvailableVariants(availableBulbTypes, selectedBulbType),
+    availableVariants: generateAvailableVariants(availableBulbTypes, selectedBulbType, techChars),
   };
 };
 

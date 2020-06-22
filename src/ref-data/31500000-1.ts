@@ -5,30 +5,15 @@ export enum Variants {
   LED = '31712341-2',
 }
 
-const techChars = {
-  [Variants.Incandescent]: {
-    lumPerWatt: 15,
-    timeRate: 1375,
-    availablePowers: [30, 40, 60, 80, 100, 120, 200],
-  },
-  [Variants.Halogen]: {
-    lumPerWatt: 20,
-    timeRate: 3000,
-    availablePowers: [3, 7, 10, 15, 20, 45, 60, 75],
-  },
-  [Variants.Fluorescent]: {
-    lumPerWatt: 60,
-    timeRate: 30000,
-    availablePowers: [30, 40, 60, 80, 100, 120, 200],
-  },
-  [Variants.LED]: {
-    lumPerWatt: 90,
-    timeRate: 42000,
-    availablePowers: [3, 7, 10, 15, 20, 45, 60, 75],
-  },
+export type TechCharacteristics = {
+  [key in Variants]: {
+    lumPerWatt: number;
+    timeRate: number;
+    availablePowers: number[];
+  };
 };
 
-const calculateEnergyEfficiencyClass = (eei: number) => {
+const calculateEnergyEfficiencyClass = (eei: number): string => {
   if (eei <= 0.13) {
     return 'A++';
   } else if (eei > 0.13 && eei <= 0.18) {
@@ -47,6 +32,5 @@ const calculateEnergyEfficiencyClass = (eei: number) => {
 };
 
 export default {
-  techChars,
   calculateEnergyEfficiencyClass,
 };

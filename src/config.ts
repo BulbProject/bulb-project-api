@@ -23,6 +23,15 @@ export const manageCred = {
   password: process.env.MANAGE_PASSWORD || '',
 };
 
+export const documentService = {
+  url: `https://udoc.eprocurement.systems`,
+  repo: {
+    owner: 'BulbProject',
+    name: 'bulb-project-api',
+    branch: 'new-formulas-workflow',
+  },
+};
+
 export const specificationCleanerConfig = {
   runInterval: +(process.env.SC_RUN_INTERVAL_DAYS ?? 1),
   deleteThreshold: +(process.env.SC_DELETE_THRESHOLD_DAYS ?? 7),
