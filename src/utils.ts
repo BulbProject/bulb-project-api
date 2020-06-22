@@ -41,7 +41,7 @@ export const generateId = <O extends Record<string, unknown>>(initialId = '') =>
 };
 
 export const getAlgorithmId = <S extends string = keyof typeof refData>(fileName: string): S => {
-  return basename(fileName, '.ts') as S;
+  return basename(fileName, process.env.NODE_ENV === 'production' ? '.js' : '.ts') as S;
 };
 
 export const errorsMap = {
