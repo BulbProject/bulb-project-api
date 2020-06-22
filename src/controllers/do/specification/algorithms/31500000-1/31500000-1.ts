@@ -3,7 +3,7 @@ import { Variants } from 'ref-data/31500000-1';
 import type { Criterion, Requirement, RequirementGroup } from 'types/parts';
 
 import axios from 'axios';
-import { getDirectoryTableConfig } from 'api';
+import { getTableConfig } from 'api';
 
 import * as csv from 'csv-string';
 
@@ -38,7 +38,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
   let directoryCsv = '';
 
   try {
-    const { data } = await axios.request<{ content: string }>(getDirectoryTableConfig(categoryId));
+    const { data } = await axios.request<{ content: string }>(getTableConfig('directory', categoryId));
 
     directoryCsv = data.content;
   } catch (e) {

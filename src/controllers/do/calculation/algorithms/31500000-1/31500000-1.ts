@@ -3,7 +3,7 @@ import RequestError from 'lib/request-error';
 import { Variants } from 'ref-data/31500000-1';
 
 import axios from 'axios';
-import { getFormulasTableConfig, getDirectoryTableConfig } from 'api';
+import { getTableConfig } from 'api';
 
 import * as csv from 'csv-string';
 
@@ -30,7 +30,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
   let directoryCsv = '';
 
   try {
-    const { data } = await axios.request<{ content: string }>(getDirectoryTableConfig(id));
+    const { data } = await axios.request<{ content: string }>(getTableConfig('directory', id));
 
     directoryCsv = data.content;
   } catch (e) {
@@ -63,7 +63,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
   let formulasCsv: string;
 
   try {
-    const { data } = await axios.request<{ content: string }>(getFormulasTableConfig(id));
+    const { data } = await axios.request<{ content: string }>(getTableConfig('formulas', id));
 
     formulasCsv = data.content;
   } catch (error) {
