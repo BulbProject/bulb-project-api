@@ -3,13 +3,13 @@ version: '3.7'
 services:
   bulb-db:
     image: mongo:bionic
-    container_name: ${DB_HOST}
+    container_name: ${DB_HOST}-${APP_ENV}
     ports:
       - ${DB_PORT}:${DB_PORT}
     expose:
       - ${DB_PORT}
     volumes:
-      - ./data/bulb-db:/usr/data/db
+      - ./data/bulb-db-${APP_ENV}:/usr/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
@@ -17,7 +17,7 @@ services:
     command: mongod --port ${DB_PORT}
 
   bulb-api:
-    container_name: 'bulb-api'
+    container_name: 'bulb-api-${APP_ENV}'
     build: .
     ports:
       - ${SERVICE_PORT}:${SERVICE_PORT}
