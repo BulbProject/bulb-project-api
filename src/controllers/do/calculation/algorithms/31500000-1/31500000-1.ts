@@ -49,7 +49,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
       ..._techChars,
       [bulbType]: {
         ...(_techChars[bulbType] || {}),
-        [techCharName]: techCharName === 'availablePowers' ? row[1].split(';') : +row[1],
+        [techCharName]: techCharName === 'availablePowers' ? row[1].split(';').map((p) => +p) : +row[1],
       },
     };
   }, {} as TechCharacteristics);
