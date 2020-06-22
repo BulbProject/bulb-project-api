@@ -31,3 +31,8 @@ export const documentService = {
     branch: 'new-formulas-workflow',
   },
 };
+
+export const specificationCleanerConfig = {
+  runInterval: +(process.env.SC_RUN_INTERVAL_DAYS ?? 1),
+  deleteThreshold: +(process.env.SC_DELETE_THRESHOLD_DAYS ?? 7),
+};

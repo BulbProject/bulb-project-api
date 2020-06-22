@@ -5,6 +5,7 @@ import cors from 'fastify-cors';
 import { connectToDb } from 'lib/db';
 import swagger from 'lib/swagger';
 import { loggerOptions } from 'lib/logger';
+import { SpecificationCleaner } from 'services';
 
 import routes from 'routes';
 
@@ -24,6 +25,7 @@ const start = async (): Promise<void> => {
     if (process.env.NODE_ENV === 'development') app.log.info(app.printRoutes());
 
     await connectToDb();
+    await SpecificationCleaner.start();
   } catch (error) {
     app.log.error(error);
     process.exit(1);
