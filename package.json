@@ -1,6 +1,6 @@
 {
   "name": "bulb-broject-api",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "API Service for Bulb Project",
   "main": "build/app/index.js",
   "author": "uStudio Front-end Department",
