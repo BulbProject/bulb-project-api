@@ -1,17 +1,16 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
+    "target": "es6",
+    "lib": ["esnext"],
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "strict": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "outDir": "build",
-    "baseUrl": "src",
-    "paths": {
-      "config": ["./config.ts"],
-      "lib/*": ["./lib/*"]
-    }
+    "baseUrl": "src"
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "build", "**/*/*.spec.ts"]
 }

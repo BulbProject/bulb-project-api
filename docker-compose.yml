@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  bulb-db:
+    image: mongo:bionic
+    container_name: ${DB_HOST}-${APP_ENV}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    expose:
+      - ${DB_PORT}
+    volumes:
+      - ./data/bulb-db-${APP_ENV}:/usr/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+    command: mongod --port ${DB_PORT}
+
+  bulb-api:
+    container_name: 'bulb-api-${APP_ENV}'
+    build: .
+    ports:
+      - ${SERVICE_PORT}:${SERVICE_PORT}
+    expose:
+      - ${SERVICE_PORT}
+    environment:
+      - SERVICE_URL=${SERVICE_URL}
+      - SERVICE_PORT=${SERVICE_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - MANAGE_USERNAME=${MANAGE_USERNAME}
+      - MANAGE_PASSWORD=${MANAGE_PASSWORD}
+      - SC_RUN_INTERVAL_DAYS=${SC_RUN_INTERVAL_DAYS}
+      - SC_DELETE_THRESHOLD_DAYS=${SC_DELETE_THRESHOLD_DAYS}
+    depends_on:
+      - bulb-db
