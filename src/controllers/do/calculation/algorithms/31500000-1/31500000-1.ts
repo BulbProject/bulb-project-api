@@ -158,7 +158,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
 
     const providedQuantity = getValueFromResponses(typeOfNeedResponses, requirementIdForBulbQuantity);
 
-    if (typeof providedQuantity !== 'number' || providedPower <= 0) {
+    if (typeof providedQuantity !== 'number' || providedPower <= 0 || !Number.isInteger(providedQuantity)) {
       throw new RequestError(400, `Not provides correct value for bulbs quantity for calculationDraft concrete bulb.`);
     }
 
@@ -220,7 +220,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
 
     const bulbsQuantity = getValueFromResponses(typeOfNeedResponses, requirementIdForQuantity);
 
-    if (!bulbsQuantity || typeof bulbsQuantity !== 'number' || bulbsQuantity <= 0) {
+    if (!bulbsQuantity || typeof bulbsQuantity !== 'number' || bulbsQuantity <= 0 || !Number.isInteger(bulbsQuantity)) {
       throw new RequestError(400, `Not provided correct value for bulbs quantity for calculation light project.`);
     }
 
@@ -283,7 +283,7 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
 
     const bulbsQuantity = getValueFromResponses(typeOfNeedResponses, requirementIdForQuantity);
 
-    if (!bulbsQuantity || typeof bulbsQuantity !== 'number' || bulbsQuantity <= 0) {
+    if (!bulbsQuantity || typeof bulbsQuantity !== 'number' || bulbsQuantity <= 0 || !Number.isInteger(bulbsQuantity)) {
       throw new RequestError(400, `Not provided correct value for bulbs quantity for calculation light project.`);
     }
 
@@ -380,11 +380,11 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
     const hoursInDay = modeOfUseResponses[0].value as unknown;
     const daysInWeek = modeOfUseResponses[1].value as unknown;
 
-    if (typeof hoursInDay !== 'number' || (hoursInDay <= 0 && hoursInDay > 24)) {
+    if (typeof hoursInDay !== 'number' || hoursInDay <= 0 || hoursInDay > 24) {
       throw new RequestError(400, 'Incorrect provided working hours per day.');
     }
 
-    if (typeof daysInWeek !== 'number' || (daysInWeek <= 0 && daysInWeek > 7)) {
+    if (typeof daysInWeek !== 'number' || daysInWeek <= 0 || daysInWeek > 7) {
       throw new RequestError(400, 'Incorrect provided working days per week.');
     }
 
