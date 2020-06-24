@@ -1,10 +1,10 @@
 Значення,Формула,Примітка
 Φ,P * η,Яскравість в люменах
-Pref,Φ >= 1300 ? 0.07341 * Φ : 0.88 * sqrt(Φ + 0.49 * Φ),
+Pref,Φ >= 1300 ? 0.07341 * Φ : 0.88 * sqrt(Φ + 0.49 * Φ),-
 EEI,P / Pref,Коефіцієнт енергоефективності
 lightRateLux,lightRateInLum * roomArea,Рівень освітлення в люксах
 P,lightRateLux / quantity / η,Потужність
 workingHoursInWeek,hoursInDay * daysInWeek,Кількість робочих годин на тиждень
-workingHoursInYear,workingHoursInWeek * weeksInYear,Кількість робочих годин на рік,
-energyEconomy,((Pselected * quantity - Pother * quantity) * workingHoursInYear) / 1000,
-financeEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * workingHoursInYear,
+workingHoursInYear,workingHoursInWeek * weeksInYear,Кількість робочих годин на рік
+energyEconomy,((Pselected * quantity - Pother * quantity) * workingHoursInYear) / 1000,-
+financeEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * workingHoursInYear,-
