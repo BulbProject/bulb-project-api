@@ -5,6 +5,6 @@ EEI,P / Pref,Коефіцієнт енергоефективності
 lightRateLux,lightRateInLum * roomArea,Рівень освітлення в люксах
 P,lightRateLux / quantity / η,Потужність
 workingHoursInWeek,hoursInDay * daysInWeek,Кількість робочих годин на тиждень
-workingHoursInYear,workingHoursInWeek * weeksInYear,Кількість робочих годин на рік
+workingHoursInYear,workingHoursInWeek * weeksInYear,Кількість робочих годин на рік,
 energyEconomy,((Pselected * quantity - Pother * quantity) * workingHoursInYear) / 1000,
-financeEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * workingHoursInYear
+financeEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * workingHoursInYear,
