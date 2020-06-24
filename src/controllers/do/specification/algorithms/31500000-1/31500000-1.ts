@@ -66,7 +66,11 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
     return /^01/.test(id);
   });
 
-  if (directionalLightFlowResponses.length !== 1 || typeof directionalLightFlowResponses[0].value !== 'boolean') {
+  if (
+    directionalLightFlowResponses.length !== 1 ||
+    typeof directionalLightFlowResponses[0].value !== 'boolean' ||
+    !directionalLightFlowResponses[0].value
+  ) {
     throw new RequestError(400, `Not correct provided information about directional light.`);
   }
 
@@ -74,7 +78,7 @@ const LightingEquipmentAndElectricLamps: SpecificationEngine = async ({
   const functionalityRequirementsBaseId = '0201';
 
   const lightFlowType =
-    new RegExp(`^${efficacyRequirementsBaseId}`).test(directionalLightFlowResponses[0].requirement.id) &&
+    new RegExp(efficacyRequirementsBaseId).test(directionalLightFlowResponses[0].requirement.id) &&
     directionalLightFlowResponses[0].value
       ? 'directional'
       : 'non-directional';
