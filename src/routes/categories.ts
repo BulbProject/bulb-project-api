@@ -1,6 +1,11 @@
 import fastify from 'fastify';
 
-import { getCategoriesList, getVersionsPackage, getCategoryVersion } from 'controllers/categories';
+import {
+  getCategoriesList,
+  getCategoriesListDetails,
+  getVersionsPackage,
+  getCategoryVersion,
+} from 'controllers/categories';
 
 import { category } from 'json-schemas';
 import { object, string, array } from 'json-schemas/primitives';
@@ -43,6 +48,16 @@ export const categoriesRoute = (app: fastify.FastifyInstance): void => {
       },
     },
     getCategoriesList
+  );
+
+  app.get(
+    '/categories-details/',
+    {
+      schema: {
+        hide: true,
+      },
+    },
+    getCategoriesListDetails
   );
 
   app.get(
