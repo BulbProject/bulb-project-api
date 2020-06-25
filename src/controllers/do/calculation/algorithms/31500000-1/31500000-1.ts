@@ -377,8 +377,8 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
   }
 
   if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
-    const hoursInDay = modeOfUseResponses[0].value as unknown;
-    const daysInWeek = modeOfUseResponses[1].value as unknown;
+    const hoursInDay = modeOfUseResponses[0]?.value as unknown;
+    const daysInWeek = modeOfUseResponses[1]?.value as unknown;
 
     if (typeof hoursInDay !== 'number' || hoursInDay <= 0 || hoursInDay > 24) {
       throw new RequestError(400, 'Incorrect provided working hours per day.');
