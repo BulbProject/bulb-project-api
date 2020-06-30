@@ -1,4 +1,4 @@
 export * from './category';
 export * from './available-variants';
-export * from './requestedNeed';
+export * from './requested-need';
 export * from './selected-variant';
