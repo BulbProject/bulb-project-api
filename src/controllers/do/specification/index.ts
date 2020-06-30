@@ -47,6 +47,6 @@ export const specification: TypedRequestHandler<
       .header('Content-Disposition', 'attachment;filename="specification.docx"')
       .header('Content-Description', 'File Transfer')
       .header('Content-Transfer-Encoding', 'binary')
-      .send(new Buffer(result as Buffer));
+      .send(Buffer.from(result));
   }
 };
