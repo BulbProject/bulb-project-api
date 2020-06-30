@@ -3,7 +3,7 @@ import { string, numeric, mixed, object, array } from './primitives';
 import { classification, options, period } from './parts';
 
 export const category = object({
-  required: ['id', 'title', 'description', 'classification', 'items', 'criteria', 'conversions'],
+  required: ['id', 'title', 'description', 'classification', 'items', 'criteria'],
   properties: {
     id: string(),
     title: string(),

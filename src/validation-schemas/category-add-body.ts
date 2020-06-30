@@ -148,29 +148,26 @@ export const categoryAddBodySchema = object()
       )
       .min(1)
       .required(),
-    conversions: array()
-      .of(
-        object().shape({
-          id,
-          relatesTo: string()
-            .matches(/requirement/)
-            .required(),
-          relatedItem: string().required(),
-          description: string(),
-          coefficients: array()
-            .of(
-              object().shape({
-                id,
-                value: string().required(),
-                coefficient: number().required(),
-              })
-            )
-            .min(1)
-            .required(),
-        })
-      )
-      .min(1)
-      .required(),
+    conversions: array().of(
+      object().shape({
+        id,
+        relatesTo: string()
+          .matches(/requirement/)
+          .required(),
+        relatedItem: string().required(),
+        description: string(),
+        coefficients: array()
+          .of(
+            object().shape({
+              id,
+              value: string().required(),
+              coefficient: number().required(),
+            })
+          )
+          .min(1)
+          .required(),
+      })
+    ),
   })
   .nullable()
   .required('Empty request body');
