@@ -443,6 +443,10 @@ const LightingEquipmentAndElectricLamps: CalculationEngine = async ({
   return {
     category: id,
     version,
+    requestedVariant: selectedBulbType,
+    recommendedVariant: generateAvailableVariants(availableBulbTypes, selectedBulbType, techChars)[
+      generateAvailableVariants(availableBulbTypes, selectedBulbType, techChars).length > 1 ? 1 : 0
+    ].id,
     availableVariants: generateAvailableVariants(availableBulbTypes, selectedBulbType, techChars),
   };
 };

@@ -3,10 +3,12 @@ import { array, numeric, object, string } from './primitives';
 import { criteria, metrics, value } from './parts';
 
 export const availableVariants = object({
-  required: ['category', 'version', 'availableVariants'],
+  required: ['category', 'version', 'recommendedVariant', 'availableVariants'],
   properties: {
     category: string(),
     version: string(),
+    requestedVariant: string(),
+    recommendedVariant: string(),
     availableVariants: array({
       minItems: 1,
       items: object({
