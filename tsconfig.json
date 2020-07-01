@@ -1,16 +1,23 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
-    "lib": ["esnext"],
+    "target": "ES2019",
     "moduleResolution": "node",
+    "lib": ["esnext"],
+    "outDir": "dist",
+    "rootDir": ".",
+    "baseUrl": "src",
     "resolveJsonModule": true,
-    "strict": true,
-    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true,
-    "outDir": "build",
-    "baseUrl": "src"
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "build", "**/*/*.spec.ts"]
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  }
 }

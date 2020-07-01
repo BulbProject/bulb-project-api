@@ -16,15 +16,15 @@ ARG SC_RUN_INTERVAL_DAYS
 ARG SC_DELETE_THRESHOLD_DAYS
 
 ENV NODE_ENV=production
-ENV NODE_PATH=./build/app
+ENV NODE_PATH=./dist/src
 
 WORKDIR /usr/src/bulb-project-api
 
-COPY package.json tsconfig.json yarn.lock ./
+COPY package.json tsconfig.json tsconfig.build.json yarn.lock ./
 COPY src ./src
 
 RUN yarn --production && yarn cache clean --force && yarn build
 
 EXPOSE $SERVICE_PORT
 
-CMD ["node", "build/app/index.js"]
+CMD ["node", "dist/src/main.js"]
