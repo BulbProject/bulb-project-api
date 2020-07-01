@@ -4,7 +4,7 @@ import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 
 import { Category } from '../../../entity';
 
-@Entity()
+@Entity({ name: 'categories-versions' })
 export class CategoryVersion {
   @ObjectIdColumn({
     select: false,
