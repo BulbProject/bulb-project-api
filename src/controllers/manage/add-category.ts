@@ -16,8 +16,6 @@ export const addCategory: TypedRequestHandler<
   undefined,
   { authorization: string }
 > = async ({ params: { categoryId }, body }) => {
-  if (!categoryId) throw new RequestError(400, 'Path parameter id category is missing');
-
   const version = 'v1';
   const publishedDate = formatDate(new Date());
 
