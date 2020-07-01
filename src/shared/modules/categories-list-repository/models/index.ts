@@ -1,1 +1,1 @@
-export * from './categorist-list-entry.model';
+export * from './categories-list-entry.model';

@@ -1,14 +1,13 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
-@Entity({ name: 'categories-list-entries' })
+@Entity({ name: 'categories-lists' })
 export class CategoriesListEntry {
   @ObjectIdColumn()
   @Exclude({ toPlainOnly: true })
   public _id: string;
 
   @Column()
-  @Index()
   public id: string;
 
   @Column()
