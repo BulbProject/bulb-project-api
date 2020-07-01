@@ -1,7 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'versions-packages' })
 export class VersionsPackage {
   @ObjectIdColumn()
   @Exclude({ toPlainOnly: true })

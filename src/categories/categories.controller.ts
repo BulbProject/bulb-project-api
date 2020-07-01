@@ -1,6 +1,7 @@
 import { ClassSerializerInterceptor, Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 
+import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 import { CategoriesListEntry, CategoriesListRepositoryService } from '../shared/modules/categories-list-repository';
 
 import { CategoryVersion, CategoryVersionRepositoryService } from '../shared/modules/category-version-repository';
@@ -21,6 +22,11 @@ export class CategoriesController {
   ) {}
 
   @Get()
+  @ApiImplicitQuery({
+    name: 'details',
+    required: false,
+    type: Boolean,
+  })
   @ApiCreatedResponse({
     type: CategoriesListEntry,
     isArray: true,

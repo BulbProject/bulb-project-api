@@ -4,7 +4,7 @@ import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 
 import { Criterion } from '../../../entity';
 
-@Entity()
+@Entity({ name: 'specifications' })
 export class Specification {
   @ObjectIdColumn()
   @Exclude({ toPlainOnly: true })
