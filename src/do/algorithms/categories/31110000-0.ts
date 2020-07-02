@@ -24,11 +24,6 @@ interface EfficiencyObject {
   };
 }
 
-enum RequirementId {
-  Poles = '0101010000',
-  Kw = '0201010000',
-}
-
 export class ElectricMotors implements AlgorithmEngine {
   public readonly categoryId = '31110000-0';
 
@@ -36,10 +31,10 @@ export class ElectricMotors implements AlgorithmEngine {
 
   public async getCalculation({ version, requestedNeed }: CalculationPayload): Promise<CalculationResponse> {
     const requestedNumberOfPoles = String(
-      requestedNeed.requirementResponses.find(({ requirement }) => requirement.id === RequirementId.Poles)?.value ?? ''
+      requestedNeed.requirementResponses.find(({ requirement }) => requirement.id === '0101010000')?.value ?? ''
     ) as string;
-    const requestedPower = requestedNeed.requirementResponses.find(
-      ({ requirement }) => requirement.id === RequirementId.Kw
+    const requestedPower = requestedNeed.requirementResponses.find(({ requirement }) =>
+      ['0201010000', '0202010000', '0203010000'].includes(requirement.id)
     )?.value as string;
 
     const directoryTable = await this.csv.getTable('directory', this.categoryId);
