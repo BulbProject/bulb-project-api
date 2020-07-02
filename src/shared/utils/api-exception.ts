@@ -1,6 +1,6 @@
-import { HttpStatus } from '@nestjs/common';
+import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
-export const apiException = (response: string, status: HttpStatus) => {
+export const apiException = (response: string): { schema: SchemaObject } => {
   return {
     schema: {
       type: 'object',
@@ -9,11 +9,11 @@ export const apiException = (response: string, status: HttpStatus) => {
           type: 'string',
           example: response,
         },
-        status: {
-          type: 'integer',
-          example: status,
-        },
       },
     },
   };
 };
+
+export enum Exception {
+  InternalServerError = 'Internal server error',
+}
