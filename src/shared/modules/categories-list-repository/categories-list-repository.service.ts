@@ -31,7 +31,7 @@ export class CategoriesListRepositoryService {
   }
 
   public async updateVersion([categoryId, version]: [string, string], updatedAt: string): Promise<void> {
-    const category = this.database.handleUndefinedValue(async () => {
+    const category = await this.database.handleUndefinedValue(async () => {
       return this.categoriesList.findOne({
         id: categoryId,
       });
@@ -39,9 +39,9 @@ export class CategoriesListRepositoryService {
 
     return this.database.handleDbError(async () => {
       await this.categoriesList.save({
+        id: category.id,
         version,
         date: updatedAt,
-        category,
       });
     });
   }

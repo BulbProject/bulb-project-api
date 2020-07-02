@@ -70,9 +70,11 @@ export class CategoryVersionRepositoryService {
       const categories = await this.getAllById(categoryId);
 
       const nextVersion = `v${
-        categories
-          .sort(({ version: versionA }, { version: versionB }) => versionA.localeCompare(versionB))[0]
-          .version.slice(1) + 1
+        Number(
+          categories
+            .sort(({ version: versionA }, { version: versionB }) => versionA.localeCompare(versionB))[0]
+            .version.slice(1)
+        ) + 1
       }`;
       const updatedAt = formatDate(new Date());
 

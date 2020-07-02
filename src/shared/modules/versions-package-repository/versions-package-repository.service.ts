@@ -55,8 +55,8 @@ export class VersionsPackageRepositoryService {
       const url = this.config.get<string>('service.url');
 
       await this.packages.save({
+        ...versionPackage,
         versions: [...versionPackage.versions, `${url}/categories/${categoryId}/${version}`],
-        versionPackage,
       });
     });
   }
