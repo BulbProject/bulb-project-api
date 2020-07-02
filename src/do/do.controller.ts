@@ -1,8 +1,20 @@
-import { Body, Controller, HttpStatus, Param, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Param, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiInternalServerErrorResponse,
+  ApiQuery,
+  ApiTags,
+  ApiExtraModels,
+  getSchemaPath,
+  ApiBadRequestResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import { apiException, Exception } from '../shared/utils';
 
 import type { Egp, Mode } from './entity';
 import { CalculationPayload, CalculationResponse } from './entity/calculation';
+import { SpecificationId } from './entity/specification';
 import type { SpecificationResponse } from './entity/specification';
 
 import { RequestedNeed } from './entity/requested-need';
@@ -11,14 +23,17 @@ import { SelectedVariant } from './entity/selected-variant';
 import { CalculationService, SpecificationService } from './algorithms/services';
 import { DocxHeadersInterceptor } from './interceptors';
 
-@ApiTags('Do')
 @Controller('do')
+@ApiTags('Do')
 export class DoController {
   public constructor(private calculation: CalculationService, private specification: SpecificationService) {}
 
   @Post('calculation/:categoryId/:version')
-  @ApiCreatedResponse({ type: CalculationPayload, status: HttpStatus.OK })
   @ApiBody({ type: RequestedNeed })
+  @ApiOkResponse({ type: CalculationPayload })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
+  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
   public async getCalculation(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
@@ -29,8 +44,7 @@ export class DoController {
   }
 
   @Post('specification/:categoryId/:version')
-  @ApiCreatedResponse({ status: HttpStatus.OK })
-  @ApiBody({ type: SelectedVariant })
+  @UseInterceptors(DocxHeadersInterceptor)
   @ApiQuery({
     name: 'egp',
     enum: ['prozorro'],
@@ -39,7 +53,24 @@ export class DoController {
     name: 'mode',
     enum: ['json', 'docx'],
   })
-  @UseInterceptors(DocxHeadersInterceptor)
+  @ApiBody({ type: SelectedVariant })
+  @ApiExtraModels(SpecificationId)
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        {
+          $ref: getSchemaPath(SpecificationId),
+        },
+        {
+          type: 'string',
+          description: 'Buffer',
+        },
+      ],
+    },
+  })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
+  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
   public async getSpecification(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
