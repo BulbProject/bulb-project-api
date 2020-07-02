@@ -3,7 +3,7 @@ import { ApiBasicAuth, ApiBody, ApiCreatedResponse, ApiInternalServerErrorRespon
 
 import { Category, ManageResponse } from '../shared/entity';
 
-import { CategoryVersionRepositoryService } from '../shared/modules/category-version-repository';
+import { CategoryVersionRepositoryService } from '../shared/repositories/category-version';
 import { apiException } from '../shared/utils';
 
 import { AuthenticationGuard, IdConformanceGuard } from './guards';

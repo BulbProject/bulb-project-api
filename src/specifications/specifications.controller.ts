@@ -1,8 +1,8 @@
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiCreatedResponse, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 
-import { SpecificationRepositoryService } from '../shared/modules/specification-repository';
-import { Specification } from '../shared/modules/specification-repository/models';
+import { SpecificationRepositoryService } from '../shared/repositories/specification';
+import { Specification } from '../shared/repositories/specification/models';
 
 @ApiTags('Specification')
 @Controller('specification')

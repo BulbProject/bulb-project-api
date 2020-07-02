@@ -1,9 +1,9 @@
 import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { CategoriesListRepositoryModule } from '../shared/modules/categories-list-repository';
-import { CategoryVersionRepositoryModule } from '../shared/modules/category-version-repository';
-import { VersionsPackageRepositoryModule } from '../shared/modules/versions-package-repository';
+import { CategoriesListRepositoryModule } from '../shared/repositories/categories-list';
+import { CategoryVersionRepositoryModule } from '../shared/repositories/category-version';
+import { VersionsPackageRepositoryModule } from '../shared/repositories/versions-package';
 
 import { ManageController } from './manage.controller';
 import { IdValidatorPipe } from './pipes';

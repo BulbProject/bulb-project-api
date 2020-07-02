@@ -2,11 +2,11 @@ import { ClassSerializerInterceptor, Controller, Get, HttpStatus, Param, Query, 
 import { ApiCreatedResponse, ApiNotFoundResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
-import { CategoriesListEntry, CategoriesListRepositoryService } from '../shared/modules/categories-list-repository';
+import { CategoriesListEntry, CategoriesListRepositoryService } from '../shared/repositories/categories-list';
 
-import { CategoryVersion, CategoryVersionRepositoryService } from '../shared/modules/category-version-repository';
+import { CategoryVersion, CategoryVersionRepositoryService } from '../shared/repositories/category-version';
 
-import { VersionsPackage, VersionsPackageRepositoryService } from '../shared/modules/versions-package-repository';
+import { VersionsPackage, VersionsPackageRepositoryService } from '../shared/repositories/versions-package';
 import { apiException } from '../shared/utils';
 
 import { CategoryDetails } from './entity';

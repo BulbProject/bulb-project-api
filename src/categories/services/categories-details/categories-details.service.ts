@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { CategoriesListRepositoryService } from '../../../shared/modules/categories-list-repository';
-import { CategoryVersionRepositoryService } from '../../../shared/modules/category-version-repository';
+import { CategoriesListRepositoryService } from '../../../shared/repositories/categories-list';
+import { CategoryVersionRepositoryService } from '../../../shared/repositories/category-version';
 import { CategoryDetails } from '../../entity';
 
 @Injectable()
@@ -15,19 +15,19 @@ export class CategoriesDetailsService {
     const categoriesListEntries = await this.categoriesList.findAll();
 
     return Promise.all(
-      categoriesListEntries.map(({ version, id }) => {
-        return this.categoriesVersions.getOne([id, version]);
+      categoriesListEntries.map(async ({ version, id }) => {
+        const { date, status, category } = await this.categoriesVersions.getOne([id, version]);
+
+        return {
+          id,
+          version,
+          date,
+          status,
+          title: category.title,
+          description: category.description,
+          image: category.documents?.find((document) => !document.relatesTo)?.url,
+        };
       })
-    ).then((categoryVersions) => {
-      return categoryVersions.map(({ date, category, status, version }) => ({
-        id: category.id,
-        version,
-        date,
-        status,
-        title: category.title,
-        description: category.description,
-        image: category.documents?.find((document) => !document.relatesTo)?.url,
-      }));
-    });
+    );
   }
 }

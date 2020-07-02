@@ -4,7 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { DatabaseModule } from '../../shared/modules/database';
+import { DatabaseModule } from '../../shared/database';
 
 import { CategoriesModule } from '../../categories';
 import { SpecificationsModule } from '../../specifications';

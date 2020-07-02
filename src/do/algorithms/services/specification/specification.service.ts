@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { CategoryVersionRepositoryService } from '../../../../shared/modules/category-version-repository';
+import { CategoryVersionRepositoryService } from '../../../../shared/repositories/category-version';
 
 import { AlgorithmsService } from '../../algorithms.service';
 import type { Egp, Mode } from '../../../entity';
