@@ -14,8 +14,9 @@ import { AvailableVariant } from '../../entity/available-variant';
 import { RequirementResponse } from '../../entity/requirement-response';
 import { Metric } from '../../entity/variant';
 
-import type { CalculationPayload, CalculationResponse } from '../../entity/calculation';
-import type { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
+import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
+import { SpecificationPayload } from '../../entity/specification';
+import type { SpecificationResponse } from '../../entity/specification';
 
 import { DocumentsService } from '../../services/documents';
 import { Criterion, Option } from '../../../shared/entity/category';

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 
@@ -9,6 +9,7 @@ export class CategoryVersion {
   @ObjectIdColumn({
     select: false,
   })
+  @ApiHideProperty()
   @Exclude({ toPlainOnly: true })
   public _id: string;
 
