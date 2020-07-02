@@ -2,8 +2,10 @@ import { ApiHideProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
+import { Timestamp } from '../../../entity';
+
 @Entity({ name: 'categories-lists' })
-export class CategoriesListEntry {
+export class CategoriesListEntry extends Timestamp {
   @ObjectIdColumn()
   @ApiHideProperty()
   @Exclude({ toPlainOnly: true })

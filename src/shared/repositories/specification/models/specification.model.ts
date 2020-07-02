@@ -2,10 +2,10 @@ import { Exclude, Type } from 'class-transformer';
 import { IsArray, IsString, ValidateNested } from 'class-validator';
 import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 
-import { Criterion } from '../../../entity';
+import { Criterion, Timestamp } from '../../../entity';
 
 @Entity({ name: 'specifications' })
-export class Specification {
+export class Specification extends Timestamp {
   @ObjectIdColumn()
   @Exclude({ toPlainOnly: true })
   public _id: string;

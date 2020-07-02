@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 
 import { formatDate } from '../../utils';
-import { CategoriesListRepositoryService } from '../categories-list-repository';
+import { CategoriesListRepositoryService } from '../categories-list';
 
-import { DatabaseService } from '../database';
-import { VersionsPackageRepositoryService } from '../versions-package-repository';
+import { DatabaseService } from '../../database';
+import { VersionsPackageRepositoryService } from '../versions-package';
 
 import type { ManageResponse } from '../../entity';
 import { Category } from '../../entity';
@@ -16,7 +16,7 @@ import { CategoryVersion } from './models';
 export class CategoryVersionRepositoryService {
   public constructor(
     @InjectRepository(CategoryVersion)
-    private categoriesVersions: Repository<CategoryVersion>,
+    private categoriesVersions: MongoRepository<CategoryVersion>,
     private versionsPackage: VersionsPackageRepositoryService,
     private categoriesList: CategoriesListRepositoryService,
     private database: DatabaseService
@@ -53,6 +53,8 @@ export class CategoryVersionRepositoryService {
           version,
           category,
           date: publishedDate,
+          createdAt: publishedDate,
+          status: 'pending',
         }),
         this.versionsPackage.createOne([categoryId, version], publishedDate),
         this.categoriesList.createOne([categoryId, version], publishedDate),
@@ -82,9 +84,10 @@ export class CategoryVersionRepositoryService {
         this.categoriesVersions.save({
           version: nextVersion,
           date: updatedAt,
+          updatedAt,
           category,
         }),
-        this.versionsPackage.updateVersion([categoryId, nextVersion]),
+        this.versionsPackage.updateVersion([categoryId, nextVersion], updatedAt),
         this.categoriesList.updateVersion([categoryId, nextVersion], updatedAt),
       ]);
 
@@ -105,6 +108,7 @@ export class CategoryVersionRepositoryService {
     await this.database.handleDbError(async () => {
       await this.categoriesVersions.save({
         ...category,
+        updatedAt: formatDate(new Date()),
         status: 'active',
       });
     });

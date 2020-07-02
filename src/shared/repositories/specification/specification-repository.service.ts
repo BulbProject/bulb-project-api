@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
-import { Repository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 import { Criterion } from '../../entity/category';
 
-import { DatabaseService } from '../database';
+import { DatabaseService } from '../../database';
+import { formatDate } from '../../utils';
 
 import { Specification } from './models';
 
@@ -14,7 +15,7 @@ import { Specification } from './models';
 export class SpecificationRepositoryService {
   public constructor(
     @InjectRepository(Specification)
-    private specifications: Repository<Specification>,
+    private specifications: MongoRepository<Specification>,
     private database: DatabaseService
   ) {}
 
@@ -43,6 +44,7 @@ export class SpecificationRepositoryService {
         categoryId,
         version,
         criteria,
+        createdAt: formatDate(new Date()),
       })
     );
 
