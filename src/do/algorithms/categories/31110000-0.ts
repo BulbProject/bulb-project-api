@@ -1,15 +1,100 @@
-/* import { AlgorithmEngine } from '../../entity';
+import { v4 as uuid } from 'uuid';
+
+import { AlgorithmEngine } from '../../entity';
+import { AvailableVariant } from '../../entity/available-variant';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
+import { CsvService } from '../../services/csv';
+
+const poles = ['2', '4', '6', '8'];
+const sliceIndent = 3;
+
+enum Variants {
+  IE1 = 'IE1',
+  IE2 = 'IE2',
+  IE3 = 'IE3',
+  IE4 = 'IE4',
+}
+
+interface EfficiencyObject {
+  [kw: string]: {
+    [motor in Variants]: {
+      [poles in typeof poles[number]]: number;
+    };
+  };
+}
+
+enum RequirementId {
+  Poles = '0101010000',
+  Kw = '0201010000',
+}
 
 export class ElectricMotors implements AlgorithmEngine {
   public readonly categoryId = '31110000-0';
 
-  public getCalculation(payload: CalculationPayload): Promise<CalculationResponse> {
-    return Promise.resolve(undefined);
+  public constructor(private csv: CsvService) {}
+
+  public async getCalculation({ version, requestedNeed }: CalculationPayload): Promise<CalculationResponse> {
+    const requestedNumberOfPoles = String(
+      requestedNeed.requirementResponses.find(({ requirement }) => requirement.id === RequirementId.Poles)?.value ?? ''
+    ) as string;
+    const requestedPower = requestedNeed.requirementResponses.find(
+      ({ requirement }) => requirement.id === RequirementId.Kw
+    )?.value as string;
+
+    const directoryTable = await this.csv.getTable('directory', this.categoryId);
+
+    const powers = directoryTable.slice(sliceIndent).flatMap(([power]) => power);
+    const motors = directoryTable[0].filter(Boolean) as Variants[];
+
+    const efficiencyObject: EfficiencyObject = powers.reduce((powersMap, power) => {
+      return Object.assign(powersMap, {
+        [power]: motors.reduce((motorsMap, motor) => {
+          return Object.assign(motorsMap, {
+            [motor]: poles.reduce((polesMap, pole) => {
+              return Object.assign(polesMap, {
+                [pole]: directoryTable
+                  .slice(sliceIndent)
+                  [powers.indexOf(power)].slice(motors.indexOf(motor) * motors.length + 1)[poles.indexOf(pole)],
+              });
+            }, {}),
+          });
+        }, {}),
+      });
+    }, {});
+
+    const availableVariants: AvailableVariant[] = motors.map((motor) => {
+      return {
+        id: uuid(),
+        relatedItem: motor,
+        metrics: [
+          {
+            id: '0100',
+            title: 'Показники енергоефективності',
+            observations: [
+              {
+                id: '0101',
+                measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles],
+                notes: 'ККД',
+              },
+            ],
+          },
+        ],
+        criteria: [],
+        quantity: 1,
+      };
+    });
+
+    return {
+      category: this.categoryId,
+      version,
+      availableVariants,
+    };
   }
 
-  public getSpecification(payload: SpecificationPayload): SpecificationResponse {
-    return Promise.resolve(undefined);
+  public getSpecification(_payload: SpecificationPayload): SpecificationResponse {
+    return Promise.resolve({
+      id: '',
+    });
   }
-} */
+}
