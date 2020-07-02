@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiExcludeEndpoint } from '@nestjs/swagger';
+import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
+import { ApiCreatedResponse, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 
 import { SpecificationRepositoryService } from '../shared/modules/specification-repository';
 import { Specification } from '../shared/modules/specification-repository/models';
 
+@ApiTags('Specification')
 @Controller('specification')
 export class SpecificationsController {
   public constructor(private specifications: SpecificationRepositoryService) {}
@@ -29,6 +30,7 @@ export class SpecificationsController {
   }
 
   @Get(':categoryId/:version/:specificationId')
+  @ApiCreatedResponse({ type: Specification, status: HttpStatus.OK })
   public async getSpecification(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,

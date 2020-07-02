@@ -1,7 +1,8 @@
-import { Body, Controller, Param, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Param, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { ApiBody, ApiCreatedResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import type { Egp, Mode } from './entity';
-import type { CalculationResponse } from './entity/calculation';
+import { CalculationPayload, CalculationResponse } from './entity/calculation';
 import type { SpecificationResponse } from './entity/specification';
 
 import { RequestedNeed } from './entity/requested-need';
@@ -10,11 +11,14 @@ import { SelectedVariant } from './entity/selected-variant';
 import { CalculationService, SpecificationService } from './algorithms/services';
 import { DocxHeadersInterceptor } from './interceptors';
 
+@ApiTags('Do')
 @Controller('do')
 export class DoController {
   public constructor(private calculation: CalculationService, private specification: SpecificationService) {}
 
   @Post('calculation/:categoryId/:version')
+  @ApiCreatedResponse({ type: CalculationPayload, status: HttpStatus.OK })
+  @ApiBody({ type: RequestedNeed })
   public async getCalculation(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
@@ -25,6 +29,16 @@ export class DoController {
   }
 
   @Post('specification/:categoryId/:version')
+  @ApiCreatedResponse({ status: HttpStatus.OK })
+  @ApiBody({ type: SelectedVariant })
+  @ApiQuery({
+    name: 'egp',
+    enum: ['prozorro'],
+  })
+  @ApiQuery({
+    name: 'mode',
+    enum: ['json', 'docx'],
+  })
   @UseInterceptors(DocxHeadersInterceptor)
   public async getSpecification(
     @Param('categoryId') categoryId: string,

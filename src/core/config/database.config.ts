@@ -15,6 +15,6 @@ export const databaseConfig = registerAs(
     port: Number(process.env.DB_PORT || 27017),
     username: process.env.DB_USERNAME || 'admin',
     password: process.env.DB_PASSWORD || '123456',
-    name: process.env.DB_NAME || 'bulb-nest-db',
+    name: process.env.DB_NAME || 'bulb-db',
   })
 );
