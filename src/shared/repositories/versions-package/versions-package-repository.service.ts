@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 
-import { DatabaseService } from '../database';
+import { DatabaseService } from '../../database';
 
 import { VersionsPackage } from './models';
 
@@ -11,7 +11,7 @@ import { VersionsPackage } from './models';
 export class VersionsPackageRepositoryService {
   public constructor(
     @InjectRepository(VersionsPackage)
-    private packages: Repository<VersionsPackage>,
+    private packages: MongoRepository<VersionsPackage>,
     private config: ConfigService,
     private database: DatabaseService
   ) {}
@@ -43,12 +43,13 @@ export class VersionsPackageRepositoryService {
         license: 'http://opendefinition.org/licenses/',
         publicationPolicy: 'http://opendefinition.org/licenses/',
         publishedDate,
+        createdAt: publishedDate,
         versions: [`${url}/categories/${categoryId}/${version}`],
       });
     });
   }
 
-  public async updateVersion([categoryId, version]: [string, string]): Promise<void> {
+  public async updateVersion([categoryId, version]: [string, string], updatedAt: string): Promise<void> {
     const versionPackage = await this.getOne(categoryId);
 
     await this.database.handleDbError(async () => {
@@ -56,6 +57,7 @@ export class VersionsPackageRepositoryService {
 
       await this.packages.save({
         ...versionPackage,
+        updatedAt,
         versions: [...versionPackage.versions, `${url}/categories/${categoryId}/${version}`],
       });
     });

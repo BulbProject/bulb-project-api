@@ -1,8 +1,10 @@
 import { Exclude } from 'class-transformer';
 import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 
+import { Timestamp } from '../../../entity';
+
 @Entity({ name: 'versions-packages' })
-export class VersionsPackage {
+export class VersionsPackage extends Timestamp {
   @ObjectIdColumn()
   @Exclude({ toPlainOnly: true })
   public _id: string;

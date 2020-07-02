@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 
-import { DatabaseService } from '../database';
+import { DatabaseService } from '../../database';
 
 import { CategoriesListEntry } from './models';
 
@@ -10,13 +10,19 @@ import { CategoriesListEntry } from './models';
 export class CategoriesListRepositoryService {
   public constructor(
     @InjectRepository(CategoriesListEntry)
-    private categoriesList: Repository<CategoriesListEntry>,
+    private categoriesList: MongoRepository<CategoriesListEntry>,
     private database: DatabaseService
   ) {}
 
   public async findAll(): Promise<CategoriesListEntry[]> {
     return this.database.handleUndefinedValue(async () => {
-      return this.categoriesList.find();
+      const allCategories = (await this.categoriesList.find()).sort(({ version: versionA }, { version: versionB }) =>
+        versionB.localeCompare(versionA)
+      );
+
+      return [...new Set(allCategories.map(({ id }) => id))].map(
+        (id) => allCategories.find((category) => category.id === id) as CategoriesListEntry
+      );
     }, `No categories were found`);
   }
 
@@ -26,6 +32,7 @@ export class CategoriesListRepositoryService {
         id: categoryId,
         version,
         date: publishedDate,
+        createdAt: publishedDate,
       });
     });
   }
@@ -42,6 +49,7 @@ export class CategoriesListRepositoryService {
         id: category.id,
         version,
         date: updatedAt,
+        updatedAt,
       });
     });
   }
