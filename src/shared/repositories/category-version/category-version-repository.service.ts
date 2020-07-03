@@ -69,19 +69,21 @@ export class CategoryVersionRepositoryService {
 
   public async updateVersion(categoryId: string, category: Category): Promise<ManageResponse> {
     return this.database.handleUndefinedValue(async () => {
-      const categories = await this.getAllById(categoryId);
+      const versionsPackage = await this.versionsPackage.getOne(categoryId);
 
-      const nextVersion = `v${
-        Number(
-          categories
-            .sort(({ version: versionA }, { version: versionB }) => versionA.localeCompare(versionB))[0]
-            .version.slice(1)
-        ) + 1
-      }`;
+      const [, previosVersion] = [
+        ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
+      ];
+
+      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previosVersion}`]);
+
+      const nextVersion = `v${Number(previosVersion) + 1}`;
+
       const updatedAt = formatDate(new Date());
 
       await Promise.all([
         this.categoriesVersions.save({
+          ...previousCategoryVersion,
           version: nextVersion,
           date: updatedAt,
           updatedAt,
