@@ -18,9 +18,6 @@ module.exports = {
   collectCoverageFrom: ['src/**/*.ts'],
   clearMocks: true,
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
-  moduleDirectories: ['node_modules', 'src'],
-  moduleNameMapper: {
-    '^/(.*)$': '<rootDir>/src/$1',
-  },
-  testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/']
+  moduleDirectories: ['node_modules', 'src', 'e2e'],
+  testPathIgnorePatterns: ['<rootDir>/dist', '<rootDir>/node_modules']
 };

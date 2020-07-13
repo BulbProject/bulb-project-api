@@ -6,10 +6,10 @@ export class Timestamp {
   @Column('timestamp')
   @Exclude({ toPlainOnly: true })
   @ApiHideProperty()
-  public createdAt: string;
+  public createdAt?: string;
 
   @Column('timestamp')
   @Exclude({ toPlainOnly: true })
   @ApiHideProperty()
-  public updatedAt: string;
+  public updatedAt?: string;
 }

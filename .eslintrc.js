@@ -2,7 +2,8 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    es6: true
+    es6: true,
+    'jest/globals': true,
   },
   extends: [
     'airbnb-base',
@@ -11,36 +12,30 @@ module.exports = {
     'plugin:promise/recommended',
     'plugin:unicorn/recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:jest/recommended',
+    'plugin:jest/style',
     'prettier/@typescript-eslint',
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
   ],
-  plugins: [
-    'sonarjs',
-    'promise',
-    'immutable',
-    'unicorn',
-    'import',
-    '@typescript-eslint',
-    'prettier'
-  ],
+  plugins: ['sonarjs', 'promise', 'immutable', 'unicorn', 'import', '@typescript-eslint', 'jest', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
     ecmaVersion: 2019,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   ignorePatterns: ['lib/**/*', 'node_modules/**/*'],
   globals: {
     Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly'
+    SharedArrayBuffer: 'readonly',
   },
   settings: {
     'import/parsers': {
-      '@typescript-eslint/parser': ['.ts']
+      '@typescript-eslint/parser': ['.ts'],
     },
     'import/resolver': {
-      typescript: {}
-    }
+      typescript: {},
+    },
   },
   rules: {
     '@typescript-eslint/no-unused-vars': [
@@ -48,15 +43,15 @@ module.exports = {
       {
         varsIgnorePattern: '^_',
         argsIgnorePattern: '^_',
-        ignoreRestSiblings: true
-      }
+        ignoreRestSiblings: true,
+      },
     ],
     '@typescript-eslint/explicit-function-return-type': [
       'warn',
       {
         allowExpressions: true,
-        allowTypedFunctionExpressions: true
-      }
+        allowTypedFunctionExpressions: true,
+      },
     ],
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/member-ordering': 'error',
@@ -82,8 +77,8 @@ module.exports = {
     'unicorn/filename-case': [
       'error',
       {
-        case: 'kebabCase'
-      }
+        case: 'kebabCase',
+      },
     ],
     'unicorn/no-reduce': 'off',
 
@@ -93,6 +88,6 @@ module.exports = {
     'sort-imports': 'off',
     'no-useless-constructor': 'off',
     'class-methods-use-this': 'off',
-    'max-classes-per-file': 'off'
-  }
+    'max-classes-per-file': 'off',
+  },
 };

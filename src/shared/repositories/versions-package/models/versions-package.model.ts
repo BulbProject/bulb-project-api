@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 
@@ -5,10 +6,6 @@ import { Timestamp } from '../../../entity';
 
 @Entity({ name: 'versions-packages' })
 export class VersionsPackage extends Timestamp {
-  @ObjectIdColumn()
-  @Exclude({ toPlainOnly: true })
-  public _id: string;
-
   @Column()
   @Index()
   public id: string;
@@ -36,4 +33,9 @@ export class VersionsPackage extends Timestamp {
 
   @Column()
   public versions: string[];
+
+  @ApiHideProperty()
+  @ObjectIdColumn()
+  @Exclude({ toPlainOnly: true })
+  public readonly _id?: string;
 }

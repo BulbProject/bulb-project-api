@@ -62,7 +62,6 @@ export class CategoriesController {
   @Get(':categoryId')
   @ApiOkResponse({
     type: VersionsPackage,
-    status: HttpStatus.OK,
   })
   @ApiNotFoundResponse(apiException('Release package for category 31500000-1 was not found'))
   @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
@@ -76,7 +75,6 @@ export class CategoriesController {
   @Get(':categoryId/:version')
   @ApiOkResponse({
     type: CategoryVersion,
-    status: HttpStatus.OK,
   })
   @ApiNotFoundResponse(apiException('Category 31500000-1 with version v1 was not found'))
   @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))

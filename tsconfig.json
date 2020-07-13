@@ -6,7 +6,6 @@
     "lib": ["esnext"],
     "outDir": "dist",
     "rootDir": ".",
-    "baseUrl": "src",
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
