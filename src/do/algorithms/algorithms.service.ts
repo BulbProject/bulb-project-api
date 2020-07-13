@@ -1,23 +1,24 @@
 import { Injectable } from '@nestjs/common';
 
-import { SpecificationRepositoryService } from '../../shared/modules/specification-repository';
+import { SpecificationRepositoryService } from '../../shared/repositories/specification';
 
 import type { AlgorithmEngine } from '../entity';
 import type { CalculationPayload, CalculationResponse } from '../entity/calculation';
 import type { SpecificationPayload, SpecificationResponse } from '../entity/specification';
 
-import { DocumentsService, DocxGeneratorService } from '../services';
+import { CsvService, DocxGeneratorService } from '../services';
 
-import { LightingEquipmentAndElectricLamps } from './categories';
+import { ElectricMotors, LightingEquipmentAndElectricLamps } from './categories';
 
 @Injectable()
 export class AlgorithmsService {
   private readonly algorithms: Record<string, AlgorithmEngine> = {
-    '31500000-1': new LightingEquipmentAndElectricLamps(this.documents, this.specifications, this.docxGenerator),
+    '31500000-1': new LightingEquipmentAndElectricLamps(this.csv, this.specifications, this.docxGenerator),
+    '31110000-0': new ElectricMotors(this.csv),
   };
 
   public constructor(
-    private documents: DocumentsService,
+    private csv: CsvService,
     private specifications: SpecificationRepositoryService,
     private docxGenerator: DocxGeneratorService
   ) {}

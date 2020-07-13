@@ -27,16 +27,20 @@ async function bootstrap(): Promise<void> {
     })
   );
 
-  const options = new DocumentBuilder()
-    .setTitle(packageJson.description)
-    .setDescription('Swagger API Documentation')
-    .setVersion(packageJson.version)
-    .addBasicAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, options);
-
-  SwaggerModule.setup('$wagger', app, document);
+  SwaggerModule.setup(
+    '$wagger',
+    app,
+    SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder()
+        .setTitle(packageJson.description)
+        .setDescription('Swagger API Documentation')
+        .setVersion(packageJson.version)
+        .addTag(packageJson.description)
+        .addBasicAuth()
+        .build()
+    )
+  );
 
   await app.listen(Number(process.env.SERVICE_PORT), '0.0.0.0');
 }

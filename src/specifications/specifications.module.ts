@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { SpecificationRepositoryModule } from '../shared/modules/specification-repository';
+import { SpecificationRepositoryModule } from '../shared/repositories/specification';
 
 import { SpecificationsController } from './specifications.controller';
 

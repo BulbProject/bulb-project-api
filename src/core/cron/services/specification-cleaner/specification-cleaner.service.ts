@@ -5,7 +5,7 @@ import { CronJob } from 'cron';
 import dayjs from 'dayjs';
 import type { OpUnitType } from 'dayjs';
 
-import { SpecificationRepositoryService } from '../../../../shared/modules/specification-repository';
+import { SpecificationRepositoryService } from '../../../../shared/repositories/specification';
 
 @Injectable()
 export class SpecificationCleanerService {
