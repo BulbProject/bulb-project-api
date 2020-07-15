@@ -68,7 +68,7 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
 
     'immutable/no-let': 'error',
-    'immutable/no-mutation': 'warn',
+    'immutable/no-mutation': 'off',
 
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
