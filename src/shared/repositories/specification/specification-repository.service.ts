@@ -19,12 +19,12 @@ export class SpecificationRepositoryService {
     private database: DatabaseService
   ) {}
 
-  public async getOne([categoryId, version, specificationId]: [string, string, string]): Promise<Specification> {
+  public async getOne(specificationId: string): Promise<Specification> {
     return this.database.handleUndefinedValue(async () => {
       return this.specifications.findOne({
         id: specificationId,
       });
-    }, `Specification with id ${specificationId} for category ${categoryId}-${version} was not found`);
+    }, `Specification with id ${specificationId} was not found`);
   }
 
   public async deleteOutdated(beforeDate: Date): Promise<number> {
