@@ -11,7 +11,7 @@ import { SpecificationRepositoryService } from '../shared/repositories/specifica
 import { Specification } from '../shared/repositories/specification/models';
 import { apiException, Exception } from '../shared/utils';
 
-@Controller('specification')
+@Controller('specifications')
 @ApiTags('Specification')
 @ApiInternalServerErrorResponse()
 export class SpecificationsController {
@@ -37,18 +37,16 @@ export class SpecificationsController {
       mode ${mode}`;
   }
 
-  @Get(':categoryId/:version/:specificationId')
+  @Get(':specificationId')
   @ApiOkResponse({ type: Specification, status: HttpStatus.OK })
   @ApiNotFoundResponse(
     apiException('Specification with id k34yiufgw-fhui2y4-fweg-353r for category 31500000-0-v1 was not found')
   )
   @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
   public async getSpecification(
-    @Param('categoryId') categoryId: string,
-    @Param('version') version: string,
     @Param('specificationId')
     specificationId: string
   ): Promise<Specification> {
-    return this.specifications.getOne([categoryId, version, specificationId]);
+    return this.specifications.getOne(specificationId);
   }
 }
