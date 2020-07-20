@@ -39,9 +39,7 @@ export class SpecificationsController {
 
   @Get(':specificationId')
   @ApiOkResponse({ type: Specification, status: HttpStatus.OK })
-  @ApiNotFoundResponse(
-    apiException('Specification with id k34yiufgw-fhui2y4-fweg-353r for category 31500000-0-v1 was not found')
-  )
+  @ApiNotFoundResponse(apiException('Specification with id k34yiufgw-fhui2y4-fweg-353r was not found'))
   @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
   public async getSpecification(
     @Param('specificationId')
