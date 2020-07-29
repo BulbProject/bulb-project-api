@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-import { UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, UnprocessableEntityException } from '@nestjs/common';
 import { evaluate } from 'mathjs';
 import { AlgorithmEngine } from '../../entity';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
@@ -94,7 +94,7 @@ export class WaterPumps implements AlgorithmEngine {
       }).toFixed(2);
 
       if (efficiency < 0 || efficiency > 100) {
-        throw new UnprocessableEntityException('Incorrect item data');
+        throw new BadRequestException(`Incorrect data for item ${itemId}`);
       }
 
       return efficiency;
