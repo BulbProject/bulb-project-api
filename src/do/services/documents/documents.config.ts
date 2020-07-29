@@ -16,7 +16,7 @@ export const documentsConfig = registerAs(
     repo: {
       owner: 'BulbProject',
       name: 'bulb-project-api',
-      branch: 'develop',
+      branch: 'pumps-calculation',
     },
   })
 );
