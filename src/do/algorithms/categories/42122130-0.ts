@@ -87,11 +87,17 @@ export class WaterPumps implements AlgorithmEngine {
 
       const correspondingCoefficient = Number(directoryTable[columnIndex][rowIndex]);
 
-      return evaluate(formulas.efficiency, {
+      const efficiency = evaluate(formulas.efficiency, {
         x: specificSpeedNaturalLog,
         y: flowNaturalLog,
         C: correspondingCoefficient,
       }).toFixed(2);
+
+      if (efficiency < 0 || efficiency > 100) {
+        throw new UnprocessableEntityException('Incorrect item data');
+      }
+
+      return efficiency;
     };
 
     const availableVariants = pumpVariants.map((item) => {
