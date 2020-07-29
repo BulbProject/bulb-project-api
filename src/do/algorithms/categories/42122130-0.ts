@@ -1,11 +1,13 @@
 import { v4 as uuid } from 'uuid';
 
-import { BadRequestException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { evaluate } from 'mathjs';
+
 import { AlgorithmEngine } from '../../entity';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
+import { getFormulas } from '../../../shared/utils';
 
 const EndSuctionVariants = ['ESOB', 'ESCC', 'ESCCi'];
 
@@ -42,22 +44,7 @@ export class WaterPumps implements AlgorithmEngine {
         '(ηbep)min req': 'efficiency',
       } as const;
 
-      type CalculatedKeys = keyof typeof calculatedValuesMap;
-      type CalculatedValues = typeof calculatedValuesMap[CalculatedKeys];
-      type Formulas = Record<CalculatedValues, string>;
-
-      const formulas: Formulas = Object.keys(calculatedValuesMap).reduce((_formulas, value) => {
-        const formula = formulasTable.find(([_value]) => _value === value)?.[1];
-
-        if (!formula) {
-          throw new UnprocessableEntityException(`There is no formula for calculating "${value}"`);
-        }
-
-        return {
-          ..._formulas,
-          [calculatedValuesMap[value as CalculatedKeys]]: formula,
-        };
-      }, {} as Formulas);
+      const formulas = getFormulas(calculatedValuesMap, formulasTable);
 
       const rotationSpeedRequirementId = pumpStageCount === 1 ? '0101010000' : '0102010000';
       const rotationSpeed = getValueFromResponses(rotationSpeedRequirementId) as number;
