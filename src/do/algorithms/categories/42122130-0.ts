@@ -81,37 +81,43 @@ export class WaterPumps implements AlgorithmEngine {
       }).toFixed(2);
 
       if (efficiency < 0 || efficiency > 100) {
-        throw new BadRequestException(`Incorrect data for item ${itemId}`);
+        throw new BadRequestException(`Incorrect data efficiency calculation for item ${itemId}`);
       }
 
       return efficiency;
     };
 
-    const availableVariants = pumpVariants.map((item) => {
-      return {
-        id: uuid(),
-        relatedItem: item,
-        metrics: [
-          {
-            id: '0100',
-            title: 'Показники енергоефективності',
-            observations: [
-              {
-                id: '0101',
-                measure: getEfficiency(item),
-                notes: 'ККД',
-              },
-            ],
-          },
-        ],
-        criteria: [],
-        quantity: 1,
-      };
-    });
+    const availableVariants = pumpVariants
+      .map((item) => {
+        return {
+          id: uuid(),
+          relatedItem: item,
+          metrics: [
+            {
+              id: '0100',
+              title: 'Показники енергоефективності',
+              observations: [
+                {
+                  id: '0101',
+                  measure: getEfficiency(item),
+                  notes: 'ККД',
+                },
+              ],
+            },
+          ],
+          criteria: [],
+          quantity: 1,
+        };
+      })
+      .sort(
+        (variant1, variant2) =>
+          variant2.metrics[0].observations[0]?.measure - variant1.metrics[0].observations[0]?.measure
+      );
 
     return {
       category: this.categoryId,
       version,
+      recommendedVariant: availableVariants[0].id,
       availableVariants,
     };
   }
