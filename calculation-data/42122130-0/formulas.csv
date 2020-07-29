@@ -1,6 +1,6 @@
 Значення,Формула,        Примітка
 ns,n*(sqrt(Qbep)/((1/i)*Hbep)^(3/4)),Питома швидкість
-x,ln(ns),
+x,log(ns, exp),
 Q,Qbep*3600,Потік за годину
-y,ln(Q),
+y,log(Q, exp),
 (ηbep)min req,88.59*x + 13.46*y - 11.48*(x)^2 - 0.85*(y)^2 - 0.38*x*y - C,required minimum efficiency at best efficiency point
