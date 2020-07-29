@@ -75,24 +75,23 @@ export class WaterPumps implements AlgorithmEngine {
         Hbep: head,
       });
 
-      const x = evaluate(formulas.x, {
+      const specificSpeedNaturalLog = evaluate(formulas.x, {
         ns: specificSpeed,
       });
 
-      const y = evaluate(formulas.y, {
+      const flowNaturalLog = evaluate(formulas.y, {
         Q: flowPerHour,
       });
       const rowIndex = directoryTable[0].findIndex((element) => element === itemId);
       const columnIndex = directoryTable.findIndex((element) => Number(element[0]) === rotationSpeed);
 
-      const c = Number(directoryTable[columnIndex][rowIndex]);
+      const correspondingCoefficient = Number(directoryTable[columnIndex][rowIndex]);
 
       return evaluate(formulas.efficiency, {
-        x,
-        y,
-        C: c,
-      });
-      return 1;
+        x: specificSpeedNaturalLog,
+        y: flowNaturalLog,
+        C: correspondingCoefficient,
+      }).toFixed(2);
     };
 
     const availableVariants = pumpVariants.map((item) => {
