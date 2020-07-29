@@ -6,13 +6,14 @@ import { SpecificationRepositoryModule } from '../../shared/repositories/specifi
 import { DocumentsService, DocxGeneratorService, CsvService } from '../services';
 
 import { AlgorithmsService } from './algorithms.service';
-import { ElectricMotors, LightingEquipmentAndElectricLamps } from './categories';
+import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps } from './categories';
 import { SpecificationService, CalculationService } from './services';
 
 const algorithms = [
   AlgorithmsService,
   LightingEquipmentAndElectricLamps,
   ElectricMotors,
+  WaterPumps,
   SpecificationService,
   CalculationService,
 ];
