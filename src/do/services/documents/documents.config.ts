@@ -12,11 +12,11 @@ interface DocumentsConfig {
 export const documentsConfig = registerAs(
   'documents',
   (): DocumentsConfig => ({
-    url: process.env.DOCUMENTS_SERVICE || 'https://udoc.eprocurement.systems',
+    url: process.env.DOCS_SERVICE_URL || 'https://udoc.eprocurement.systems',
     repo: {
-      owner: process.env.DOCUMENTS_REPO_OWNER || 'BulbProject',
-      name: process.env.DOCUMENTS_REPO_NAME || 'bulb-project-api',
-      branch: process.env.DOCUMENTS_REPO_BRANCH || 'master',
+      owner: process.env.DOCS_SERVICE_REPO_OWNER || 'BulbProject',
+      name: process.env.DOCS_SERVICE_REPO_NAME || 'bulb-project-api',
+      branch: process.env.DOCS_SERVICE_REPO_BRANCH || 'master',
     },
   })
 );
