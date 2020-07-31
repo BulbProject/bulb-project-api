@@ -6,7 +6,7 @@ import { evaluate } from 'mathjs';
 import { RequirementGroup } from '../../../shared/entity/category/requirement-group.entity';
 import { Requirement } from '../../../shared/entity/category/requirement.entity';
 import { SpecificationRepositoryService } from '../../../shared/repositories/specification';
-import { generateId } from '../../../shared/utils';
+import { generateId, getFormulas } from '../../../shared/utils';
 
 import type { AlgorithmEngine } from '../../entity';
 import { AvailableVariant } from '../../entity/available-variant';
@@ -307,22 +307,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
       financeEconomy: 'financeEconomy',
     } as const;
 
-    type CalculatedKeys = keyof typeof calculatedValuesMap;
-    type CalculatedValues = typeof calculatedValuesMap[CalculatedKeys];
-    type Formulas = Record<CalculatedValues, string>;
-
-    const formulas: Formulas = Object.keys(calculatedValuesMap).reduce((_formulas, value) => {
-      const formula = formulasTable.find(([_value]) => _value === value)?.[1];
-
-      if (!formula) {
-        throw new UnprocessableEntityException(`There is no formula for calculating "${value}"`);
-      }
-
-      return {
-        ..._formulas,
-        [calculatedValuesMap[value as CalculatedKeys]]: formula,
-      };
-    }, {} as Formulas);
+    const formulas = getFormulas(calculatedValuesMap, formulasTable);
 
     const calculationDraft = Object.values(Variants).reduce((_calculation, bulbCode: Variants) => {
       return {

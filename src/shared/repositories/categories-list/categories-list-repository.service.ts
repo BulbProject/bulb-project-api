@@ -17,7 +17,10 @@ export class CategoriesListRepositoryService {
   public async findAll(): Promise<CategoriesListEntry[]> {
     return this.database.handleUndefinedValue(async () => {
       const allCategories = (await this.categoriesList.find()).sort(({ version: versionA }, { version: versionB }) =>
-        versionB.localeCompare(versionA)
+        versionB.localeCompare(versionA, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        })
       );
 
       return [...new Set(allCategories.map(({ id }) => id))].map(
