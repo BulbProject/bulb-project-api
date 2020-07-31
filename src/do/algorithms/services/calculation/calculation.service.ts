@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { AlgorithmsService } from '../../algorithms.service';
-import { CategoryVersionRepositoryService } from '../../../../shared/modules/category-version-repository';
+import { CategoryVersionRepositoryService } from '../../../../shared/repositories/category-version';
 import type { CalculationResponse } from '../../../entity/calculation';
 import { RequestedNeed } from '../../../entity/requested-need';
 

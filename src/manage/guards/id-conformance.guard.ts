@@ -6,6 +6,10 @@ export class IdConformanceGuard implements CanActivate {
     const { categoryId } = context.getArgByIndex(0).params;
     const bodyId = context.switchToHttp().getRequest().body.id;
 
+    if (bodyId === undefined) {
+      throw new UnprocessableEntityException(`Incorrect body format`);
+    }
+
     if (categoryId !== bodyId) {
       throw new UnprocessableEntityException("Parameter `categoryId` must correspond to the provided category's id");
     }

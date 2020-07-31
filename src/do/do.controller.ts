@@ -1,7 +1,20 @@
 import { Body, Controller, Param, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiInternalServerErrorResponse,
+  ApiQuery,
+  ApiTags,
+  ApiExtraModels,
+  getSchemaPath,
+  ApiBadRequestResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import { apiException, Exception } from '../shared/utils';
 
 import type { Egp, Mode } from './entity';
-import type { CalculationResponse } from './entity/calculation';
+import { CalculationPayload, CalculationResponse } from './entity/calculation';
+import { SpecificationId } from './entity/specification';
 import type { SpecificationResponse } from './entity/specification';
 
 import { RequestedNeed } from './entity/requested-need';
@@ -11,10 +24,16 @@ import { CalculationService, SpecificationService } from './algorithms/services'
 import { DocxHeadersInterceptor } from './interceptors';
 
 @Controller('do')
+@ApiTags('Do')
 export class DoController {
   public constructor(private calculation: CalculationService, private specification: SpecificationService) {}
 
   @Post('calculation/:categoryId/:version')
+  @ApiBody({ type: RequestedNeed })
+  @ApiOkResponse({ type: CalculationPayload })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
+  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
   public async getCalculation(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
@@ -26,6 +45,32 @@ export class DoController {
 
   @Post('specification/:categoryId/:version')
   @UseInterceptors(DocxHeadersInterceptor)
+  @ApiQuery({
+    name: 'egp',
+    enum: ['prozorro'],
+  })
+  @ApiQuery({
+    name: 'mode',
+    enum: ['json', 'docx'],
+  })
+  @ApiBody({ type: SelectedVariant })
+  @ApiExtraModels(SpecificationId)
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        {
+          $ref: getSchemaPath(SpecificationId),
+        },
+        {
+          type: 'string',
+          description: 'Buffer',
+        },
+      ],
+    },
+  })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
+  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
   public async getSpecification(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,

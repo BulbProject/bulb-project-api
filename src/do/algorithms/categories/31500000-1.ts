@@ -1,25 +1,25 @@
 /* eslint immutable/no-mutation: 0 */
 /* eslint id-length: 0 */
 import { BadRequestException, UnprocessableEntityException } from '@nestjs/common';
-import * as csv from 'csv-string';
 import { v4 as uuid } from 'uuid';
 import { evaluate } from 'mathjs';
 import { RequirementGroup } from '../../../shared/entity/category/requirement-group.entity';
 import { Requirement } from '../../../shared/entity/category/requirement.entity';
-import { SpecificationRepositoryService } from '../../../shared/modules/specification-repository';
-import { generateId } from '../../../shared/utils';
+import { SpecificationRepositoryService } from '../../../shared/repositories/specification';
+import { generateId, getFormulas } from '../../../shared/utils';
 
 import type { AlgorithmEngine } from '../../entity';
 import { AvailableVariant } from '../../entity/available-variant';
 import { RequirementResponse } from '../../entity/requirement-response';
 import { Metric } from '../../entity/variant';
 
-import type { CalculationPayload, CalculationResponse } from '../../entity/calculation';
-import type { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
+import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
+import { SpecificationPayload } from '../../entity/specification';
+import type { SpecificationResponse } from '../../entity/specification';
 
-import { DocumentsService } from '../../services/documents';
 import { Criterion, Option } from '../../../shared/entity/category';
 import { DocxGeneratorService } from '../../services/docx-generator';
+import { CsvService } from '../../services/csv';
 
 enum Variants {
   Incandescent = '31519100-8',
@@ -60,7 +60,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
   public readonly categoryId = '31500000-1';
 
   public constructor(
-    private documents: DocumentsService,
+    private csv: CsvService,
     private specifications: SpecificationRepositoryService,
     private docxGenerator: DocxGeneratorService
   ) {}
@@ -270,7 +270,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
     version,
     requestedNeed: { requirementResponses },
   }: CalculationPayload): Promise<CalculationResponse> {
-    const directoryTable = await this.getDirectoryTable(this.categoryId);
+    const directoryTable = await this.csv.getTable('directory', this.categoryId);
 
     const techChars = directoryTable.reduce((_techChars, row) => {
       if (!/^.+\/.+$/.test(row[0])) return _techChars;
@@ -293,7 +293,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
       throw new UnprocessableEntityException('No "weeksInYear" data in reference data');
     }
 
-    const formulasTable = await this.getFormulasTable(this.categoryId);
+    const formulasTable = await this.csv.getTable('formulas', this.categoryId);
 
     const calculatedValuesMap = {
       Φ: 'lum',
@@ -307,22 +307,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
       financeEconomy: 'financeEconomy',
     } as const;
 
-    type CalculatedKeys = keyof typeof calculatedValuesMap;
-    type CalculatedValues = typeof calculatedValuesMap[CalculatedKeys];
-    type Formulas = Record<CalculatedValues, string>;
-
-    const formulas: Formulas = Object.keys(calculatedValuesMap).reduce((_formulas, value) => {
-      const formula = formulasTable.find(([_value]) => _value === value)?.[1];
-
-      if (!formula) {
-        throw new UnprocessableEntityException(`There is no formula for calculating "${value}"`);
-      }
-
-      return {
-        ..._formulas,
-        [calculatedValuesMap[value as CalculatedKeys]]: formula,
-      };
-    }, {} as Formulas);
+    const formulas = getFormulas(calculatedValuesMap, formulasTable);
 
     const calculationDraft = Object.values(Variants).reduce((_calculation, bulbCode: Variants) => {
       return {
@@ -745,7 +730,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
   }: SpecificationPayload): SpecificationResponse {
     const relatedItem = selectedVariant.relatedItem as Variants;
 
-    const directoryTable = await this.getDirectoryTable(this.categoryId);
+    const directoryTable = await this.csv.getTable('directory', this.categoryId);
 
     const techChars = directoryTable.reduce((_techChars, row) => {
       if (!/^.+\/.+$/.test(row[0])) return _techChars;
@@ -1415,13 +1400,5 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
     throw new BadRequestException(
       `Specification generation has failed for category with id ${this.categoryId}. Enter new data or try again.`
     );
-  }
-
-  private async getDirectoryTable(id: string): Promise<string[][]> {
-    return csv.parse(await this.documents.getTable('directory', id));
-  }
-
-  private async getFormulasTable(id: string): Promise<string[][]> {
-    return csv.parse(await this.documents.getTable('formulas', id));
   }
 }

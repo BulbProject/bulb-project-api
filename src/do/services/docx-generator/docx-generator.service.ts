@@ -10,6 +10,7 @@ import {
   Media,
   Packer,
   Paragraph,
+  PictureRun,
   ShadingType,
   Table,
   TableCell,
@@ -26,16 +27,6 @@ import { ecoDesignData } from './images-data.json';
 
 @Injectable()
 export class DocxGeneratorService {
-  private static document = new Document({
-    hyperlinks: {
-      law1: {
-        link: 'https://zakon.rada.gov.ua/laws/show/804-2018-%D0%BF',
-        text: '№804 від 03.10.2018',
-        type: HyperlinkType.EXTERNAL,
-      },
-    },
-  });
-
   private static borders = Object.fromEntries(
     ['start', 'top', 'bottom', 'left', 'right'].map((direction) => [
       direction,
@@ -56,12 +47,9 @@ export class DocxGeneratorService {
 
   private static differentColumns = [DocxGeneratorService.indentation(70), DocxGeneratorService.indentation(20)];
 
-  private static ecoDesign = Media.addImage(
-    DocxGeneratorService.document,
-    Buffer.from(ecoDesignData, 'base64'),
-    DocxGeneratorService.indentation(),
-    DocxGeneratorService.indentation()
-  );
+  private document: Document;
+
+  private ecoDesign: PictureRun;
 
   /* private static greenProcurement = Media.addImage(
       DocxGeneratorService.document,
@@ -166,9 +154,26 @@ export class DocxGeneratorService {
     selectedVariant: SelectedVariant['selectedVariant'],
     criteria: Criterion[]
   ): Promise<Buffer> {
+    this.document = new Document({
+      hyperlinks: {
+        law1: {
+          link: 'https://zakon.rada.gov.ua/laws/show/804-2018-%D0%BF',
+          text: '№804 від 03.10.2018',
+          type: HyperlinkType.EXTERNAL,
+        },
+      },
+    });
+
+    this.ecoDesign = Media.addImage(
+      this.document,
+      Buffer.from(ecoDesignData, 'base64'),
+      DocxGeneratorService.indentation(),
+      DocxGeneratorService.indentation()
+    );
+
     const currentItem = category.items.find((item) => item.id === selectedVariant.relatedItem) || ({} as Item);
 
-    DocxGeneratorService.document.addSection({
+    this.document.addSection({
       children: [
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
@@ -265,7 +270,7 @@ export class DocxGeneratorService {
                   children: [
                     new Paragraph({
                       alignment: AlignmentType.RIGHT,
-                      children: [DocxGeneratorService.ecoDesign],
+                      children: [this.ecoDesign],
                     }),
                   ],
                 }),
@@ -326,7 +331,7 @@ export class DocxGeneratorService {
                   children: [
                     new Paragraph({
                       alignment: AlignmentType.RIGHT,
-                      children: [DocxGeneratorService.ecoDesign],
+                      children: [this.ecoDesign],
                     }),
                   ],
                 }),
@@ -337,6 +342,6 @@ export class DocxGeneratorService {
       ],
     });
 
-    return Buffer.from(await Packer.toBuffer(DocxGeneratorService.document));
+    return Buffer.from(await Packer.toBuffer(this.document));
   }
 }

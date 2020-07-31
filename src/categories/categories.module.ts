@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 
-import { CategoriesListRepositoryModule } from '../shared/modules/categories-list-repository';
-import { CategoryVersionRepositoryModule } from '../shared/modules/category-version-repository';
-import { VersionsPackageRepositoryModule } from '../shared/modules/versions-package-repository';
+import { CategoriesListRepositoryModule } from '../shared/repositories/categories-list';
+import { CategoryVersionRepositoryModule } from '../shared/repositories/category-version';
+import { VersionsPackageRepositoryModule } from '../shared/repositories/versions-package';
 
 import { CategoriesController } from './categories.controller';
 import { CategoriesDetailsService } from './services';
