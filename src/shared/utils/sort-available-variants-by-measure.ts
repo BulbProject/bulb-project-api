@@ -1,3 +1,4 @@
+/* eslint import/no-cycle: 0 */
 import { AvailableVariant } from '../../do/entity/available-variant';
 
 export const sortAvailableVariantsByMeasure = (availableVariants: AvailableVariant[] = []) => {

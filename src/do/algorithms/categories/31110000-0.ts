@@ -6,7 +6,7 @@ import { CalculationPayload, CalculationResponse } from '../../entity/calculatio
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
 
-import { sortAvailableVariantsByMeasure } from '../../../shared/utils/sort-by-measure';
+import { sortAvailableVariantsByMeasure } from '../../../shared/utils';
 
 const poles = ['2', '4', '6', '8'];
 const sliceIndent = 3;
