@@ -6,6 +6,8 @@ import { CalculationPayload, CalculationResponse } from '../../entity/calculatio
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
 
+import { sortAvailableVariantsByMeasure } from '../../../shared/utils/sort-by-measure';
+
 const poles = ['2', '4', '6', '8'];
 const sliceIndent = 3;
 
@@ -58,31 +60,34 @@ export class ElectricMotors implements AlgorithmEngine {
       });
     }, {});
 
-    const availableVariants: AvailableVariant[] = motors.map((motor) => {
-      return {
-        id: uuid(),
-        relatedItem: motor,
-        metrics: [
-          {
-            id: '0100',
-            title: 'Показники енергоефективності',
-            observations: [
-              {
-                id: '0101',
-                measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles],
-                notes: 'ККД',
-              },
-            ],
-          },
-        ],
-        criteria: [],
-        quantity: 1,
-      };
-    });
+    const availableVariants: AvailableVariant[] = sortAvailableVariantsByMeasure(
+      motors.map((motor) => {
+        return {
+          id: uuid(),
+          relatedItem: motor,
+          metrics: [
+            {
+              id: '0100',
+              title: 'Показники енергоефективності',
+              observations: [
+                {
+                  id: '0101',
+                  measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles],
+                  notes: 'ККД',
+                },
+              ],
+            },
+          ],
+          criteria: [],
+          quantity: 1,
+        };
+      })
+    );
 
     return {
       category: this.categoryId,
       version,
+      recommendedVariant: availableVariants[0].id,
       availableVariants,
     };
   }
