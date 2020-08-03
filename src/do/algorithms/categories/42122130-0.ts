@@ -7,8 +7,7 @@ import { AlgorithmEngine } from '../../entity';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
-import { getFormulas } from '../../../shared/utils';
-import { sortAvailableVariantsByMeasure } from '../../../shared/utils/sort-by-measure';
+import { getFormulas, sortAvailableVariantsByMeasure } from '../../../shared/utils';
 
 const EndSuctionVariants = ['ESOB', 'ESCC', 'ESCCi'];
 
