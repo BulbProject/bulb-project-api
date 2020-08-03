@@ -72,7 +72,7 @@ module.exports = {
 
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
-    'import/no-cycle': 'error',
+    'import/no-cycle': 'warn',
     'import/no-named-as-default': 'off',
 
     'prettier/prettier': 'warn',
