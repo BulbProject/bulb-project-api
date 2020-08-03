@@ -8,6 +8,7 @@ import { CalculationPayload, CalculationResponse } from '../../entity/calculatio
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
 import { getFormulas } from '../../../shared/utils';
+import { sortAvailableVariantsByMeasure } from '../../../shared/utils/sort-by-measure';
 
 const EndSuctionVariants = ['ESOB', 'ESCC', 'ESCCi'];
 
@@ -87,8 +88,8 @@ export class WaterPumps implements AlgorithmEngine {
       return efficiency;
     };
 
-    const availableVariants = pumpVariants
-      .map((item) => {
+    const availableVariants = sortAvailableVariantsByMeasure(
+      pumpVariants.map((item) => {
         return {
           id: uuid(),
           relatedItem: item,
@@ -109,10 +110,7 @@ export class WaterPumps implements AlgorithmEngine {
           quantity: 1,
         };
       })
-      .sort(
-        (variant1, variant2) =>
-          variant2.metrics[0].observations[0]?.measure - variant1.metrics[0].observations[0]?.measure
-      );
+    );
 
     return {
       category: this.categoryId,
