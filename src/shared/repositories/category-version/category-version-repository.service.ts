@@ -33,16 +33,6 @@ export class CategoryVersionRepositoryService {
     }, `Category ${categoryId} with version ${version} was not found`);
   }
 
-  public async getAllById(categoryId: string): Promise<CategoryVersion[]> {
-    return this.database.handleUndefinedValue(() => {
-      return this.categoriesVersions.find({
-        where: {
-          'category.id': categoryId,
-        },
-      });
-    }, `No records present for id ${categoryId}`);
-  }
-
   public async createOne(categoryId: string, category: Category): Promise<ManageResponse> {
     const version = 'v1';
     const publishedDate = formatDate(new Date());
