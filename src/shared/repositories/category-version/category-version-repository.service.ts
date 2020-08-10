@@ -34,6 +34,18 @@ export class CategoryVersionRepositoryService {
   }
 
   public async createOne(categoryId: string, category: Category): Promise<ManageResponse> {
+    const existedCategory = await this.database.handleDbError(async () => {
+      return this.categoriesVersions.findOne({
+        where: {
+          'category.id': categoryId,
+        },
+      });
+    });
+
+    if (existedCategory) {
+      throw new BadRequestException(`Category ${categoryId} had already been created.`);
+    }
+
     const version = 'v1';
     const publishedDate = formatDate(new Date());
 
