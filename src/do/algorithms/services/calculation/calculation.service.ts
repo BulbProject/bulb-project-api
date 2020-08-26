@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { AlgorithmsService } from '../../algorithms.service';
 import { CategoryVersionRepositoryService } from '../../../../shared/repositories/category-version';
@@ -14,6 +14,10 @@ export class CalculationService {
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
     const categoryVersion = await this.categories.getOne([categoryId, version]);
+
+    if (categoryVersion.status === 'pending') {
+      throw new BadRequestException('Calculation is impossible because category status is pending');
+    }
 
     return this.algorithms.getCalculation(categoryId, {
       category: categoryVersion.category,
