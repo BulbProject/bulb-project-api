@@ -9,10 +9,10 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 
+import { ApiException } from 'shared/entity';
 import { CategoriesListEntry, CategoriesListRepositoryService } from '../shared/repositories/categories-list';
 import { CategoryVersion, CategoryVersionRepositoryService } from '../shared/repositories/category-version';
 import { VersionsPackage, VersionsPackageRepositoryService } from '../shared/repositories/versions-package';
-import { ApiException } from '../shared/entity';
 
 import { CategoryDetails } from './entity';
 import { CategoriesDetailsService } from './services';
