@@ -9,8 +9,8 @@ import {
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 
-import { Category, ManageResponse, ApiException } from '../shared/entity';
-import { HttpExceptionFilter } from '../shared/filters';
+import { Category, ManageResponse, ApiException } from 'shared/entity';
+import { HttpExceptionFilter } from 'shared/filters';
 
 import { CategoryVersionRepositoryService } from '../shared/repositories/category-version';
 

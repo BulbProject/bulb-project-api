@@ -3,6 +3,7 @@
 import { BadRequestException, UnprocessableEntityException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { evaluate } from 'mathjs';
+
 import { DataType } from 'ts4ocds/extensions/requirements';
 import { RequirementGroup } from '../../../shared/entity/category/requirement-group.entity';
 import { Requirement } from '../../../shared/entity/category/requirement.entity';

@@ -10,7 +10,7 @@ import {
   ApiBadRequestResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ApiException } from '../shared/entity';
+import { ApiException } from 'shared/entity';
 
 import type { Egp, Mode } from './entity';
 import { CalculationPayload, CalculationResponse } from './entity/calculation';

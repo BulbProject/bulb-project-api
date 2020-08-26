@@ -7,9 +7,9 @@ import {
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
 
+import { ApiException } from 'shared/entity';
 import { SpecificationRepositoryService } from '../shared/repositories/specification';
 import { Specification } from '../shared/repositories/specification/models';
-import { ApiException } from '../shared/entity';
 
 @Controller('specifications')
 @ApiTags('Specification')
