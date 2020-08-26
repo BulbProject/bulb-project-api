@@ -5,15 +5,11 @@ import { IsArray, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from 'c
 import { IsUnion } from '../../validators';
 
 class Coefficient {
-  @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
-  })
-  @IsUnion(['string', 'number'])
-  public id: string | number;
+  @IsString()
+  public id: string;
 
   @IsUnion(['string', 'number', 'boolean'])
-  @IsOptional()
-  public value?: number | string | boolean;
+  public value: number | string | boolean;
 
   @IsNumber()
   @IsOptional()
@@ -24,33 +20,32 @@ class Coefficient {
   public maxValue?: number;
 
   @IsNumber()
-  @IsOptional()
-  public coefficient?: number;
+  public coefficient: number;
 }
 
-const conversionRelatesTo = ['requirement', 'observation'];
+const conversionRelatesTo = ['requirement'];
 
 export class Conversion {
-  @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
-  })
-  @IsUnion(['string', 'number'])
-  public id: string | number;
+  @IsString()
+  public id: string;
+
+  @IsString()
+  @IsOptional()
+  public description?: string;
 
   @ApiProperty({
     enum: conversionRelatesTo,
   })
   @IsIn(conversionRelatesTo)
+  public relatesTo: 'requirement';
+
+  @IsString()
   @IsOptional()
-  public relatesTo?: 'requirement' | 'observation';
+  public relatedItem?: string;
 
   @IsString()
   @IsOptional()
   public rationale?: string;
-
-  @IsString()
-  @IsOptional()
-  public description?: string;
 
   @IsArray()
   @Type(() => Coefficient)
@@ -58,8 +53,4 @@ export class Conversion {
     each: true,
   })
   public coefficients: Coefficient[];
-
-  @IsString()
-  @IsOptional()
-  public relatedItem?: string;
 }

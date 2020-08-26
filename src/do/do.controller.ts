@@ -10,7 +10,7 @@ import {
   ApiBadRequestResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { apiException, Exception } from '../shared/utils';
+import { ApiException } from '../shared/entity';
 
 import type { Egp, Mode } from './entity';
 import { CalculationPayload, CalculationResponse } from './entity/calculation';
@@ -33,7 +33,7 @@ export class DoController {
   @ApiOkResponse({ type: CalculationPayload })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async getCalculation(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
@@ -70,7 +70,7 @@ export class DoController {
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async getSpecification(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,

@@ -9,7 +9,7 @@ import {
 
 import { SpecificationRepositoryService } from '../shared/repositories/specification';
 import { Specification } from '../shared/repositories/specification/models';
-import { apiException, Exception } from '../shared/utils';
+import { ApiException } from '../shared/entity';
 
 @Controller('specifications')
 @ApiTags('Specification')
@@ -39,8 +39,8 @@ export class SpecificationsController {
 
   @Get(':specificationId')
   @ApiOkResponse({ type: Specification, status: HttpStatus.OK })
-  @ApiNotFoundResponse(apiException('Specification with id k34yiufgw-fhui2y4-fweg-353r was not found'))
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiNotFoundResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async getSpecification(
     @Param('specificationId')
     specificationId: string

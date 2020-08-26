@@ -3,6 +3,7 @@
 import { BadRequestException, UnprocessableEntityException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { evaluate } from 'mathjs';
+import { DataType } from 'ts4ocds/extensions/requirements';
 import { RequirementGroup } from '../../../shared/entity/category/requirement-group.entity';
 import { Requirement } from '../../../shared/entity/category/requirement.entity';
 import { SpecificationRepositoryService } from '../../../shared/repositories/specification';
@@ -427,7 +428,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
 
       const lightRateInLum = conversions
         ?.find(({ relatedItem }) => relatedItem === RequirementId.TypeOfRoom)
-        ?.coefficients?.find(({ value }) => ((value as unknown) as string) === typeOfRoom)?.coefficient;
+        ?.coefficients.find(({ value }) => ((value as unknown) as string) === typeOfRoom)?.coefficient;
 
       if (!lightRateInLum) {
         throw new BadRequestException(`Can't find lumen value for ${typeOfRoom} type of room.`);
@@ -524,7 +525,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
 
       const lightRateInLum = conversions
         ?.find(({ relatedItem }) => relatedItem === RequirementId.LightLevel)
-        ?.coefficients?.find(({ value }) => ((value as unknown) as string) === lightLevel)?.coefficient;
+        ?.coefficients.find(({ value }) => ((value as unknown) as string) === lightLevel)?.coefficient;
 
       if (!lightRateInLum) {
         throw new BadRequestException(`Can't find lumen value for specified light level ${lightLevel}.`);
@@ -594,7 +595,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
               requirementGroup.id ===
               requirementResponses
                 .find(({ requirement }) => requirement.id.startsWith('02'))
-                ?.requirement.id?.replace(/\d{6}$/, '000000')
+                ?.requirement.id.replace(/\d{6}$/, '000000')
             );
           });
 
@@ -794,10 +795,12 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
             id: '',
             name: 'W',
           },
+          dataType: 'number' as DataType,
         },
         {
           title: 'Коефіцієнт коригування Pmax',
           expectedValue: +PmaxCor,
+          dataType: 'number' as DataType,
         },
       ].map(generateId(efficacyRequirementsBaseId))
     );
