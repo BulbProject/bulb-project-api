@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsIn, IsOptional, IsString } from 'class-validator';
+
+const documentType = ['illustration'];
 
 export class Document {
   @IsString()
@@ -16,8 +18,9 @@ export class Document {
   public url: string;
 
   @ApiProperty({
-    enum: ['illustration'],
+    enum: documentType,
   })
+  @IsIn(documentType)
   public documentType?: DocumentType;
 
   @IsString()
