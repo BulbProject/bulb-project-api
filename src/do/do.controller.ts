@@ -37,9 +37,10 @@ export class DoController {
   public async getCalculation(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
-    @Body('requestedNeed', new ValidationPipe({ transform: true }))
+    @Body(new ValidationPipe({ transform: true }))
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
+    console.log('requestedNeed', requestedNeed);
     return this.calculation.getCalculation([categoryId, version], requestedNeed);
   }
 

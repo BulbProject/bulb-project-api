@@ -20,7 +20,9 @@ export class WaterPumps implements AlgorithmEngine {
 
   public async getCalculation({
     version,
-    requestedNeed: { requirementResponses },
+    requestedNeed: {
+      requestedNeed: { requirementResponses },
+    },
   }: CalculationPayload): Promise<CalculationResponse> {
     const pumpStageCount =
       (requirementResponses.find((res) => res.requirement.id === '0102020000')?.value as number) || 1;
