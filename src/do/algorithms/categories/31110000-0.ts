@@ -31,7 +31,10 @@ export class ElectricMotors implements AlgorithmEngine {
 
   public constructor(private csv: CsvService) {}
 
-  public async getCalculation({ version, requestedNeed }: CalculationPayload): Promise<CalculationResponse> {
+  public async getCalculation({
+    version,
+    requestedNeed: { requestedNeed },
+  }: CalculationPayload): Promise<CalculationResponse> {
     const requestedNumberOfPoles = String(
       requestedNeed.requirementResponses.find(({ requirement }) => requirement.id === '0101010000')?.value ?? ''
     ) as string;

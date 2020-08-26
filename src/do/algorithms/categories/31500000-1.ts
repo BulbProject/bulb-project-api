@@ -268,7 +268,9 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
   public async getCalculation({
     category: { items, criteria, conversions },
     version,
-    requestedNeed: { requirementResponses },
+    requestedNeed: {
+      requestedNeed: { requirementResponses },
+    },
   }: CalculationPayload): Promise<CalculationResponse> {
     const directoryTable = await this.csv.getTable('directory', this.categoryId);
 
