@@ -8,10 +8,6 @@ import { Document } from './document.entity';
 import { Item } from './item.entity';
 
 export class Category {
-  @ValidateNested()
-  @Type(() => Classification)
-  public classification: Classification;
-
   @IsString()
   public id: string;
 
@@ -20,6 +16,10 @@ export class Category {
 
   @IsString()
   public description: string;
+
+  @ValidateNested()
+  @Type(() => Classification)
+  public classification: Classification;
 
   @IsArray()
   @ArrayMinSize(1)
@@ -32,11 +32,10 @@ export class Category {
   @IsArray()
   @ArrayMinSize(1)
   @Type(() => Document)
-  @IsOptional()
   @ValidateNested({
     each: true,
   })
-  public documents?: Document[];
+  public documents: Document[];
 
   @IsArray()
   @ArrayMinSize(1)

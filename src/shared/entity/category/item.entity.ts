@@ -1,24 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, ArrayMinSize, ValidateNested } from 'class-validator';
-
-import { IsUnion } from '../../validators';
 
 import { Classification } from './classification.entity';
 
 export class Item {
-  @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
-  })
-  @IsUnion(['string', 'number'])
-  public id: string | number;
+  @IsString()
+  public id: string;
 
   @IsString()
-  @IsOptional()
-  public description?: string;
+  public description: string;
 
+  @Type(() => Classification)
   @ValidateNested()
-  public classification?: Classification;
+  public classification: Classification;
 
   @IsArray()
   @ArrayMinSize(1)
@@ -26,5 +20,6 @@ export class Item {
   @ValidateNested({
     each: true,
   })
+  @IsOptional()
   public additionalClassifications?: Classification[];
 }

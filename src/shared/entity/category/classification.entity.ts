@@ -8,23 +8,15 @@ const itemClassificationScheme = ['CPV', 'CPVS', 'GSIN', 'UNSPSC', 'CPC', 'OKDP'
 export class Classification {
   @ApiPropertyOptional({
     enum: itemClassificationScheme,
-    isArray: true,
   })
   @IsUnion([itemClassificationScheme, 'string'])
-  @IsOptional()
-  public scheme?: ItemClassificationScheme;
-
-  @ApiPropertyOptional({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
-    isArray: true,
-  })
-  @IsUnion(['string', 'number'])
-  @IsOptional()
-  public id?: string | number;
+  public scheme: ItemClassificationScheme;
 
   @IsString()
-  @IsOptional()
-  public description?: string;
+  public id: string;
+
+  @IsString()
+  public description: string;
 
   @IsString()
   @IsOptional()

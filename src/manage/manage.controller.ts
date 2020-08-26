@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post, Put, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Param, Patch, Post, Put, UseFilters, UseGuards, ValidationPipe } from '@nestjs/common';
 import {
   ApiBasicAuth,
   ApiBody,
@@ -6,12 +6,13 @@ import {
   ApiInternalServerErrorResponse,
   ApiTags,
   ApiNotFoundResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 
-import { Category, ManageResponse } from '../shared/entity';
+import { Category, ManageResponse, ApiException } from '../shared/entity';
+import { HttpExceptionFilter } from '../shared/filters';
 
 import { CategoryVersionRepositoryService } from '../shared/repositories/category-version';
-import { apiException, Exception } from '../shared/utils';
 
 import { AuthenticationGuard, IdConformanceGuard } from './guards';
 
@@ -27,9 +28,10 @@ export class ManageController {
 
   @Post('add/categories/:categoryId')
   @UseGuards(IdConformanceGuard)
+  @UseFilters(HttpExceptionFilter)
   @ApiBody({ type: Category })
-  @ApiOkResponse({ type: ManageResponse })
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiBadRequestResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async addCategory(
     @Param('categoryId')
     categoryId: string,
@@ -43,8 +45,8 @@ export class ManageController {
   @UseGuards(IdConformanceGuard)
   @ApiBody({ type: Category })
   @ApiOkResponse({ type: ManageResponse })
-  @ApiNotFoundResponse(apiException('Could not update version for category with id 31500000-0'))
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiNotFoundResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async updateCategory(
     @Param('categoryId')
     categoryId: string,
@@ -56,8 +58,8 @@ export class ManageController {
 
   @Patch('activate/categories/:categoryId/:version')
   @ApiOkResponse({ type: ManageResponse })
-  @ApiNotFoundResponse(apiException('Category 31500000-1 with version v1 was not found'))
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiNotFoundResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async activateCategory(
     @Param('categoryId')
     categoryId: string,

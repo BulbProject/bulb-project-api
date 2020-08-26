@@ -12,7 +12,7 @@ import {
 import { CategoriesListEntry, CategoriesListRepositoryService } from '../shared/repositories/categories-list';
 import { CategoryVersion, CategoryVersionRepositoryService } from '../shared/repositories/category-version';
 import { VersionsPackage, VersionsPackageRepositoryService } from '../shared/repositories/versions-package';
-import { apiException, Exception } from '../shared/utils';
+import { ApiException } from '../shared/entity';
 
 import { CategoryDetails } from './entity';
 import { CategoriesDetailsService } from './services';
@@ -49,8 +49,8 @@ export class CategoriesController {
     example: 'false',
     required: false,
   })
-  @ApiNotFoundResponse(apiException('No categories were found'))
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiNotFoundResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async getListEntries(@Query('details') details?: boolean): Promise<CategoriesListEntry[] | CategoryDetails[]> {
     if (details) {
       return this.categoriesDetails.getCategoriesDetails();
@@ -64,8 +64,8 @@ export class CategoriesController {
     type: VersionsPackage,
     status: HttpStatus.OK,
   })
-  @ApiNotFoundResponse(apiException('Release package for category 31500000-1 was not found'))
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiNotFoundResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async getCategory(
     @Param('categoryId')
     categoryId: string
@@ -78,8 +78,8 @@ export class CategoriesController {
     type: CategoryVersion,
     status: HttpStatus.OK,
   })
-  @ApiNotFoundResponse(apiException('Category 31500000-1 with version v1 was not found'))
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiNotFoundResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async getCategoryVersion(
     @Param('categoryId')
     categoryId: string,

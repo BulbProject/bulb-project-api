@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class IdConformanceGuard implements CanActivate {
@@ -7,11 +7,11 @@ export class IdConformanceGuard implements CanActivate {
     const bodyId = context.switchToHttp().getRequest().body.id;
 
     if (bodyId === undefined) {
-      throw new UnprocessableEntityException(`Incorrect body format`);
+      throw new BadRequestException(`Can't find parameter 'id' in request body.`);
     }
 
     if (categoryId !== bodyId) {
-      throw new UnprocessableEntityException("Parameter `categoryId` must correspond to the provided category's id");
+      throw new BadRequestException("Parameter 'categoryId' must correspond to the provided category's 'id'");
     }
 
     return true;
