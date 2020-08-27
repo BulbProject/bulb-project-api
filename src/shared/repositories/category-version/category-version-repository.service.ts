@@ -66,6 +66,7 @@ export class CategoryVersionRepositoryService {
     return {
       id: category.id,
       version,
+      status: 'pending',
     };
   }
 
@@ -73,13 +74,13 @@ export class CategoryVersionRepositoryService {
     return this.database.handleUndefinedValue(async () => {
       const versionsPackage = await this.versionsPackage.getOne(categoryId);
 
-      const [, previosVersion] = [
+      const [, previousVersion] = [
         ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
       ];
 
-      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previosVersion}`]);
+      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
 
-      const nextVersion = `v${Number(previosVersion) + 1}`;
+      const nextVersion = `v${Number(previousVersion) + 1}`;
 
       const updatedAt = formatDate(new Date());
 
@@ -98,6 +99,7 @@ export class CategoryVersionRepositoryService {
       return {
         id: categoryId,
         version: nextVersion,
+        status: 'active',
       };
     }, `Could not update version for category with id ${categoryId}`);
   }
@@ -120,6 +122,7 @@ export class CategoryVersionRepositoryService {
     return {
       id: categoryId,
       version,
+      status: 'active',
     };
   }
 }
