@@ -1,4 +1,14 @@
-import { Body, Controller, Param, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  UseFilters,
+  UseInterceptors,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiOkResponse,
@@ -11,9 +21,10 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ApiException } from 'shared/entity';
+import { HttpExceptionFilter } from 'shared/filters';
 
 import type { Egp, Mode } from './entity';
-import { CalculationPayload, CalculationResponse } from './entity/calculation';
+import { CalculationResponse } from './entity/calculation';
 import { SpecificationId } from './entity/specification';
 import type { SpecificationResponse } from './entity/specification';
 
@@ -29,10 +40,10 @@ export class DoController {
   public constructor(private calculation: CalculationService, private specification: SpecificationService) {}
 
   @Post('calculation/:categoryId/:version')
+  @HttpCode(200)
+  @UseFilters(HttpExceptionFilter)
   @ApiBody({ type: RequestedNeed })
-  @ApiOkResponse({ type: CalculationPayload })
-  @ApiBadRequestResponse({ description: 'Bad request' })
-  @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
+  @ApiBadRequestResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
   public async getCalculation(
     @Param('categoryId') categoryId: string,
@@ -40,7 +51,6 @@ export class DoController {
     @Body(new ValidationPipe({ transform: true }))
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
-    console.log('requestedNeed', requestedNeed);
     return this.calculation.getCalculation([categoryId, version], requestedNeed);
   }
 
