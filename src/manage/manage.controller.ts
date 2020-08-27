@@ -7,6 +7,7 @@ import {
   ApiTags,
   ApiNotFoundResponse,
   ApiBadRequestResponse,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
 
 import { Category, ManageResponse, ApiException } from 'shared/entity';
@@ -44,7 +45,7 @@ export class ManageController {
   @Put('update/categories/:categoryId')
   @UseGuards(IdConformanceGuard)
   @ApiBody({ type: Category })
-  @ApiOkResponse({ type: ManageResponse })
+  @ApiCreatedResponse({ type: ManageResponse })
   @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
   public async updateCategory(
