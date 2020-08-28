@@ -59,6 +59,7 @@ export class ManageController {
   }
 
   @Patch('activate/categories/:categoryId/:version')
+  @UseFilters(HttpExceptionFilter)
   @ApiOkResponse({ type: ManageResponse })
   @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
