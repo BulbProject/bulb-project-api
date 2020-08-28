@@ -36,7 +36,7 @@ export class AuthenticationGuard implements CanActivate {
     return this.handleAuthorization(request);
   }
 
-  private async handleAuthorization(request: { headers: { authorization?: string } }): Promise<boolean> {
+  private async handleAuthorization(request: { headers?: { authorization?: string } }): Promise<boolean> {
     if (!request.headers?.authorization) {
       throw new ForbiddenException();
     }
