@@ -81,10 +81,10 @@ export class CategoryVersionRepositoryService {
         ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
       ];
 
-      const { _id, status, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
+      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
 
       const nextVersion = `v${Number(previousVersion) + 1}`;
-
+      const status = 'pending';
       const updatedAt = formatDate(new Date());
 
       await Promise.all([
@@ -92,6 +92,7 @@ export class CategoryVersionRepositoryService {
           ...previousCategoryVersion,
           version: nextVersion,
           date: updatedAt,
+          status,
           updatedAt,
           category,
         }),
