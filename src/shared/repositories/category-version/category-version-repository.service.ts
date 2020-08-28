@@ -66,20 +66,24 @@ export class CategoryVersionRepositoryService {
     return {
       id: category.id,
       version,
+      status: 'pending',
     };
   }
 
   public async updateVersion(categoryId: string, category: Category): Promise<ManageResponse> {
     return this.database.handleUndefinedValue(async () => {
-      const versionsPackage = await this.versionsPackage.getOne(categoryId);
+      const versionsPackage = await this.versionsPackage.getOne(
+        categoryId,
+        `Category ${categoryId} was not found for update.`
+      );
 
-      const [, previosVersion] = [
+      const [, previousVersion] = [
         ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
       ];
 
-      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previosVersion}`]);
+      const { _id, status, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
 
-      const nextVersion = `v${Number(previosVersion) + 1}`;
+      const nextVersion = `v${Number(previousVersion) + 1}`;
 
       const updatedAt = formatDate(new Date());
 
@@ -98,6 +102,7 @@ export class CategoryVersionRepositoryService {
       return {
         id: categoryId,
         version: nextVersion,
+        status,
       };
     }, `Could not update version for category with id ${categoryId}`);
   }
@@ -120,6 +125,7 @@ export class CategoryVersionRepositoryService {
     return {
       id: categoryId,
       version,
+      status: 'active',
     };
   }
 }

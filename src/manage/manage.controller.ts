@@ -43,8 +43,10 @@ export class ManageController {
 
   @Put('update/categories/:categoryId')
   @UseGuards(IdConformanceGuard)
+  @UseFilters(HttpExceptionFilter)
   @ApiBody({ type: Category })
   @ApiOkResponse({ type: ManageResponse })
+  @ApiBadRequestResponse({ type: ApiException })
   @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
   public async updateCategory(
