@@ -71,7 +71,10 @@ export class CategoryVersionRepositoryService {
 
   public async updateVersion(categoryId: string, category: Category): Promise<ManageResponse> {
     return this.database.handleUndefinedValue(async () => {
-      const versionsPackage = await this.versionsPackage.getOne(categoryId);
+      const versionsPackage = await this.versionsPackage.getOne(
+        categoryId,
+        `Category ${categoryId} was not found for update.`
+      );
 
       const [, previosVersion] = [
         ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
