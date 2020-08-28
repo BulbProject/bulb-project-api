@@ -78,7 +78,7 @@ export class CategoryVersionRepositoryService {
         ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
       ];
 
-      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
+      const { _id, status, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
 
       const nextVersion = `v${Number(previousVersion) + 1}`;
 
@@ -99,7 +99,7 @@ export class CategoryVersionRepositoryService {
       return {
         id: categoryId,
         version: nextVersion,
-        status: 'active',
+        status,
       };
     }, `Could not update version for category with id ${categoryId}`);
   }
