@@ -40,7 +40,6 @@ export class DoController {
     @Body(new ValidationPipe({ transform: true }))
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
-    console.log('requestedNeed', requestedNeed);
     return this.calculation.getCalculation([categoryId, version], requestedNeed);
   }
 

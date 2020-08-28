@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 
 import { AlgorithmEngine } from '../../entity';
@@ -36,11 +37,28 @@ export class ElectricMotors implements AlgorithmEngine {
     requestedNeed: { requestedNeed },
   }: CalculationPayload): Promise<CalculationResponse> {
     const requestedNumberOfPoles = String(
-      requestedNeed.requirementResponses.find(({ requirement }) => requirement.id === '0101010000')?.value ?? ''
-    ) as string;
+      requestedNeed.requirementResponses.find(({ requirement }) => requirement.id === '0101010000')?.value
+    );
+
+    if (!['2', '4', '6', '8'].includes(requestedNumberOfPoles)) {
+      throw new BadRequestException('A wrong value for the number of motor poles was transmitted.');
+    }
+
+    const nominalPowerCheck = requestedNeed.requirementResponses.find(
+      ({ requirement }) => requirement.id === '0101020000'
+    )?.value;
+
+    if (typeof nominalPowerCheck !== 'boolean' && !nominalPowerCheck) {
+      throw new BadRequestException('A wrong value for nominal power was transmitted.');
+    }
+
     const requestedPower = requestedNeed.requirementResponses.find(({ requirement }) =>
       ['0201010000', '0202010000', '0203010000'].includes(requirement.id)
     )?.value as string;
+
+    if (typeof requestedPower !== 'string') {
+      throw new BadRequestException('A wrong value for requested power was transmitted.');
+    }
 
     const directoryTable = await this.csv.getTable('directory', this.categoryId);
 
@@ -63,6 +81,53 @@ export class ElectricMotors implements AlgorithmEngine {
       });
     }, {});
 
+    if (!efficiencyObject[requestedPower]) {
+      throw new BadRequestException('A wrong value for requested power was transmitted.');
+    }
+
+    const modeOfUseResponses = requestedNeed.requirementResponses.filter(({ requirement }) =>
+      requirement.id.startsWith('03')
+    );
+
+    if (modeOfUseResponses.length === 0) {
+      throw new BadRequestException(`Mode of use responses must be provided.`);
+    }
+
+    const modeOfUseResponsesIsConsistent = modeOfUseResponses.every(({ requirement }) => {
+      return modeOfUseResponses[0].requirement.id.slice(2, 4) === requirement.id.slice(2, 4);
+    });
+
+    if (!modeOfUseResponsesIsConsistent) {
+      throw new BadRequestException(
+        `Requirement responses for mode of use are given from different requirement groups.`
+      );
+    }
+
+    if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
+      const hoursInDay = modeOfUseResponses[0]?.value as unknown;
+      const daysInWeek = modeOfUseResponses[1]?.value as unknown;
+
+      if (typeof hoursInDay !== 'number' || hoursInDay <= 0 || hoursInDay > 24) {
+        throw new BadRequestException('Incorrect working hours per day provided.');
+      }
+
+      if (typeof daysInWeek !== 'number' || daysInWeek <= 0 || daysInWeek > 7) {
+        throw new BadRequestException('Incorrect working days per week provided.');
+      }
+
+      // Calculation here
+    }
+
+    const tariffsRequirements = requestedNeed.requirementResponses.filter(({ requirement }) =>
+      requirement.id.startsWith('04')
+    );
+
+    if (tariffsRequirements.length !== 1) {
+      throw new BadRequestException(`Incorrect tariffs information provided.`);
+    }
+
+    // Calculation here
+
     const availableVariants: AvailableVariant[] = sortAvailableVariantsByMeasure(
       motors.map((motor) => {
         return {
@@ -75,7 +140,7 @@ export class ElectricMotors implements AlgorithmEngine {
               observations: [
                 {
                   id: '0101',
-                  measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles],
+                  measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles as string],
                   notes: 'ККД',
                 },
               ],
