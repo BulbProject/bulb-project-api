@@ -8,7 +8,7 @@ import { DataType } from 'ts4ocds/extensions/requirements';
 import { RequirementGroup } from '../../../shared/entity/category/requirement-group.entity';
 import { Requirement } from '../../../shared/entity/category/requirement.entity';
 import { SpecificationRepositoryService } from '../../../shared/repositories/specification';
-import { generateId, getFormulas } from '../../../shared/utils';
+import { generateId, getFormulas, getTariff } from '../../../shared/utils';
 
 import type { AlgorithmEngine } from '../../entity';
 import { AvailableVariant } from '../../entity/available-variant';
@@ -677,6 +677,8 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
       throw new BadRequestException(`Incorrect tariffs information provided.`);
     }
 
+    const tariff = getTariff(tariffsRequirements[0]);
+
     (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
       const { quantity, power, workingHoursInYear } = availableBulbTypes[bulbType];
 
@@ -687,8 +689,6 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
           Pother: power,
           workingHoursInYear,
         });
-
-        const tariff = tariffsRequirements[0].value;
 
         if (typeof tariff === 'number' && tariff > 0) {
           availableBulbTypes[bulbType].financeEconomy = +evaluate(formulas.financeEconomy, {

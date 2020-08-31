@@ -7,7 +7,7 @@ import { CalculationPayload, CalculationResponse } from '../../entity/calculatio
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
 
-import { sortAvailableVariantsByMeasure } from '../../../shared/utils';
+import { getTariff, sortAvailableVariantsByMeasure } from '../../../shared/utils';
 
 const poles = ['2', '4', '6', '8'];
 const sliceIndent = 3;
@@ -32,6 +32,7 @@ export class ElectricMotors implements AlgorithmEngine {
 
   public constructor(private csv: CsvService) {}
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   public async getCalculation({
     version,
     requestedNeed: { requestedNeed },
@@ -85,6 +86,29 @@ export class ElectricMotors implements AlgorithmEngine {
       throw new BadRequestException('A wrong value for requested power was transmitted.');
     }
 
+    const availableVariants: AvailableVariant[] = sortAvailableVariantsByMeasure(
+      motors.map((motor) => {
+        return {
+          id: uuid(),
+          relatedItem: motor,
+          metrics: [
+            {
+              id: '0100',
+              title: 'Показники енергоефективності',
+              observations: [
+                {
+                  id: '0101',
+                  measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles as string],
+                  notes: 'ККД',
+                },
+              ],
+            },
+          ],
+          quantity: 1,
+        };
+      })
+    );
+
     const modeOfUseResponses = requestedNeed.requirementResponses.filter(({ requirement }) =>
       requirement.id.startsWith('03')
     );
@@ -115,47 +139,61 @@ export class ElectricMotors implements AlgorithmEngine {
         throw new BadRequestException('Incorrect working days per week provided.');
       }
 
-      // Calculation here
-    }
+      const normalizeRequestedPower = /-/.test(requestedPower)
+        ? requestedPower.split('-').reduce((accumulator, power) => accumulator + +power, 0) /
+          requestedPower.split('-').length
+        : +requestedPower;
 
-    const tariffsRequirements = requestedNeed.requirementResponses.filter(({ requirement }) =>
-      requirement.id.startsWith('04')
-    );
+      const tariffsRequirements = requestedNeed.requirementResponses.filter(({ requirement }) =>
+        requirement.id.startsWith('04')
+      );
 
-    if (tariffsRequirements.length !== 1) {
-      throw new BadRequestException(`Incorrect tariffs information provided.`);
-    }
+      if (tariffsRequirements.length !== 1) {
+        throw new BadRequestException(`Incorrect tariffs information provided.`);
+      }
 
-    // Calculation here
+      const tariff = getTariff(tariffsRequirements[0]);
 
-    const availableVariants: AvailableVariant[] = sortAvailableVariantsByMeasure(
-      motors.map((motor) => {
-        return {
-          id: uuid(),
-          relatedItem: motor,
-          metrics: [
+      availableVariants.forEach((variant) => {
+        const efficiency =
+          efficiencyObject[requestedPower][variant.relatedItem as Variants][requestedNumberOfPoles as string] * 0.01;
+        const yearEnergyUse = normalizeRequestedPower * hoursInDay * daysInWeek * 52;
+        const yearEnergyProduction = yearEnergyUse * efficiency;
+        const yearEnergyProductionImMW = yearEnergyProduction / 1000;
+
+        variant.metrics.push({
+          id: '0200',
+          title: 'Економічні показники',
+          observations: [
             {
-              id: '0100',
-              title: 'Показники енергоефективності',
-              observations: [
-                {
-                  id: '0101',
-                  measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles as string],
-                  notes: 'ККД',
-                },
-              ],
+              id: 'energyEconomy',
+              notes: 'Виробнича ємність',
+              measure: (yearEnergyProductionImMW < 0.01 ? yearEnergyProduction : yearEnergyProductionImMW).toFixed(2),
+              unit: {
+                id: '332',
+                name: `${yearEnergyProductionImMW < 0.01 ? 'к' : 'М'}Вт/рік`,
+              },
             },
           ],
-          criteria: [],
-          quantity: 1,
-        };
-      })
-    );
+        });
+
+        if (typeof tariff === 'number') {
+          variant.metrics[1].observations.push({
+            id: 'financeEconomy',
+            notes: 'Фінансова економія',
+            value: {
+              amount: +((yearEnergyUse - yearEnergyProduction) * tariff).toFixed(1),
+              currency: 'грн/рік' as 'UAH',
+            },
+          });
+        }
+      });
+    }
 
     return {
       category: this.categoryId,
       version,
-      recommendedVariant: availableVariants[0].id,
+      recommendedVariant: availableVariants[0].relatedItem,
       availableVariants,
     };
   }

@@ -194,11 +194,11 @@ export class DocxGeneratorService {
             DocxGeneratorService.generateRow('Конкретна назва предмету закупівлі', category.title, true),
             DocxGeneratorService.generateRow(
               'Деталізований код за ДК: 021-2015',
-              currentItem.classification?.id as string
+              currentItem.classification.id as string
             ),
             DocxGeneratorService.generateRow(
               'Назва код згідно ДК: 021-2015',
-              currentItem.classification?.description as string,
+              currentItem.classification.description as string,
               true
             ),
           ],
