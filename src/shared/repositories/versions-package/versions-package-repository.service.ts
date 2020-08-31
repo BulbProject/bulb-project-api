@@ -16,13 +16,16 @@ export class VersionsPackageRepositoryService {
     private database: DatabaseService
   ) {}
 
-  public async getOne(categoryId: string): Promise<VersionsPackage> {
+  public async getOne(
+    categoryId: string,
+    exceptionMessage = `Version package for category ${categoryId} was not found.`
+  ): Promise<VersionsPackage> {
     return this.database.handleUndefinedValue(
       () =>
         this.packages.findOne({
           id: categoryId,
         }),
-      `Release package for category ${categoryId} was not found`
+      exceptionMessage
     );
   }
 

@@ -186,7 +186,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
           observations.push({
             id: 'energyEconomy',
             notes: 'Менше енергії',
-            measure: currentBulb.energyEconomy.toFixed(0),
+            measure: currentBulb.energyEconomy.toFixed(currentBulb.energyEconomy >= 1 ? 0 : 1),
             unit: {
               id: '332',
               name: 'кВт*год/рік',
@@ -325,7 +325,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
       | undefined;
 
     if (selectedBulbType === undefined || !Object.values(Variants).includes(selectedBulbType)) {
-      throw new UnprocessableEntityException(`Incorrect lamp type was provided.`);
+      throw new BadRequestException(`Incorrect lamp type was provided.`);
     }
 
     const bulbTypeNeedIsPresent = items.some((item) => item.id === selectedBulbType);

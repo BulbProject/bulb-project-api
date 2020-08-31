@@ -67,6 +67,7 @@ export class CategoryVersionRepositoryService {
     return {
       id: category.id,
       version,
+      status: 'pending',
     };
   }
 
@@ -77,9 +78,8 @@ export class CategoryVersionRepositoryService {
       const previousVersion = getLastVersionNumber(versionsPackage.versions);
 
       const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
-
       const nextVersion = `v${Number(previousVersion) + 1}`;
-
+      const status = 'pending';
       const updatedAt = formatDate(new Date());
 
       await Promise.all([
@@ -87,6 +87,7 @@ export class CategoryVersionRepositoryService {
           ...previousCategoryVersion,
           version: nextVersion,
           date: updatedAt,
+          status,
           updatedAt,
           category,
         }),
@@ -97,6 +98,7 @@ export class CategoryVersionRepositoryService {
       return {
         id: categoryId,
         version: nextVersion,
+        status,
       };
     }, `Could not update version for category with id ${categoryId}`);
   }
@@ -119,6 +121,7 @@ export class CategoryVersionRepositoryService {
     return {
       id: categoryId,
       version,
+      status: 'active',
     };
   }
 }
