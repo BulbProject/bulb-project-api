@@ -14,7 +14,7 @@ export class RequirementResponse {
     oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }, { type: 'integer' }],
   })
   @IsUnion(['string', 'number', 'boolean', 'integer'])
-  public value?: string | number | boolean;
+  public value: string | number | boolean;
 
   @IsObject()
   @ValidateNested()
