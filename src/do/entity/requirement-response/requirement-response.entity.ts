@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsObject, IsString, ValidateNested } from 'class-validator';
 
 import { IsUnion } from 'shared/validators';
 
@@ -13,10 +13,10 @@ export class RequirementResponse {
   @ApiProperty({
     oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }, { type: 'integer' }],
   })
-  @IsUnion(['string', 'number', 'integer', 'boolean'])
-  @IsOptional()
+  @IsUnion(['string', 'number', 'boolean', 'integer'])
   public value?: string | number | boolean;
 
+  @IsObject()
   @ValidateNested()
   @Type(() => RequirementReference)
   public requirement: RequirementReference;

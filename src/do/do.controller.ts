@@ -50,7 +50,7 @@ export class DoController {
   public async getCalculation(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
-    @Body(new ValidationPipe({ transform: true }))
+    @Body()
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
     return this.calculation.getCalculation([categoryId, version], requestedNeed);
