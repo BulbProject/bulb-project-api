@@ -14,7 +14,7 @@ export class Observation {
   public notes?: string;
 
   @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
+    oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'integer' }],
   })
   @IsUnion(['string', 'number', 'integer'])
   @IsOptional()

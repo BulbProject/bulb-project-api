@@ -19,6 +19,7 @@ import {
   getSchemaPath,
   ApiBadRequestResponse,
   ApiUnprocessableEntityResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { ApiException } from 'shared/entity';
 import { HttpExceptionFilter } from 'shared/filters';
@@ -44,6 +45,7 @@ export class DoController {
   @UseFilters(HttpExceptionFilter)
   @ApiBody({ type: RequestedNeed })
   @ApiBadRequestResponse({ type: ApiException })
+  @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
   public async getCalculation(
     @Param('categoryId') categoryId: string,
@@ -79,7 +81,8 @@ export class DoController {
       ],
     },
   })
-  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiBadRequestResponse({ type: ApiException })
+  @ApiNotFoundResponse({ type: ApiException })
   @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
   @ApiInternalServerErrorResponse({ type: ApiException })
   public async getSpecification(

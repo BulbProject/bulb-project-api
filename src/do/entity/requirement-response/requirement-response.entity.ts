@@ -11,7 +11,7 @@ export class RequirementResponse {
   public id: string;
 
   @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
+    oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }, { type: 'integer' }],
   })
   @IsUnion(['string', 'number', 'integer', 'boolean'])
   @IsOptional()
