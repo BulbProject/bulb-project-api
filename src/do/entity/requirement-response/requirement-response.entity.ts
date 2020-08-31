@@ -12,6 +12,7 @@ export class RequirementResponse {
 
   @ApiProperty({
     oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }, { type: 'integer' }],
+    example: 'string',
   })
   @IsUnion(['string', 'number', 'boolean', 'integer'])
   public value: string | number | boolean;

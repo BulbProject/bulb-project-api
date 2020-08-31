@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 
 import { formatDate } from '../../utils';
+import { getLastVersionNumber } from '../../utils/get-last-version-number';
 import { CategoriesListRepositoryService } from '../categories-list';
 
 import { DatabaseService } from '../../database';
@@ -73,13 +74,11 @@ export class CategoryVersionRepositoryService {
     return this.database.handleUndefinedValue(async () => {
       const versionsPackage = await this.versionsPackage.getOne(categoryId);
 
-      const [, previosVersion] = [
-        ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
-      ];
+      const previousVersion = getLastVersionNumber(versionsPackage.versions);
 
-      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previosVersion}`]);
+      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
 
-      const nextVersion = `v${Number(previosVersion) + 1}`;
+      const nextVersion = `v${Number(previousVersion) + 1}`;
 
       const updatedAt = formatDate(new Date());
 

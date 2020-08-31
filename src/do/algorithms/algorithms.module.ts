@@ -8,6 +8,7 @@ import { DocumentsService, DocxGeneratorService, CsvService } from '../services'
 import { AlgorithmsService } from './algorithms.service';
 import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps } from './categories';
 import { SpecificationService, CalculationService } from './services';
+import { VersionsPackageRepositoryModule } from '../../shared/repositories/versions-package';
 
 const algorithms = [
   AlgorithmsService,
@@ -19,7 +20,7 @@ const algorithms = [
 ];
 
 @Module({
-  imports: [CategoryVersionRepositoryModule, SpecificationRepositoryModule],
+  imports: [CategoryVersionRepositoryModule, SpecificationRepositoryModule, VersionsPackageRepositoryModule],
   providers: [...algorithms, DocumentsService, DocxGeneratorService, CsvService],
   exports: algorithms,
 })
