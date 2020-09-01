@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { CategoryVersionRepositoryService } from 'shared/repositories/category-version';
 import { VersionsPackageRepositoryService } from 'shared/repositories/versions-package';
@@ -21,11 +21,26 @@ export class CalculationService {
     [categoryId, version]: [string, string],
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
+    console.log(requestedNeed);
+    if (Object.keys(requestedNeed).length === 0) {
+      throw new BadRequestException(`Requested body is empty.`);
+    }
+
+    if (!(categoryId in this.algorithms.algorithms)) {
+      throw new InternalServerErrorException(`Algorithm for category ${categoryId} do not exist.`);
+    }
+
     const versionsPackage = await this.versionsPackage.getOne(categoryId);
 
-    const lastVersion = getLastVersionNumber(versionsPackage.versions);
+    const lastVersion = Number(getLastVersionNumber(versionsPackage.versions));
 
-    if (`v${lastVersion}` !== version) {
+    const versionNumber = Number(version.slice(1));
+
+    if (versionNumber > lastVersion || versionNumber < 1) {
+      throw new BadRequestException(`Category version do not exist.`);
+    }
+
+    if (versionNumber < lastVersion) {
       throw new BadRequestException(`Calculation is impossible for archive version.`);
     }
 
