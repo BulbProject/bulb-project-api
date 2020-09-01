@@ -21,7 +21,6 @@ export class CalculationService {
     [categoryId, version]: [string, string],
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
-    console.log(requestedNeed);
     if (Object.keys(requestedNeed).length === 0) {
       throw new BadRequestException(`Requested body is empty.`);
     }
