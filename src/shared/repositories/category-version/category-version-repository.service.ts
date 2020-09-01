@@ -2,8 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 
-import { formatDate } from '../../utils';
-import { getLastVersionNumber } from '../../utils/get-last-version-number';
+import { formatDate, getLastVersionNumber } from '../../utils';
 import { CategoriesListRepositoryService } from '../categories-list';
 
 import { DatabaseService } from '../../database';

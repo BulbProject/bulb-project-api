@@ -1,5 +1,5 @@
-export const getLastVersionNumber = (versions: string[]): string => {
+export const getLastVersionNumber = (versions: string[]): number => {
   const [, lastVersion] = [...(versions[versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray)];
 
-  return lastVersion;
+  return Number(lastVersion);
 };

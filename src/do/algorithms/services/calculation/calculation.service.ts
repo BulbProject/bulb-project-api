@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 
 import { CategoryVersionRepositoryService } from 'shared/repositories/category-version';
 import { VersionsPackageRepositoryService } from 'shared/repositories/versions-package';
-import { getLastVersionNumber } from 'shared/utils/get-last-version-number';
+import { getLastVersionNumber } from 'shared/utils';
 
 import { AlgorithmsService } from '../../algorithms.service';
 
@@ -26,12 +26,12 @@ export class CalculationService {
     }
 
     if (!(categoryId in this.algorithms.algorithms)) {
-      throw new InternalServerErrorException(`Algorithm for category ${categoryId} do not exist.`);
+      throw new InternalServerErrorException(`Algorithm for category ${categoryId} does not exist.`);
     }
 
     const versionsPackage = await this.versionsPackage.getOne(categoryId);
 
-    const lastVersion = Number(getLastVersionNumber(versionsPackage.versions));
+    const lastVersion = getLastVersionNumber(versionsPackage.versions);
 
     const versionNumber = Number(version.slice(1));
 
@@ -40,7 +40,7 @@ export class CalculationService {
     }
 
     if (versionNumber < lastVersion) {
-      throw new BadRequestException(`Calculation is impossible for archive version.`);
+      throw new BadRequestException(`Calculation is impossible for archived version.`);
     }
 
     const categoryVersion = await this.categories.getOne([categoryId, version]);
