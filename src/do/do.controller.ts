@@ -1,4 +1,14 @@
-import { Body, Controller, Param, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  UseFilters,
+  UseInterceptors,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiOkResponse,
@@ -9,11 +19,13 @@ import {
   getSchemaPath,
   ApiBadRequestResponse,
   ApiUnprocessableEntityResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { ApiException } from 'shared/entity';
+import { HttpExceptionFilter } from 'shared/filters';
 
 import type { Egp, Mode } from './entity';
-import { CalculationPayload, CalculationResponse } from './entity/calculation';
+import { CalculationResponse } from './entity/calculation';
 import { SpecificationId } from './entity/specification';
 import type { SpecificationResponse } from './entity/specification';
 
@@ -29,15 +41,16 @@ export class DoController {
   public constructor(private calculation: CalculationService, private specification: SpecificationService) {}
 
   @Post('calculation/:categoryId/:version')
+  @HttpCode(200)
+  @UseFilters(HttpExceptionFilter)
   @ApiBody({ type: RequestedNeed })
-  @ApiOkResponse({ type: CalculationPayload })
-  @ApiBadRequestResponse({ description: 'Bad request' })
-  @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
+  @ApiBadRequestResponse({ type: ApiException })
+  @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
   public async getCalculation(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
-    @Body(new ValidationPipe({ transform: true }))
+    @Body()
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
     return this.calculation.getCalculation([categoryId, version], requestedNeed);
@@ -68,7 +81,8 @@ export class DoController {
       ],
     },
   })
-  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiBadRequestResponse({ type: ApiException })
+  @ApiNotFoundResponse({ type: ApiException })
   @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
   @ApiInternalServerErrorResponse({ type: ApiException })
   public async getSpecification(

@@ -12,7 +12,7 @@ import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps } from '.
 
 @Injectable()
 export class AlgorithmsService {
-  private readonly algorithms: Record<string, AlgorithmEngine> = {
+  public readonly algorithms: Record<string, AlgorithmEngine> = {
     '31500000-1': new LightingEquipmentAndElectricLamps(this.csv, this.specifications, this.docxGenerator),
     '31110000-0': new ElectricMotors(this.csv),
     '42122130-0': new WaterPumps(this.csv),

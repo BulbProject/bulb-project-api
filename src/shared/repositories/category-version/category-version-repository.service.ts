@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 
-import { formatDate } from '../../utils';
+import { formatDate, getLastVersionNumber } from '../../utils';
 import { CategoriesListRepositoryService } from '../categories-list';
 
 import { DatabaseService } from '../../database';
@@ -72,17 +72,11 @@ export class CategoryVersionRepositoryService {
 
   public async updateVersion(categoryId: string, category: Category): Promise<ManageResponse> {
     return this.database.handleUndefinedValue(async () => {
-      const versionsPackage = await this.versionsPackage.getOne(
-        categoryId,
-        `Category ${categoryId} was not found for update.`
-      );
+      const versionsPackage = await this.versionsPackage.getOne(categoryId);
 
-      const [, previousVersion] = [
-        ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
-      ];
+      const previousVersion = getLastVersionNumber(versionsPackage.versions);
 
       const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
-
       const nextVersion = `v${Number(previousVersion) + 1}`;
       const status = 'pending';
       const updatedAt = formatDate(new Date());
