@@ -7,7 +7,7 @@ import { CalculationPayload, CalculationResponse } from '../../entity/calculatio
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
 
-import { getTariff, sortAvailableVariantsByMeasure } from '../../../shared/utils';
+import { sortAvailableVariantsByMeasure } from '../../../shared/utils';
 
 const poles = ['2', '4', '6', '8'];
 const sliceIndent = 3;
@@ -27,10 +27,12 @@ interface EfficiencyObject {
   };
 }
 
-export class ElectricMotors implements AlgorithmEngine {
+export class ElectricMotors extends AlgorithmEngine {
   public readonly categoryId = '31110000-0';
 
-  public constructor(private csv: CsvService) {}
+  public constructor(private csv: CsvService) {
+    super();
+  }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   public async getCalculation({
@@ -109,50 +111,17 @@ export class ElectricMotors implements AlgorithmEngine {
       })
     );
 
-    const modeOfUseResponses = requestedNeed.requirementResponses.filter(({ requirement }) =>
-      requirement.id.startsWith('03')
-    );
+    const modeOfUse = this.getModeOfUse(requestedNeed.requirementResponses, '03');
 
-    if (modeOfUseResponses.length === 0) {
-      throw new BadRequestException(`Mode of use responses must be provided.`);
-    }
-
-    const modeOfUseResponsesIsConsistent = modeOfUseResponses.every(({ requirement }) => {
-      return modeOfUseResponses[0].requirement.id.slice(2, 4) === requirement.id.slice(2, 4);
-    });
-
-    if (!modeOfUseResponsesIsConsistent) {
-      throw new BadRequestException(
-        `Requirement responses for mode of use are given from different requirement groups.`
-      );
-    }
-
-    if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
-      const hoursInDay = modeOfUseResponses[0]?.value as unknown;
-      const daysInWeek = modeOfUseResponses[1]?.value as unknown;
-
-      if (typeof hoursInDay !== 'number' || hoursInDay <= 0 || hoursInDay > 24) {
-        throw new BadRequestException('Incorrect working hours per day provided.');
-      }
-
-      if (typeof daysInWeek !== 'number' || daysInWeek <= 0 || daysInWeek > 7) {
-        throw new BadRequestException('Incorrect working days per week provided.');
-      }
+    if (modeOfUse) {
+      const { hoursInDay, daysInWeek } = modeOfUse;
 
       const normalizeRequestedPower = /-/.test(requestedPower)
         ? requestedPower.split('-').reduce((accumulator, power) => accumulator + +power, 0) /
           requestedPower.split('-').length
         : +requestedPower;
 
-      const tariffsRequirements = requestedNeed.requirementResponses.filter(({ requirement }) =>
-        requirement.id.startsWith('04')
-      );
-
-      if (tariffsRequirements.length !== 1) {
-        throw new BadRequestException(`Incorrect tariffs information provided.`);
-      }
-
-      const tariff = getTariff(tariffsRequirements[0]);
+      const tariff = this.getTariff(requestedNeed.requirementResponses, '04');
 
       availableVariants.forEach((variant) => {
         const efficiency =
@@ -177,7 +146,7 @@ export class ElectricMotors implements AlgorithmEngine {
           ],
         });
 
-        if (typeof tariff === 'number') {
+        if (tariff) {
           variant.metrics[1].observations.push({
             id: 'financeEconomy',
             notes: 'Фінансова економія',

@@ -13,10 +13,12 @@ const EndSuctionVariants = ['ESOB', 'ESCC', 'ESCCi'];
 
 const MultistageVariants = ['MS-V', 'MSS'];
 
-export class WaterPumps implements AlgorithmEngine {
+export class WaterPumps extends AlgorithmEngine {
   public readonly categoryId = '42122130-0';
 
-  public constructor(private csv: CsvService) {}
+  public constructor(private csv: CsvService) {
+    super();
+  }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   public async getCalculation({
@@ -38,48 +40,18 @@ export class WaterPumps implements AlgorithmEngine {
       })?.value as unknown;
     };
 
-    const modeOfUseResponses = requestedNeed.requirementResponses.filter(({ requirement }) =>
-      requirement.id.startsWith('03')
-    );
+    const modeOfUse = this.getModeOfUse(requestedNeed.requirementResponses, '03');
 
-    if (modeOfUseResponses.length === 0) {
-      throw new BadRequestException(`Mode of use responses must be provided.`);
-    }
-
-    const modeOfUseResponsesIsConsistent = modeOfUseResponses.every(({ requirement }) => {
-      return modeOfUseResponses[0].requirement.id.slice(2, 4) === requirement.id.slice(2, 4);
-    });
-
-    if (!modeOfUseResponsesIsConsistent) {
-      throw new BadRequestException(
-        `Requirement responses for mode of use are given from different requirement groups.`
-      );
-    }
-
-    if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
-      const hoursInDay = modeOfUseResponses[0]?.value as unknown;
-      const daysInWeek = modeOfUseResponses[1]?.value as unknown;
-
-      if (typeof hoursInDay !== 'number' || hoursInDay <= 0 || hoursInDay > 24) {
-        throw new BadRequestException('Incorrect working hours per day provided.');
-      }
-
-      if (typeof daysInWeek !== 'number' || daysInWeek <= 0 || daysInWeek > 7) {
-        throw new BadRequestException('Incorrect working days per week provided.');
-      }
+    if (modeOfUse) {
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { hoursInDay, daysInWeek } = modeOfUse;
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const tariff = this.getTariff(requestedNeed.requirementResponses, '04');
 
       // Calculation here
     }
-
-    const tariffsRequirements = requestedNeed.requirementResponses.filter(({ requirement }) =>
-      requirement.id.startsWith('04')
-    );
-
-    if (tariffsRequirements.length !== 1) {
-      throw new BadRequestException(`Incorrect tariffs information provided.`);
-    }
-
-    // Calculation here
 
     const getEfficiency = (itemId: string) => {
       const calculatedValuesMap = {

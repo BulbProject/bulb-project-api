@@ -8,9 +8,9 @@ import { DataType } from 'ts4ocds/extensions/requirements';
 import { RequirementGroup } from '../../../shared/entity/category/requirement-group.entity';
 import { Requirement } from '../../../shared/entity/category/requirement.entity';
 import { SpecificationRepositoryService } from '../../../shared/repositories/specification';
-import { generateId, getFormulas, getTariff } from '../../../shared/utils';
+import { generateId, getFormulas } from '../../../shared/utils';
 
-import type { AlgorithmEngine } from '../../entity';
+import { AlgorithmEngine } from '../../entity';
 import { AvailableVariant } from '../../entity/available-variant';
 import { RequirementResponse } from '../../entity/requirement-response';
 import { Metric } from '../../entity/variant';
@@ -58,14 +58,16 @@ type Calculation = {
   };
 };
 
-export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
+export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
   public readonly categoryId = '31500000-1';
 
   public constructor(
     private csv: CsvService,
     private specifications: SpecificationRepositoryService,
     private docxGenerator: DocxGeneratorService
-  ) {}
+  ) {
+    super();
+  }
 
   private static calculateEnergyEfficiencyClass(eei: number): string {
     if (eei <= 0.13) {
@@ -625,35 +627,14 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
     }
 
     // 3) Bulb lifetime
-    const modeOfUseResponses = requirementResponses.filter(({ requirement }) => requirement.id.startsWith('03'));
+    const modeOfUse = this.getModeOfUse(requirementResponses, '03');
 
-    if (modeOfUseResponses.length === 0) {
-      throw new BadRequestException(`Mode of use responses must be provided.`);
-    }
-
-    const modeOfUseResponsesIsConsistent = modeOfUseResponses.every(({ requirement }) => {
-      return modeOfUseResponses[0].requirement.id.slice(2, 4) === requirement.id.slice(2, 4);
-    });
-
-    if (!modeOfUseResponsesIsConsistent) {
-      throw new BadRequestException(
-        `Requirement responses for mode of use are given from different requirement groups.`
-      );
-    }
-
-    if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
-      const hoursInDay = modeOfUseResponses[0]?.value as unknown;
-      const daysInWeek = modeOfUseResponses[1]?.value as unknown;
-
-      if (typeof hoursInDay !== 'number' || hoursInDay <= 0 || hoursInDay > 24) {
-        throw new BadRequestException('Incorrect working hours per day provided.');
-      }
-
-      if (typeof daysInWeek !== 'number' || daysInWeek <= 0 || daysInWeek > 7) {
-        throw new BadRequestException('Incorrect working days per week provided.');
-      }
+    if (modeOfUse) {
+      const { hoursInDay, daysInWeek } = modeOfUse;
+      const tariff = this.getTariff(requirementResponses, '04');
 
       (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
+        const { quantity, power } = availableBulbTypes[bulbType];
         const workingHoursInWeek = evaluate(formulas.workingHoursInWeek, {
           hoursInDay,
           daysInWeek,
@@ -667,42 +648,28 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
         availableBulbTypes[bulbType].modeOfUseLifetime = +(techChars[bulbType].timeRate / workingHoursInYear).toFixed(
           2
         );
+
+        if (workingHoursInYear) {
+          availableBulbTypes[bulbType].energyEconomy = evaluate(formulas.energyEconomy, {
+            Pselected: availableBulbTypes[selectedBulbType].power,
+            quantity,
+            Pother: power,
+            workingHoursInYear,
+          });
+
+          if (tariff) {
+            availableBulbTypes[bulbType].financeEconomy = +evaluate(formulas.financeEconomy, {
+              Pselected: availableBulbTypes[selectedBulbType].power,
+              quantity,
+              tariff,
+              Pother: power,
+              workingHoursInYear,
+            }).toFixed(2);
+          }
+        }
       });
     }
 
-    // 4) Economy
-    const tariffsRequirements = requirementResponses.filter(({ requirement }) => requirement.id.startsWith('04'));
-
-    if (tariffsRequirements.length !== 1) {
-      throw new BadRequestException(`Incorrect tariffs information provided.`);
-    }
-
-    const tariff = getTariff(tariffsRequirements[0]);
-
-    (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
-      const { quantity, power, workingHoursInYear } = availableBulbTypes[bulbType];
-
-      if (workingHoursInYear) {
-        availableBulbTypes[bulbType].energyEconomy = evaluate(formulas.energyEconomy, {
-          Pselected: availableBulbTypes[selectedBulbType].power,
-          quantity,
-          Pother: power,
-          workingHoursInYear,
-        });
-
-        if (typeof tariff === 'number' && tariff > 0) {
-          availableBulbTypes[bulbType].financeEconomy = +evaluate(formulas.financeEconomy, {
-            Pselected: availableBulbTypes[selectedBulbType].power,
-            quantity,
-            tariff,
-            Pother: power,
-            workingHoursInYear,
-          }).toFixed(2);
-        }
-      }
-    });
-
-    // 5) Efficiency
     (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
       availableBulbTypes[bulbType].eeClass = LightingEquipmentAndElectricLamps.calculateEnergyEfficiencyClass(
         availableBulbTypes[bulbType].eei
