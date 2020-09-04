@@ -69,7 +69,6 @@ export class CategoriesController {
     example: 'false',
     required: false,
   })
-  @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
   public async getListEntries(@Query() query: QueryDto): Promise<CategoriesListEntry[] | CategoryDetails[]> {
     if (query.details === 'true') {
@@ -82,8 +81,21 @@ export class CategoriesController {
   @Get(':categoryId')
   @UseFilters(HttpExceptionFilter)
   @ApiOkResponse({
-    type: VersionsPackage,
-    status: HttpStatus.OK,
+    schema: {
+      example: {
+        id: 'string',
+        license: 'string',
+        publicationPolicy: 'string',
+        publishedDate: 'string',
+        publisher: {
+          name: 'string',
+          uri: 'string',
+        },
+        uri: 'string',
+        version: 'string',
+        versions: ['string'],
+      },
+    },
   })
   @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
