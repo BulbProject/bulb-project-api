@@ -192,13 +192,10 @@ export class DocxGeneratorService {
           columnWidths: DocxGeneratorService.equalColumns,
           rows: [
             DocxGeneratorService.generateRow('Конкретна назва предмету закупівлі', category.title, true),
-            DocxGeneratorService.generateRow(
-              'Деталізований код за ДК: 021-2015',
-              currentItem.classification?.id as string
-            ),
+            DocxGeneratorService.generateRow('Деталізований код за ДК: 021-2015', currentItem.classification.id),
             DocxGeneratorService.generateRow(
               'Назва код згідно ДК: 021-2015',
-              currentItem.classification?.description as string,
+              currentItem.classification.description,
               true
             ),
           ],

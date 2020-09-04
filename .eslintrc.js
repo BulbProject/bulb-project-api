@@ -93,6 +93,7 @@ module.exports = {
     'sort-imports': 'off',
     'no-useless-constructor': 'off',
     'class-methods-use-this': 'off',
-    'max-classes-per-file': 'off'
+    'max-classes-per-file': 'off',
+    'consistent-return': 'off',
   }
 };
