@@ -28,7 +28,7 @@ export class SpecificationService {
         return item.id === specificationBody.selectedVariant.relatedItem;
       })
     ) {
-      throw new BadRequestException(`Field 'relatedItem' is not match.`);
+      throw new BadRequestException(`Field 'relatedItem' does not match.`);
     }
 
     return this.algorithms.getSpecification(categoryId, {
