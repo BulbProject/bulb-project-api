@@ -1,1 +1,1 @@
-export * from './existed-algorithm.guard';
+export * from './existing-algorithm.guard';

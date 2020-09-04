@@ -3,7 +3,7 @@ import { CanActivate, ExecutionContext, Injectable, InternalServerErrorException
 import { AlgorithmsService } from '../algorithms';
 
 @Injectable()
-export class ExistedAlgorithmGuard implements CanActivate {
+export class ExistingAlgorithmGuard implements CanActivate {
   public constructor(private algorithms: AlgorithmsService) {}
 
   public canActivate(context: ExecutionContext): boolean {

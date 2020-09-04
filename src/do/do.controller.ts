@@ -14,7 +14,7 @@ import {
 import { ApiException } from 'shared/entity';
 import { HttpExceptionFilter } from 'shared/filters';
 
-import { ExistedAlgorithmGuard } from './guards';
+import { ExistingAlgorithmGuard } from './guards';
 
 import { CalculationResponse } from './entity/calculation';
 import { SpecificationId, QueryDto } from './entity/specification';
@@ -31,7 +31,7 @@ export class DoController {
   public constructor(private calculation: CalculationService, private specification: SpecificationService) {}
 
   @Post('calculation/:categoryId/:version')
-  @UseGuards(ExistedAlgorithmGuard)
+  @UseGuards(ExistingAlgorithmGuard)
   @HttpCode(200)
   @UseFilters(HttpExceptionFilter)
   @ApiBody({ type: RequestedNeed })
@@ -48,7 +48,7 @@ export class DoController {
   }
 
   @Post('specification/:categoryId/:version')
-  @UseGuards(ExistedAlgorithmGuard)
+  @UseGuards(ExistingAlgorithmGuard)
   @UseFilters(HttpExceptionFilter)
   @UseInterceptors(DocxHeadersInterceptor)
   @ApiQuery({
