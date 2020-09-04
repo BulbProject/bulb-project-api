@@ -27,11 +27,14 @@ interface EfficiencyObject {
   };
 }
 
-export class ElectricMotors implements AlgorithmEngine {
+export class ElectricMotors extends AlgorithmEngine {
   public readonly categoryId = '31110000-0';
 
-  public constructor(private csv: CsvService) {}
+  public constructor(private csv: CsvService) {
+    super();
+  }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   public async getCalculation({
     version,
     requestedNeed: { requestedNeed },
@@ -85,49 +88,6 @@ export class ElectricMotors implements AlgorithmEngine {
       throw new BadRequestException('A wrong value for requested power was transmitted.');
     }
 
-    const modeOfUseResponses = requestedNeed.requirementResponses.filter(({ requirement }) =>
-      requirement.id.startsWith('03')
-    );
-
-    if (modeOfUseResponses.length === 0) {
-      throw new BadRequestException(`Mode of use responses must be provided.`);
-    }
-
-    const modeOfUseResponsesIsConsistent = modeOfUseResponses.every(({ requirement }) => {
-      return modeOfUseResponses[0].requirement.id.slice(2, 4) === requirement.id.slice(2, 4);
-    });
-
-    if (!modeOfUseResponsesIsConsistent) {
-      throw new BadRequestException(
-        `Requirement responses for mode of use are given from different requirement groups.`
-      );
-    }
-
-    if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
-      const hoursInDay = modeOfUseResponses[0]?.value as unknown;
-      const daysInWeek = modeOfUseResponses[1]?.value as unknown;
-
-      if (typeof hoursInDay !== 'number' || hoursInDay <= 0 || hoursInDay > 24) {
-        throw new BadRequestException('Incorrect working hours per day provided.');
-      }
-
-      if (typeof daysInWeek !== 'number' || daysInWeek <= 0 || daysInWeek > 7) {
-        throw new BadRequestException('Incorrect working days per week provided.');
-      }
-
-      // Calculation here
-    }
-
-    const tariffsRequirements = requestedNeed.requirementResponses.filter(({ requirement }) =>
-      requirement.id.startsWith('04')
-    );
-
-    if (tariffsRequirements.length !== 1) {
-      throw new BadRequestException(`Incorrect tariffs information provided.`);
-    }
-
-    // Calculation here
-
     const availableVariants: AvailableVariant[] = sortAvailableVariantsByMeasure(
       motors.map((motor) => {
         return {
@@ -146,16 +106,63 @@ export class ElectricMotors implements AlgorithmEngine {
               ],
             },
           ],
-          criteria: [],
           quantity: 1,
         };
       })
     );
 
+    const modeOfUse = this.tryGetModeOfUse(requestedNeed.requirementResponses, '03');
+
+    if (modeOfUse) {
+      const { hoursInDay, daysInWeek } = modeOfUse;
+
+      const normalizedRequestedPower = /-/.test(requestedPower)
+        ? requestedPower.split('-').reduce((accumulator, power) => accumulator + +power, 0) /
+          requestedPower.split('-').length
+        : +requestedPower;
+
+      const tariff = this.tryGetTariff(requestedNeed.requirementResponses, '04');
+
+      availableVariants.forEach((variant) => {
+        const efficiency =
+          efficiencyObject[requestedPower][variant.relatedItem as Variants][requestedNumberOfPoles as string] * 0.01;
+        const yearEnergyUse = normalizedRequestedPower * hoursInDay * daysInWeek * 52;
+        const yearEnergyProduction = yearEnergyUse * efficiency;
+        const yearEnergyProductionImMW = yearEnergyProduction / 1000;
+
+        variant.metrics.push({
+          id: '0200',
+          title: 'Економічні показники',
+          observations: [
+            {
+              id: 'energyEconomy',
+              notes: 'Виробнича ємність',
+              measure: (yearEnergyProductionImMW < 0.01 ? yearEnergyProduction : yearEnergyProductionImMW).toFixed(2),
+              unit: {
+                id: '332',
+                name: `${yearEnergyProductionImMW < 0.01 ? 'к' : 'М'}Вт/рік`,
+              },
+            },
+          ],
+        });
+
+        if (tariff) {
+          variant.metrics[1].observations.push({
+            id: 'financeEconomy',
+            notes: 'Фінансова економія',
+            value: {
+              amount: +((yearEnergyUse - yearEnergyProduction) * tariff).toFixed(1),
+              currency: 'грн/рік' as 'UAH',
+            },
+          });
+        }
+      });
+    }
+
     return {
       category: this.categoryId,
       version,
-      recommendedVariant: availableVariants[0].id,
+      recommendedVariant: availableVariants[0].relatedItem,
       availableVariants,
     };
   }
