@@ -81,21 +81,7 @@ export class CategoriesController {
   @Get(':categoryId')
   @UseFilters(HttpExceptionFilter)
   @ApiOkResponse({
-    schema: {
-      example: {
-        id: 'string',
-        license: 'string',
-        publicationPolicy: 'string',
-        publishedDate: 'string',
-        publisher: {
-          name: 'string',
-          uri: 'string',
-        },
-        uri: 'string',
-        version: 'string',
-        versions: ['string'],
-      },
-    },
+    type: VersionsPackage,
   })
   @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
