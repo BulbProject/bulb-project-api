@@ -111,22 +111,22 @@ export class ElectricMotors extends AlgorithmEngine {
       })
     );
 
-    const modeOfUse = this.getModeOfUse(requestedNeed.requirementResponses, '03');
+    const modeOfUse = this.tryGetModeOfUse(requestedNeed.requirementResponses, '03');
 
     if (modeOfUse) {
       const { hoursInDay, daysInWeek } = modeOfUse;
 
-      const normalizeRequestedPower = /-/.test(requestedPower)
+      const normalizedRequestedPower = /-/.test(requestedPower)
         ? requestedPower.split('-').reduce((accumulator, power) => accumulator + +power, 0) /
           requestedPower.split('-').length
         : +requestedPower;
 
-      const tariff = this.getTariff(requestedNeed.requirementResponses, '04');
+      const tariff = this.tryGetTariff(requestedNeed.requirementResponses, '04');
 
       availableVariants.forEach((variant) => {
         const efficiency =
           efficiencyObject[requestedPower][variant.relatedItem as Variants][requestedNumberOfPoles as string] * 0.01;
-        const yearEnergyUse = normalizeRequestedPower * hoursInDay * daysInWeek * 52;
+        const yearEnergyUse = normalizedRequestedPower * hoursInDay * daysInWeek * 52;
         const yearEnergyProduction = yearEnergyUse * efficiency;
         const yearEnergyProductionImMW = yearEnergyProduction / 1000;
 

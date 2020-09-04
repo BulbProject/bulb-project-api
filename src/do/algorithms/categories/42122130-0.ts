@@ -40,7 +40,7 @@ export class WaterPumps extends AlgorithmEngine {
       })?.value as unknown;
     };
 
-    const modeOfUse = this.getModeOfUse(requestedNeed.requirementResponses, '03');
+    const modeOfUse = this.tryGetModeOfUse(requestedNeed.requirementResponses, '03');
 
     if (modeOfUse) {
       // @ts-ignore
@@ -48,7 +48,7 @@ export class WaterPumps extends AlgorithmEngine {
       const { hoursInDay, daysInWeek } = modeOfUse;
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const tariff = this.getTariff(requestedNeed.requirementResponses, '04');
+      const tariff = this.tryGetTariff(requestedNeed.requirementResponses, '04');
 
       // Calculation here
     }

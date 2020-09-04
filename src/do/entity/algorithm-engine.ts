@@ -12,7 +12,7 @@ interface ModeOfUse {
 export abstract class AlgorithmEngine {
   public readonly categoryId: string;
 
-  public getTariff(requirementResponses: RequirementResponse[], criterionNumber: string): number | void {
+  protected tryGetTariff(requirementResponses: RequirementResponse[], criterionNumber: string): number | void {
     const tariffResponses = requirementResponses.filter(({ requirement }) => {
       return requirement.id.startsWith(criterionNumber);
     });
@@ -29,7 +29,7 @@ export abstract class AlgorithmEngine {
       (requirementReferenceId === '0401010000' && (typeof tariffValue !== 'number' || tariffValue <= 0)) ||
       (requirementReferenceId === '0402010000' && (typeof tariffValue !== 'boolean' || !tariffValue))
     ) {
-      throw new BadRequestException(`Requirement responses for tariffs not valid.`);
+      throw new BadRequestException(`Requirement responses for tariffs are not valid.`);
     }
 
     if (typeof tariffValue === 'number') {
@@ -37,7 +37,7 @@ export abstract class AlgorithmEngine {
     }
   }
 
-  public getModeOfUse(requirementResponses: RequirementResponse[], criterionNumber: string): ModeOfUse | void {
+  protected tryGetModeOfUse(requirementResponses: RequirementResponse[], criterionNumber: string): ModeOfUse | void {
     const modeOfUseResponses = requirementResponses.filter(({ requirement }) => {
       return requirement.id.startsWith(criterionNumber);
     });

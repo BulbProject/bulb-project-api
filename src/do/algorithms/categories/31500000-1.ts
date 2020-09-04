@@ -627,11 +627,11 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     }
 
     // 3) Bulb lifetime
-    const modeOfUse = this.getModeOfUse(requirementResponses, '03');
+    const modeOfUse = this.tryGetModeOfUse(requirementResponses, '03');
 
     if (modeOfUse) {
       const { hoursInDay, daysInWeek } = modeOfUse;
-      const tariff = this.getTariff(requirementResponses, '04');
+      const tariff = this.tryGetTariff(requirementResponses, '04');
 
       (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
         const { quantity, power } = availableBulbTypes[bulbType];
