@@ -12,6 +12,7 @@ export class ExistedAlgorithmGuard implements CanActivate {
     if (!(categoryId in this.algorithms.algorithms)) {
       throw new InternalServerErrorException(`Algorithm for category ${categoryId} does not exist.`);
     }
+
     return true;
   }
 }

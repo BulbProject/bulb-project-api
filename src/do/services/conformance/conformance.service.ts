@@ -28,8 +28,8 @@ export class ConformanceService {
 
     const categoryVersion = await this.categories.getOne([categoryId, version]);
 
-    if (categoryVersion.status === 'pending') {
-      throw new BadRequestException('Calculation is impossible because category status is pending.');
+    if (categoryVersion.status !== 'active') {
+      throw new BadRequestException('Calculation is only possible for active category.');
     }
 
     return categoryVersion;

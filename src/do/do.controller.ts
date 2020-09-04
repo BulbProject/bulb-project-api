@@ -6,7 +6,6 @@ import {
   ApiQuery,
   ApiTags,
   ApiExtraModels,
-  getSchemaPath,
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiCreatedResponse,
@@ -15,7 +14,7 @@ import {
 import { ApiException } from 'shared/entity';
 import { HttpExceptionFilter } from 'shared/filters';
 
-import { ExistedAlgorithmGuard } from './guards/existed-algorithm.guard';
+import { ExistedAlgorithmGuard } from './guards';
 
 import { CalculationResponse } from './entity/calculation';
 import { SpecificationId, QueryDto } from './entity/specification';
@@ -70,15 +69,6 @@ export class DoController {
   @ApiCreatedResponse({
     schema: {
       example: { id: 'string' },
-      oneOf: [
-        {
-          $ref: getSchemaPath(SpecificationId),
-        },
-        {
-          type: 'string',
-          description: 'Buffer',
-        },
-      ],
     },
   })
   @ApiBadRequestResponse({ type: ApiException })

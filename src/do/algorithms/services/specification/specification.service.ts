@@ -18,7 +18,7 @@ export class SpecificationService {
   ): SpecificationResponse {
     // TODO: add validation for empty body request
     if (Object.keys(specificationBody).length === 0) {
-      throw new BadRequestException(`Requested body is empty`);
+      throw new BadRequestException(`Request body should not be empty.`);
     }
 
     const categoryVersion = await this.conformance.getCategory(categoryId, version);
@@ -28,7 +28,7 @@ export class SpecificationService {
         return item.id === specificationBody.selectedVariant.relatedItem;
       })
     ) {
-      throw new BadRequestException(`Related item is not match`);
+      throw new BadRequestException(`Field 'relatedItem' is not match.`);
     }
 
     return this.algorithms.getSpecification(categoryId, {
