@@ -21,7 +21,7 @@ import {
 
 import { Category, Criterion, Item } from '../../../shared/entity';
 
-import { SelectedVariant } from '../../entity';
+import { SpecificationBody } from '../../entity';
 
 import { ecoDesignData } from './images-data.json';
 
@@ -151,7 +151,7 @@ export class DocxGeneratorService {
 
   public async generateDocx(
     category: Category,
-    selectedVariant: SelectedVariant['selectedVariant'],
+    selectedVariant: SpecificationBody['selectedVariant'],
     criteria: Criterion[]
   ): Promise<Buffer> {
     this.document = new Document({
@@ -194,11 +194,11 @@ export class DocxGeneratorService {
             DocxGeneratorService.generateRow('Конкретна назва предмету закупівлі', category.title, true),
             DocxGeneratorService.generateRow(
               'Деталізований код за ДК: 021-2015',
-              currentItem.classification?.id as string
+              currentItem.classification.id as string
             ),
             DocxGeneratorService.generateRow(
               'Назва код згідно ДК: 021-2015',
-              currentItem.classification?.description as string,
+              currentItem.classification.description as string,
               true
             ),
           ],

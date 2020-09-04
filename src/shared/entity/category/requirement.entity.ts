@@ -48,6 +48,7 @@ export class Requirement {
 
   @IsOptional()
   @ValidateNested()
+  @Type(() => Unit)
   public unit?: Unit;
 
   @IsOptional()

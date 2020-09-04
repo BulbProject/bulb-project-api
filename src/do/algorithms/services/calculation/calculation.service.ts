@@ -1,21 +1,15 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-
-import { CategoryVersionRepositoryService } from 'shared/repositories/category-version';
-import { VersionsPackageRepositoryService } from 'shared/repositories/versions-package';
-import { getLastVersionNumber } from 'shared/utils';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { AlgorithmsService } from '../../algorithms.service';
+
+import { ConformanceService } from '../../../services/conformance';
 
 import type { CalculationResponse } from '../../../entity/calculation';
 import { RequestedNeed } from '../../../entity/requested-need';
 
 @Injectable()
 export class CalculationService {
-  public constructor(
-    private versionsPackage: VersionsPackageRepositoryService,
-    private categories: CategoryVersionRepositoryService,
-    private algorithms: AlgorithmsService
-  ) {}
+  public constructor(private algorithms: AlgorithmsService, private conformance: ConformanceService) {}
 
   public async getCalculation(
     [categoryId, version]: [string, string],
@@ -26,29 +20,7 @@ export class CalculationService {
       throw new BadRequestException(`Requested body is empty.`);
     }
 
-    if (!(categoryId in this.algorithms.algorithms)) {
-      throw new InternalServerErrorException(`Algorithm for category ${categoryId} does not exist.`);
-    }
-
-    const versionsPackage = await this.versionsPackage.getOne(categoryId);
-
-    const lastVersion = getLastVersionNumber(versionsPackage.versions);
-
-    const versionNumber = Number(version.slice(1));
-
-    if (versionNumber > lastVersion || versionNumber < 1) {
-      throw new BadRequestException(`Category version do not exist.`);
-    }
-
-    if (versionNumber < lastVersion) {
-      throw new BadRequestException(`Calculation is impossible for archived version.`);
-    }
-
-    const categoryVersion = await this.categories.getOne([categoryId, version]);
-
-    if (categoryVersion.status === 'pending') {
-      throw new BadRequestException('Calculation is impossible because category status is pending.');
-    }
+    const categoryVersion = await this.conformance.getCategory(categoryId, version);
 
     return this.algorithms.getCalculation(categoryId, {
       category: categoryVersion.category,
