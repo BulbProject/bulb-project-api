@@ -1,4 +1,13 @@
-import { ClassSerializerInterceptor, Controller, Get, HttpStatus, Param, Query, UseInterceptors } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Query,
+  UseFilters,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiInternalServerErrorResponse,
@@ -14,8 +23,9 @@ import { CategoriesListEntry, CategoriesListRepositoryService } from '../shared/
 import { CategoryVersion, CategoryVersionRepositoryService } from '../shared/repositories/category-version';
 import { VersionsPackage, VersionsPackageRepositoryService } from '../shared/repositories/versions-package';
 
-import { CategoryDetails } from './entity';
+import { CategoryDetails, QueryDto } from './entity';
 import { CategoriesDetailsService } from './services';
+import { HttpExceptionFilter } from '../shared/filters';
 
 @Controller('categories')
 @ApiTags('Categories')
@@ -30,8 +40,18 @@ export class CategoriesController {
 
   @Get()
   @ApiExtraModels(CategoriesListEntry, CategoryDetails)
+  @UseFilters(HttpExceptionFilter)
   @ApiOkResponse({
     schema: {
+      example: {
+        id: 'string',
+        version: 'string',
+        date: 'string',
+        status: 'string',
+        title: 'string',
+        description: 'string',
+        image: 'string',
+      },
       oneOf: [
         {
           $ref: getSchemaPath(CategoriesListEntry),
@@ -51,8 +71,8 @@ export class CategoriesController {
   })
   @ApiNotFoundResponse({ type: ApiException })
   @ApiInternalServerErrorResponse({ type: ApiException })
-  public async getListEntries(@Query('details') details?: boolean): Promise<CategoriesListEntry[] | CategoryDetails[]> {
-    if (details) {
+  public async getListEntries(@Query() query: QueryDto): Promise<CategoriesListEntry[] | CategoryDetails[]> {
+    if (query.details === 'true') {
       return this.categoriesDetails.getCategoriesDetails();
     }
 
@@ -60,6 +80,7 @@ export class CategoriesController {
   }
 
   @Get(':categoryId')
+  @UseFilters(HttpExceptionFilter)
   @ApiOkResponse({
     type: VersionsPackage,
     status: HttpStatus.OK,
@@ -74,6 +95,7 @@ export class CategoriesController {
   }
 
   @Get(':categoryId/:version')
+  @UseFilters(HttpExceptionFilter)
   @ApiOkResponse({
     type: CategoryVersion,
     status: HttpStatus.OK,
