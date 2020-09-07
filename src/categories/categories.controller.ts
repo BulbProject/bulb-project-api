@@ -19,13 +19,13 @@ import {
 } from '@nestjs/swagger';
 
 import { ApiException } from 'shared/entity';
+import { HttpExceptionFilter } from 'shared/filters';
 import { CategoriesListEntry, CategoriesListRepositoryService } from '../shared/repositories/categories-list';
 import { CategoryVersion, CategoryVersionRepositoryService } from '../shared/repositories/category-version';
 import { VersionsPackage, VersionsPackageRepositoryService } from '../shared/repositories/versions-package';
 
 import { CategoryDetails, QueryDto } from './entity';
 import { CategoriesDetailsService } from './services';
-import { HttpExceptionFilter } from '../shared/filters';
 
 @Controller('categories')
 @ApiTags('Categories')
@@ -70,8 +70,8 @@ export class CategoriesController {
     required: false,
   })
   @ApiInternalServerErrorResponse({ type: ApiException })
-  public async getListEntries(@Query() query: QueryDto): Promise<CategoriesListEntry[] | CategoryDetails[]> {
-    if (query.details === 'true') {
+  public async getListEntries(@Query('details') details: QueryDto): Promise<CategoriesListEntry[] | CategoryDetails[]> {
+    if (details === 'true') {
       return this.categoriesDetails.getCategoriesDetails();
     }
 
