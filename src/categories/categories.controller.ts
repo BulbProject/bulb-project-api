@@ -70,8 +70,8 @@ export class CategoriesController {
     required: false,
   })
   @ApiInternalServerErrorResponse({ type: ApiException })
-  public async getListEntries(@Query('details') details: QueryDto): Promise<CategoriesListEntry[] | CategoryDetails[]> {
-    if (details === 'true') {
+  public async getListEntries(@Query() query: QueryDto): Promise<CategoriesListEntry[] | CategoryDetails[]> {
+    if (query.details === 'true') {
       return this.categoriesDetails.getCategoriesDetails();
     }
 
