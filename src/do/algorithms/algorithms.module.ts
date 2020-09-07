@@ -5,6 +5,7 @@ import { SpecificationRepositoryModule } from 'shared/repositories/specification
 import { VersionsPackageRepositoryModule } from 'shared/repositories/versions-package';
 
 import { ConformanceModule } from '../services/conformance/conformance.module';
+
 import { DocumentsService, DocxGeneratorService, CsvService } from '../services';
 import { SpecificationService, CalculationService } from './services';
 
