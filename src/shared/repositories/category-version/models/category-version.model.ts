@@ -1,6 +1,6 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
 import { Category, Timestamp } from '../../../entity';
 
@@ -14,10 +14,6 @@ export class CategoryVersion extends Timestamp {
   public _id: string;
 
   @Column()
-  @Index()
-  public id: string;
-
-  @Column()
   public version: string;
 
   @Column()
@@ -28,7 +24,6 @@ export class CategoryVersion extends Timestamp {
   })
   @ApiProperty({
     enum: ['active', 'pending'],
-    isArray: true,
   })
   public status: 'active' | 'pending' = 'pending';
 

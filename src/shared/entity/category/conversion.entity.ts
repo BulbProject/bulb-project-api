@@ -2,13 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import { IsUnion } from '../../validators';
-
 class Coefficient {
   @IsString()
   public id: string;
 
-  @IsUnion(['string', 'number', 'boolean'])
+  @ApiProperty({
+    oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
+  })
   public value: number | string | boolean;
 
   @IsNumber()
