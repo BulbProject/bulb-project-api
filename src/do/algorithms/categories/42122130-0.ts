@@ -40,24 +40,11 @@ export class WaterPumps extends AlgorithmEngine {
       })?.value as unknown;
     };
 
-    const modeOfUse = this.tryGetModeOfUse(requestedNeed.requirementResponses, '03');
-
-    if (modeOfUse) {
-      // @ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { hoursInDay, daysInWeek } = modeOfUse;
-      // @ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const tariff = this.tryGetTariff(requestedNeed.requirementResponses, '04');
-
-      // Calculation here
-    }
-
-    const getEfficiency = (itemId: string) => {
+    const getEfficiency = (itemId: string): number => {
       const calculatedValuesMap = {
+        Qbep: 'flowPerHour',
         ns: 'specificSpeed',
         x: 'x',
-        Q: 'flowPerHour',
         y: 'y',
         '(ηbep)min req': 'efficiency',
       } as const;
@@ -67,16 +54,26 @@ export class WaterPumps extends AlgorithmEngine {
       const rotationSpeedRequirementId = pumpStageCount === 1 ? '0101010000' : '0102010000';
       const rotationSpeed = getValueFromResponses(rotationSpeedRequirementId) as number;
 
-      const flow = getValueFromResponses('0201020000') as number;
+      const flowPerSecond = getValueFromResponses('0201020000');
+
+      if (typeof flowPerSecond !== 'number' || flowPerSecond < 6 || flowPerSecond > 100) {
+        throw new BadRequestException(`Flow value was provided incorrect.`);
+      }
+
       const flowPerHour = evaluate(formulas.flowPerHour, {
-        Qbep: flow,
+        Q: flowPerSecond,
       });
-      const head = getValueFromResponses('0201010000') as number;
+
+      const head = getValueFromResponses('0201010000');
+
+      if (typeof head !== 'number' || head > 140) {
+        throw new BadRequestException(`Head value was provided incorrect.`);
+      }
 
       const specificSpeed = evaluate(formulas.specificSpeed, {
         n: rotationSpeed,
         i: pumpStageCount,
-        Qbep: flow,
+        Qbep: flowPerHour,
         Hbep: head,
       });
 
@@ -85,7 +82,7 @@ export class WaterPumps extends AlgorithmEngine {
       });
 
       const flowNaturalLog = evaluate(formulas.y, {
-        Q: flowPerHour,
+        Q: flowPerSecond,
       });
       const rowIndex = directoryTable[0].findIndex((element) => element === itemId);
       const columnIndex = directoryTable.findIndex((element) => Number(element[0]) === rotationSpeed);
@@ -98,7 +95,7 @@ export class WaterPumps extends AlgorithmEngine {
         C: correspondingCoefficient,
       }).toFixed(2);
 
-      if (efficiency < 0 || efficiency > 100) {
+      if (efficiency <= 0 || efficiency >= 100) {
         throw new BadRequestException(
           `Incorrect data efficiency calculation for item ${itemId}. Try change parameters of pump.`
         );
@@ -125,7 +122,6 @@ export class WaterPumps extends AlgorithmEngine {
               ],
             },
           ],
-          criteria: [],
           quantity: 1,
         };
       })
@@ -134,7 +130,7 @@ export class WaterPumps extends AlgorithmEngine {
     return {
       category: this.categoryId,
       version,
-      recommendedVariant: availableVariants[0].id,
+      recommendedVariant: availableVariants[0].relatedItem,
       availableVariants,
     };
   }
