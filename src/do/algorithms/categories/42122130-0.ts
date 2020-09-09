@@ -1,13 +1,13 @@
-import { v4 as uuid } from 'uuid';
-
 import { BadRequestException } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
 import { evaluate } from 'mathjs';
+
+import { getFormulas, sortAvailableVariantsByMeasure } from 'shared/utils';
 
 import { AlgorithmEngine } from '../../entity';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
-import { getFormulas, sortAvailableVariantsByMeasure } from '../../../shared/utils';
 
 const EndSuctionVariants = ['ESOB', 'ESCC', 'ESCCi'];
 

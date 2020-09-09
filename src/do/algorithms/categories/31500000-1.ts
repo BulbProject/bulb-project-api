@@ -4,22 +4,22 @@ import { BadRequestException, UnprocessableEntityException } from '@nestjs/commo
 import { v4 as uuid } from 'uuid';
 import { evaluate } from 'mathjs';
 
-import { DataType } from 'ts4ocds/extensions/requirements';
-import { RequirementGroup } from '../../../shared/entity/category/requirement-group.entity';
-import { Requirement } from '../../../shared/entity/category/requirement.entity';
-import { SpecificationRepositoryService } from '../../../shared/repositories/specification';
-import { generateId, getFormulas } from '../../../shared/utils';
+import type { DataType } from 'ts4ocds/extensions/requirements';
+import type { RequirementGroup } from 'shared/entity/category/requirement-group.entity';
+import type { Criterion, Option } from 'shared/entity/category';
+import type { Requirement } from 'shared/entity/category/requirement.entity';
+import type { SpecificationRepositoryService } from 'shared/repositories/specification';
+import { generateId, getFormulas } from 'shared/utils';
 
 import { AlgorithmEngine } from '../../entity';
-import { AvailableVariant } from '../../entity/available-variant';
-import { RequirementResponse } from '../../entity/requirement-response';
-import { Metric } from '../../entity/variant';
+import type { AvailableVariant } from '../../entity/available-variant';
+import type { RequirementResponse } from '../../entity/requirement-response';
+import type { Metric } from '../../entity/variant';
 
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload } from '../../entity/specification';
 import type { SpecificationResponse } from '../../entity/specification';
 
-import { Criterion, Option } from '../../../shared/entity/category';
 import { DocxGeneratorService } from '../../services/docx-generator';
 import { CsvService } from '../../services/csv';
 

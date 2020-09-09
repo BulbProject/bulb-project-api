@@ -1,13 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 
+import { sortAvailableVariantsByMeasure } from 'shared/utils';
+
 import { AlgorithmEngine } from '../../entity';
 import { AvailableVariant } from '../../entity/available-variant';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
-
-import { sortAvailableVariantsByMeasure } from '../../../shared/utils';
 
 const poles = ['2', '4', '6', '8'];
 const sliceIndent = 3;
