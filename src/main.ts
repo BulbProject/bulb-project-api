@@ -39,7 +39,6 @@ async function bootstrap(): Promise<void> {
         .setTitle(packageJson.description)
         .setDescription('Swagger API Documentation')
         .setVersion(packageJson.version)
-        .addTag(packageJson.description)
         .addBasicAuth()
         .build()
     )

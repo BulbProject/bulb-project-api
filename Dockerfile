@@ -25,7 +25,7 @@ ENV NODE_PATH=./dist/src
 
 WORKDIR /usr/src/bulb-project-api
 
-COPY package.json tsconfig.json tsconfig.build.json yarn.lock ./
+COPY package.json tsconfig.json tsconfig.build.json nest-cli.json yarn.lock ./
 COPY src ./src
 
 RUN yarn --production && yarn cache clean --force && yarn build
