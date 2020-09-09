@@ -1,20 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class CategoryDetails {
+  @IsString()
+  public id: string;
+
+  @IsString()
+  public version: string;
+
+  @IsString()
+  public date: string;
+
   @ApiProperty({
     oneOf: [{ type: 'active' }, { type: 'pending' }],
   })
   public status: string;
 
-  public id: string;
-
-  public version: string;
-
-  public date: string;
-
+  @IsString()
   public title: string;
 
+  @IsString()
   public description: string;
 
-  public image?: string;
+  @IsString()
+  public image: string;
 }
