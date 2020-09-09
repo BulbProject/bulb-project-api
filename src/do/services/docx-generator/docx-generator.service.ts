@@ -21,7 +21,7 @@ import {
 
 import { Category, Criterion, Item } from '../../../shared/entity';
 
-import { SelectedVariant } from '../../entity';
+import { SpecificationBody } from '../../entity';
 
 import { ecoDesignData } from './images-data.json';
 
@@ -151,7 +151,7 @@ export class DocxGeneratorService {
 
   public async generateDocx(
     category: Category,
-    selectedVariant: SelectedVariant['selectedVariant'],
+    selectedVariant: SpecificationBody['selectedVariant'],
     criteria: Criterion[]
   ): Promise<Buffer> {
     this.document = new Document({

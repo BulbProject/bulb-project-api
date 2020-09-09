@@ -4,11 +4,13 @@ import { CategoryVersionRepositoryModule } from 'shared/repositories/category-ve
 import { SpecificationRepositoryModule } from 'shared/repositories/specification';
 import { VersionsPackageRepositoryModule } from 'shared/repositories/versions-package';
 
+import { ConformanceModule } from '../services/conformance/conformance.module';
 import { DocumentsService, DocxGeneratorService, CsvService } from '../services';
 
-import { AlgorithmsService } from './algorithms.service';
-import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps } from './categories';
 import { SpecificationService, CalculationService } from './services';
+import { AlgorithmsService } from './algorithms.service';
+
+import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps } from './categories';
 
 const algorithms = [
   AlgorithmsService,
@@ -20,7 +22,12 @@ const algorithms = [
 ];
 
 @Module({
-  imports: [CategoryVersionRepositoryModule, SpecificationRepositoryModule, VersionsPackageRepositoryModule],
+  imports: [
+    CategoryVersionRepositoryModule,
+    SpecificationRepositoryModule,
+    VersionsPackageRepositoryModule,
+    ConformanceModule,
+  ],
   providers: [...algorithms, DocumentsService, DocxGeneratorService, CsvService],
   exports: algorithms,
 })

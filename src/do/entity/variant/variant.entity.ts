@@ -24,6 +24,7 @@ export class Variant {
 
   @IsOptional()
   @ValidateNested()
+  @Type(() => Value)
   public avgValue?: Value;
 
   @IsArray()

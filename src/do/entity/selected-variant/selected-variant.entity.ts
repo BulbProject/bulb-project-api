@@ -4,7 +4,7 @@ import { IsArray, ValidateNested } from 'class-validator';
 import { RequirementResponse } from '../requirement-response';
 import { Variant } from '../variant';
 
-class SelectedVariantEntity extends Variant {
+class SelectedVariant extends Variant {
   @IsArray()
   @Type(() => RequirementResponse)
   @ValidateNested({
@@ -13,7 +13,8 @@ class SelectedVariantEntity extends Variant {
   public requirementResponses: RequirementResponse[];
 }
 
-export class SelectedVariant {
+export class SpecificationBody {
+  @Type(() => SelectedVariant)
   @ValidateNested()
-  public selectedVariant: SelectedVariantEntity;
+  public selectedVariant: SelectedVariant;
 }
