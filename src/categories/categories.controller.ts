@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseBoolPipe,
   Query,
   UseFilters,
   UseInterceptors,
@@ -20,11 +21,11 @@ import {
 
 import { ApiException } from 'shared/entity';
 import { HttpExceptionFilter } from 'shared/filters';
-import { CategoriesListEntry, CategoriesListRepositoryService } from '../shared/repositories/categories-list';
-import { CategoryVersion, CategoryVersionRepositoryService } from '../shared/repositories/category-version';
-import { VersionsPackage, VersionsPackageRepositoryService } from '../shared/repositories/versions-package';
+import { CategoriesListEntry, CategoriesListRepositoryService } from 'shared/repositories/categories-list';
+import { CategoryVersion, CategoryVersionRepositoryService } from 'shared/repositories/category-version';
+import { VersionsPackage, VersionsPackageRepositoryService } from 'shared/repositories/versions-package';
 
-import { CategoryDetails, QueryDto } from './entity';
+import { CategoryDetails } from './entity';
 import { CategoriesDetailsService } from './services';
 
 @Controller('categories')
@@ -47,10 +48,6 @@ export class CategoriesController {
         id: 'string',
         version: 'string',
         date: 'string',
-        status: 'string',
-        title: 'string',
-        description: 'string',
-        image: 'string',
       },
       oneOf: [
         {
@@ -70,8 +67,10 @@ export class CategoriesController {
     required: false,
   })
   @ApiInternalServerErrorResponse({ type: ApiException })
-  public async getListEntries(@Query() query: QueryDto): Promise<CategoriesListEntry[] | CategoryDetails[]> {
-    if (query.details === 'true') {
+  public async getListEntries(
+    @Query('details', ParseBoolPipe) details?: boolean
+  ): Promise<CategoriesListEntry[] | CategoryDetails[]> {
+    if (details) {
       return this.categoriesDetails.getCategoriesDetails();
     }
 
