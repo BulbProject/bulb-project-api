@@ -25,7 +25,7 @@ export class CategoriesDetailsService {
           status,
           title: category.title,
           description: category.description,
-          image: category.documents?.find((document) => !document.relatesTo)?.url,
+          image: category.documents.find((document) => !document.relatesTo)?.url as string,
         };
       })
     );

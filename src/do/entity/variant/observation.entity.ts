@@ -1,8 +1,9 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import { Unit, Value } from '../../../shared/entity';
-import { IsUnion } from '../../../shared/validators';
+import { Unit, Value } from 'shared/entity';
+import { IsUnion } from 'shared/validators';
 
 export class Observation {
   @IsString()
@@ -12,7 +13,10 @@ export class Observation {
   @IsOptional()
   public notes?: string;
 
-  @IsUnion(['string', 'number'])
+  @ApiProperty({
+    oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'integer' }],
+  })
+  @IsUnion(['string', 'number', 'integer'])
   @IsOptional()
   public measure?: string | number;
 

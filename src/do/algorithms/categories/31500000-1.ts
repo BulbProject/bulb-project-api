@@ -3,21 +3,23 @@
 import { BadRequestException, UnprocessableEntityException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { evaluate } from 'mathjs';
-import { RequirementGroup } from '../../../shared/entity/category/requirement-group.entity';
-import { Requirement } from '../../../shared/entity/category/requirement.entity';
-import { SpecificationRepositoryService } from '../../../shared/repositories/specification';
-import { generateId, getFormulas } from '../../../shared/utils';
 
-import type { AlgorithmEngine } from '../../entity';
-import { AvailableVariant } from '../../entity/available-variant';
-import { RequirementResponse } from '../../entity/requirement-response';
-import { Metric } from '../../entity/variant';
+import type { DataType } from 'ts4ocds/extensions/requirements';
+import type { RequirementGroup } from 'shared/entity/category/requirement-group.entity';
+import type { Criterion, Option } from 'shared/entity/category';
+import type { Requirement } from 'shared/entity/category/requirement.entity';
+import type { SpecificationRepositoryService } from 'shared/repositories/specification';
+import { generateId, getFormulas } from 'shared/utils';
+
+import { AlgorithmEngine } from '../../entity';
+import type { AvailableVariant } from '../../entity/available-variant';
+import type { RequirementResponse } from '../../entity/requirement-response';
+import type { Metric } from '../../entity/variant';
 
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload } from '../../entity/specification';
 import type { SpecificationResponse } from '../../entity/specification';
 
-import { Criterion, Option } from '../../../shared/entity/category';
 import { DocxGeneratorService } from '../../services/docx-generator';
 import { CsvService } from '../../services/csv';
 
@@ -56,14 +58,16 @@ type Calculation = {
   };
 };
 
-export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
+export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
   public readonly categoryId = '31500000-1';
 
   public constructor(
     private csv: CsvService,
     private specifications: SpecificationRepositoryService,
     private docxGenerator: DocxGeneratorService
-  ) {}
+  ) {
+    super();
+  }
 
   private static calculateEnergyEfficiencyClass(eei: number): string {
     if (eei <= 0.13) {
@@ -184,7 +188,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
           observations.push({
             id: 'energyEconomy',
             notes: 'Менше енергії',
-            measure: currentBulb.energyEconomy.toFixed(0),
+            measure: currentBulb.energyEconomy.toFixed(currentBulb.energyEconomy >= 1 ? 0 : 1),
             unit: {
               id: '332',
               name: 'кВт*год/рік',
@@ -268,7 +272,9 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
   public async getCalculation({
     category: { items, criteria, conversions },
     version,
-    requestedNeed: { requirementResponses },
+    requestedNeed: {
+      requestedNeed: { requirementResponses },
+    },
   }: CalculationPayload): Promise<CalculationResponse> {
     const directoryTable = await this.csv.getTable('directory', this.categoryId);
 
@@ -321,7 +327,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
       | undefined;
 
     if (selectedBulbType === undefined || !Object.values(Variants).includes(selectedBulbType)) {
-      throw new UnprocessableEntityException(`Incorrect lamp type was provided.`);
+      throw new BadRequestException(`Incorrect lamp type was provided.`);
     }
 
     const bulbTypeNeedIsPresent = items.some((item) => item.id === selectedBulbType);
@@ -427,7 +433,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
 
       const lightRateInLum = conversions
         ?.find(({ relatedItem }) => relatedItem === RequirementId.TypeOfRoom)
-        ?.coefficients?.find(({ value }) => ((value as unknown) as string) === typeOfRoom)?.coefficient;
+        ?.coefficients.find(({ value }) => ((value as unknown) as string) === typeOfRoom)?.coefficient;
 
       if (!lightRateInLum) {
         throw new BadRequestException(`Can't find lumen value for ${typeOfRoom} type of room.`);
@@ -524,7 +530,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
 
       const lightRateInLum = conversions
         ?.find(({ relatedItem }) => relatedItem === RequirementId.LightLevel)
-        ?.coefficients?.find(({ value }) => ((value as unknown) as string) === lightLevel)?.coefficient;
+        ?.coefficients.find(({ value }) => ((value as unknown) as string) === lightLevel)?.coefficient;
 
       if (!lightRateInLum) {
         throw new BadRequestException(`Can't find lumen value for specified light level ${lightLevel}.`);
@@ -594,7 +600,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
               requirementGroup.id ===
               requirementResponses
                 .find(({ requirement }) => requirement.id.startsWith('02'))
-                ?.requirement.id?.replace(/\d{6}$/, '000000')
+                ?.requirement.id.replace(/\d{6}$/, '000000')
             );
           });
 
@@ -621,35 +627,14 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
     }
 
     // 3) Bulb lifetime
-    const modeOfUseResponses = requirementResponses.filter(({ requirement }) => requirement.id.startsWith('03'));
+    const modeOfUse = this.tryGetModeOfUse(requirementResponses, '03');
 
-    if (modeOfUseResponses.length === 0) {
-      throw new BadRequestException(`Mode of use responses must be provided.`);
-    }
-
-    const modeOfUseResponsesIsConsistent = modeOfUseResponses.every(({ requirement }) => {
-      return modeOfUseResponses[0].requirement.id.slice(2, 4) === requirement.id.slice(2, 4);
-    });
-
-    if (!modeOfUseResponsesIsConsistent) {
-      throw new BadRequestException(
-        `Requirement responses for mode of use are given from different requirement groups.`
-      );
-    }
-
-    if (modeOfUseResponses[0].requirement.id.slice(2, 4) === '01') {
-      const hoursInDay = modeOfUseResponses[0]?.value as unknown;
-      const daysInWeek = modeOfUseResponses[1]?.value as unknown;
-
-      if (typeof hoursInDay !== 'number' || hoursInDay <= 0 || hoursInDay > 24) {
-        throw new BadRequestException('Incorrect working hours per day provided.');
-      }
-
-      if (typeof daysInWeek !== 'number' || daysInWeek <= 0 || daysInWeek > 7) {
-        throw new BadRequestException('Incorrect working days per week provided.');
-      }
+    if (modeOfUse) {
+      const { hoursInDay, daysInWeek } = modeOfUse;
+      const tariff = this.tryGetTariff(requirementResponses, '04');
 
       (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
+        const { quantity, power } = availableBulbTypes[bulbType];
         const workingHoursInWeek = evaluate(formulas.workingHoursInWeek, {
           hoursInDay,
           daysInWeek,
@@ -663,42 +648,28 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
         availableBulbTypes[bulbType].modeOfUseLifetime = +(techChars[bulbType].timeRate / workingHoursInYear).toFixed(
           2
         );
+
+        if (workingHoursInYear) {
+          availableBulbTypes[bulbType].energyEconomy = evaluate(formulas.energyEconomy, {
+            Pselected: availableBulbTypes[selectedBulbType].power,
+            quantity,
+            Pother: power,
+            workingHoursInYear,
+          });
+
+          if (tariff) {
+            availableBulbTypes[bulbType].financeEconomy = +evaluate(formulas.financeEconomy, {
+              Pselected: availableBulbTypes[selectedBulbType].power,
+              quantity,
+              tariff,
+              Pother: power,
+              workingHoursInYear,
+            }).toFixed(2);
+          }
+        }
       });
     }
 
-    // 4) Economy
-    const tariffsRequirements = requirementResponses.filter(({ requirement }) => requirement.id.startsWith('04'));
-
-    if (tariffsRequirements.length !== 1) {
-      throw new BadRequestException(`Incorrect tariffs information provided.`);
-    }
-
-    (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
-      const { quantity, power, workingHoursInYear } = availableBulbTypes[bulbType];
-
-      if (workingHoursInYear) {
-        availableBulbTypes[bulbType].energyEconomy = evaluate(formulas.energyEconomy, {
-          Pselected: availableBulbTypes[selectedBulbType].power,
-          quantity,
-          Pother: power,
-          workingHoursInYear,
-        });
-
-        const tariff = tariffsRequirements[0].value;
-
-        if (typeof tariff === 'number' && tariff > 0) {
-          availableBulbTypes[bulbType].financeEconomy = +evaluate(formulas.financeEconomy, {
-            Pselected: availableBulbTypes[selectedBulbType].power,
-            quantity,
-            tariff,
-            Pother: power,
-            workingHoursInYear,
-          }).toFixed(2);
-        }
-      }
-    });
-
-    // 5) Efficiency
     (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
       availableBulbTypes[bulbType].eeClass = LightingEquipmentAndElectricLamps.calculateEnergyEfficiencyClass(
         availableBulbTypes[bulbType].eei
@@ -715,7 +686,7 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
       category: this.categoryId,
       version,
       requestedVariant: selectedBulbType,
-      recommendedVariant: availableVariants[availableVariants.length > 1 ? 1 : 0].id,
+      recommendedVariant: availableVariants[availableVariants.length > 1 ? 1 : 0].relatedItem,
       availableVariants,
     };
   }
@@ -794,10 +765,12 @@ export class LightingEquipmentAndElectricLamps implements AlgorithmEngine {
             id: '',
             name: 'W',
           },
+          dataType: 'number' as DataType,
         },
         {
           title: 'Коефіцієнт коригування Pmax',
           expectedValue: +PmaxCor,
+          dataType: 'number' as DataType,
         },
       ].map(generateId(efficacyRequirementsBaseId))
     );

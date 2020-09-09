@@ -4,7 +4,7 @@ import { IsIn, IsString, ValidateNested } from 'class-validator';
 import { Category } from '../../../shared/entity/category';
 import type { Egp } from '../egp';
 import type { Mode } from '../mode';
-import { SelectedVariant } from '../selected-variant';
+import { SpecificationBody } from '../selected-variant';
 
 export class SpecificationPayload {
   @Type(() => Category)
@@ -13,9 +13,9 @@ export class SpecificationPayload {
   @IsString()
   public version: string;
 
-  @Type(() => SelectedVariant)
+  @Type(() => SpecificationBody)
   @ValidateNested()
-  public selectedVariant: SelectedVariant;
+  public selectedVariant: SpecificationBody;
 
   @IsIn(['prozorro'])
   public egp: Egp;

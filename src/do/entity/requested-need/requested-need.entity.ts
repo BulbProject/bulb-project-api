@@ -3,7 +3,7 @@ import { IsArray, IsString, ValidateNested } from 'class-validator';
 
 import { RequirementResponse } from '../requirement-response';
 
-export class RequestedNeed {
+class RequestedNeedEntity {
   @IsString()
   public id: string;
 
@@ -13,4 +13,10 @@ export class RequestedNeed {
     each: true,
   })
   public requirementResponses: RequirementResponse[];
+}
+
+export class RequestedNeed {
+  @ValidateNested()
+  @Type(() => RequestedNeedEntity)
+  public requestedNeed: RequestedNeedEntity;
 }

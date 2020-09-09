@@ -1,56 +1,45 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-
 import { IsUnion } from '../../validators';
 
 class Coefficient {
+  @IsString()
+  public id: string;
+
   @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
+    oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
   })
-  @IsUnion(['string', 'number'])
-  public id: string | number;
-
   @IsUnion(['string', 'number', 'boolean'])
-  @IsOptional()
-  public value?: number | string | boolean;
+  public value: number | string | boolean;
 
   @IsNumber()
-  @IsOptional()
-  public minValue?: number;
-
-  @IsNumber()
-  @IsOptional()
-  public maxValue?: number;
-
-  @IsNumber()
-  @IsOptional()
-  public coefficient?: number;
+  public coefficient: number;
 }
 
-const conversionRelatesTo = ['requirement', 'observation'];
+const conversionRelatesTo = ['requirement'];
 
 export class Conversion {
-  @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
-  })
-  @IsUnion(['string', 'number'])
-  public id: string | number;
+  @IsString()
+  public id: string;
+
+  @IsString()
+  @IsOptional()
+  public description?: string;
 
   @ApiProperty({
     enum: conversionRelatesTo,
   })
   @IsIn(conversionRelatesTo)
+  public relatesTo: 'requirement';
+
+  @IsString()
   @IsOptional()
-  public relatesTo?: 'requirement' | 'observation';
+  public relatedItem?: string;
 
   @IsString()
   @IsOptional()
   public rationale?: string;
-
-  @IsString()
-  @IsOptional()
-  public description?: string;
 
   @IsArray()
   @Type(() => Coefficient)
@@ -58,8 +47,4 @@ export class Conversion {
     each: true,
   })
   public coefficients: Coefficient[];
-
-  @IsString()
-  @IsOptional()
-  public relatedItem?: string;
 }

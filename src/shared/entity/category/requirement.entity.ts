@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { DataType } from 'ts4ocds/extensions/requirements';
 
-import { ExpectedValue, IsUnion, OptionValue } from '../../validators';
+import { ExpectedValue, IsUnion, OptionValue } from 'shared/validators';
 
 import { OptionDetails } from './option-details.entity';
 import { Unit } from './unit.entity';
@@ -12,12 +12,21 @@ import { Unit } from './unit.entity';
 const dataType = ['string', 'number', 'integer', 'boolean'];
 
 export class Requirement {
+  @IsString()
+  public id: string;
+
+  @IsString()
+  public title: string;
+
+  @IsString()
+  @IsOptional()
+  public description?: string;
+
   @ApiProperty({
     enum: dataType,
   })
   @IsIn(dataType)
-  @IsOptional()
-  public dataType?: DataType;
+  public dataType: DataType;
 
   @ApiProperty({
     oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
@@ -26,17 +35,6 @@ export class Requirement {
   @IsOptional()
   @ExpectedValue()
   public expectedValue?: string | number | boolean;
-
-  @IsString()
-  public id: string;
-
-  @IsString()
-  @IsOptional()
-  public title?: string;
-
-  @IsString()
-  @IsOptional()
-  public description?: string;
 
   @IsUnion(['number', 'integer'])
   @IsOptional()
@@ -50,6 +48,7 @@ export class Requirement {
 
   @IsOptional()
   @ValidateNested()
+  @Type(() => Unit)
   public unit?: Unit;
 
   @IsOptional()

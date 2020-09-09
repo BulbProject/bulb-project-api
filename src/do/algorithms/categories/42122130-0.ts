@@ -1,45 +1,50 @@
-import { v4 as uuid } from 'uuid';
-
 import { BadRequestException } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
 import { evaluate } from 'mathjs';
+
+import { getFormulas, sortAvailableVariantsByMeasure } from 'shared/utils';
 
 import { AlgorithmEngine } from '../../entity';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
 import { CsvService } from '../../services/csv';
-import { getFormulas } from '../../../shared/utils';
 
 const EndSuctionVariants = ['ESOB', 'ESCC', 'ESCCi'];
 
 const MultistageVariants = ['MS-V', 'MSS'];
 
-export class WaterPumps implements AlgorithmEngine {
+export class WaterPumps extends AlgorithmEngine {
   public readonly categoryId = '42122130-0';
 
-  public constructor(private csv: CsvService) {}
+  public constructor(private csv: CsvService) {
+    super();
+  }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   public async getCalculation({
     version,
-    requestedNeed: { requirementResponses },
+    requestedNeed: { requestedNeed },
   }: CalculationPayload): Promise<CalculationResponse> {
     const pumpStageCount =
-      (requirementResponses.find((res) => res.requirement.id === '0102020000')?.value as number) || 1;
+      (requestedNeed.requirementResponses.find(({ requirement }) => requirement.id === '0102020000')
+        ?.value as number) || 1;
+
     const pumpVariants = pumpStageCount === 1 ? EndSuctionVariants : MultistageVariants;
 
     const directoryTable = await this.csv.getTable('directory', this.categoryId);
     const formulasTable = await this.csv.getTable('formulas', this.categoryId);
 
     const getValueFromResponses = (requirementId: string): unknown => {
-      return requirementResponses.find(({ requirement: { id } }) => {
+      return requestedNeed.requirementResponses.find(({ requirement: { id } }) => {
         return id === requirementId;
       })?.value as unknown;
     };
 
-    const getEfficiency = (itemId: string) => {
+    const getEfficiency = (itemId: string): number => {
       const calculatedValuesMap = {
+        Qbep: 'flowPerHour',
         ns: 'specificSpeed',
         x: 'x',
-        Q: 'flowPerHour',
         y: 'y',
         '(ηbep)min req': 'efficiency',
       } as const;
@@ -49,16 +54,26 @@ export class WaterPumps implements AlgorithmEngine {
       const rotationSpeedRequirementId = pumpStageCount === 1 ? '0101010000' : '0102010000';
       const rotationSpeed = getValueFromResponses(rotationSpeedRequirementId) as number;
 
-      const flow = getValueFromResponses('0201020000') as number;
+      const flowPerSecond = getValueFromResponses('0201020000');
+
+      if (typeof flowPerSecond !== 'number' || flowPerSecond < 6 || flowPerSecond > 100) {
+        throw new BadRequestException(`Flow value was provided incorrect.`);
+      }
+
       const flowPerHour = evaluate(formulas.flowPerHour, {
-        Qbep: flow,
+        Q: flowPerSecond,
       });
-      const head = getValueFromResponses('0201010000') as number;
+
+      const head = getValueFromResponses('0201010000');
+
+      if (typeof head !== 'number' || head > 140) {
+        throw new BadRequestException(`Head value was provided incorrect.`);
+      }
 
       const specificSpeed = evaluate(formulas.specificSpeed, {
         n: rotationSpeed,
         i: pumpStageCount,
-        Qbep: flow,
+        Qbep: flowPerHour,
         Hbep: head,
       });
 
@@ -67,7 +82,7 @@ export class WaterPumps implements AlgorithmEngine {
       });
 
       const flowNaturalLog = evaluate(formulas.y, {
-        Q: flowPerHour,
+        Q: flowPerSecond,
       });
       const rowIndex = directoryTable[0].findIndex((element) => element === itemId);
       const columnIndex = directoryTable.findIndex((element) => Number(element[0]) === rotationSpeed);
@@ -80,15 +95,17 @@ export class WaterPumps implements AlgorithmEngine {
         C: correspondingCoefficient,
       }).toFixed(2);
 
-      if (efficiency < 0 || efficiency > 100) {
-        throw new BadRequestException(`Incorrect data efficiency calculation for item ${itemId}`);
+      if (efficiency <= 0 || efficiency >= 100) {
+        throw new BadRequestException(
+          `Incorrect data efficiency calculation for item ${itemId}. Try change parameters of pump.`
+        );
       }
 
       return efficiency;
     };
 
-    const availableVariants = pumpVariants
-      .map((item) => {
+    const availableVariants = sortAvailableVariantsByMeasure(
+      pumpVariants.map((item) => {
         return {
           id: uuid(),
           relatedItem: item,
@@ -105,19 +122,15 @@ export class WaterPumps implements AlgorithmEngine {
               ],
             },
           ],
-          criteria: [],
           quantity: 1,
         };
       })
-      .sort(
-        (variant1, variant2) =>
-          variant2.metrics[0].observations[0]?.measure - variant1.metrics[0].observations[0]?.measure
-      );
+    );
 
     return {
       category: this.categoryId,
       version,
-      recommendedVariant: availableVariants[0].id,
+      recommendedVariant: availableVariants[0].relatedItem,
       availableVariants,
     };
   }

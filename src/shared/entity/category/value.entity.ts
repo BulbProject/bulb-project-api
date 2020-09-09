@@ -1,11 +1,9 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class Value {
   @IsNumber()
-  @IsOptional()
-  public amount?: number;
+  public amount: number;
 
   @IsString()
-  @IsOptional()
-  public currency?: string;
+  public currency: string;
 }

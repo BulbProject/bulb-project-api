@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, Param, Post, Query, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import {
   ApiBody,
   ApiOkResponse,
@@ -6,19 +6,21 @@ import {
   ApiQuery,
   ApiTags,
   ApiExtraModels,
-  getSchemaPath,
   ApiBadRequestResponse,
-  ApiUnprocessableEntityResponse,
+  ApiNotFoundResponse,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
-import { apiException, Exception } from '../shared/utils';
 
-import type { Egp, Mode } from './entity';
-import { CalculationPayload, CalculationResponse } from './entity/calculation';
-import { SpecificationId } from './entity/specification';
+import { ApiException } from 'shared/entity';
+import { HttpExceptionFilter } from 'shared/filters';
+
+import { ExistingAlgorithmGuard } from './guards';
+
+import { CalculationResponse } from './entity/calculation';
+import { SpecificationId, QueryDto } from './entity/specification';
 import type { SpecificationResponse } from './entity/specification';
-
 import { RequestedNeed } from './entity/requested-need';
-import { SelectedVariant } from './entity/selected-variant';
+import { SpecificationBody } from './entity/selected-variant';
 
 import { CalculationService, SpecificationService } from './algorithms/services';
 import { DocxHeadersInterceptor } from './interceptors';
@@ -29,21 +31,25 @@ export class DoController {
   public constructor(private calculation: CalculationService, private specification: SpecificationService) {}
 
   @Post('calculation/:categoryId/:version')
+  @UseGuards(ExistingAlgorithmGuard)
+  @HttpCode(200)
+  @UseFilters(HttpExceptionFilter)
   @ApiBody({ type: RequestedNeed })
-  @ApiOkResponse({ type: CalculationPayload })
-  @ApiBadRequestResponse({ description: 'Bad request' })
-  @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiBadRequestResponse({ type: ApiException })
+  @ApiNotFoundResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async getCalculation(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
-    @Body('requestedNeed', new ValidationPipe({ transform: true }))
+    @Body()
     requestedNeed: RequestedNeed
   ): Promise<CalculationResponse> {
     return this.calculation.getCalculation([categoryId, version], requestedNeed);
   }
 
   @Post('specification/:categoryId/:version')
+  @UseGuards(ExistingAlgorithmGuard)
+  @UseFilters(HttpExceptionFilter)
   @UseInterceptors(DocxHeadersInterceptor)
   @ApiQuery({
     name: 'egp',
@@ -53,36 +59,28 @@ export class DoController {
     name: 'mode',
     enum: ['json', 'docx'],
   })
-  @ApiBody({ type: SelectedVariant })
+  @ApiBody({ type: SpecificationBody })
   @ApiExtraModels(SpecificationId)
   @ApiOkResponse({
-    schema: {
-      oneOf: [
-        {
-          $ref: getSchemaPath(SpecificationId),
-        },
-        {
-          type: 'string',
-          description: 'Buffer',
-        },
-      ],
+    content: {
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': { example: 'string' },
     },
   })
-  @ApiBadRequestResponse({ description: 'Bad request' })
-  @ApiUnprocessableEntityResponse({ description: 'Unprocessable entity' })
-  @ApiInternalServerErrorResponse(apiException(Exception.InternalServerError))
+  @ApiCreatedResponse({
+    schema: {
+      example: { id: 'string' },
+    },
+  })
+  @ApiBadRequestResponse({ type: ApiException })
+  @ApiNotFoundResponse({ type: ApiException })
+  @ApiInternalServerErrorResponse({ type: ApiException })
   public async getSpecification(
     @Param('categoryId') categoryId: string,
     @Param('version') version: string,
-    @Query('egp') egp: Egp,
-    @Query('mode') mode: Mode,
-    @Body('selectedVariant', new ValidationPipe({ transform: true }))
-    selectedVariant: SelectedVariant
+    @Query() query: QueryDto,
+    @Body()
+    specificationBody: SpecificationBody
   ): SpecificationResponse {
-    return this.specification.getSpecification([categoryId, version], [egp, mode], {
-      // Somehow ClassSerializer moves content of the `selectedVariant` property to the root object
-      // @ts-ignore
-      selectedVariant,
-    });
+    return this.specification.getSpecification([categoryId, version], [query.egp, query.mode], specificationBody);
   }
 }

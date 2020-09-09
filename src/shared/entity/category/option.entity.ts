@@ -7,25 +7,21 @@ import { IsUnion } from '../../validators';
 import { Unit } from './unit.entity';
 
 export class Option {
-  @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
-  })
-  @IsUnion(['string', 'number'])
-  public id: string | number;
+  @IsString()
+  public id: string;
+
+  @IsString()
+  public title: string;
+
+  @IsString()
+  @IsOptional()
+  public description?: string;
 
   @ApiProperty({
     oneOf: [{ type: 'string' }, { type: 'number' }],
   })
   @IsUnion(['string', 'number'])
   public value: string | number;
-
-  @IsString()
-  @IsOptional()
-  public title?: string;
-
-  @IsString()
-  @IsOptional()
-  public description?: string;
 
   @IsNumber()
   @IsOptional()

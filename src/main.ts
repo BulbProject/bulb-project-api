@@ -24,6 +24,9 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
     })
   );
 
@@ -36,7 +39,6 @@ async function bootstrap(): Promise<void> {
         .setTitle(packageJson.description)
         .setDescription('Swagger API Documentation')
         .setVersion(packageJson.version)
-        .addTag(packageJson.description)
         .addBasicAuth()
         .build()
     )

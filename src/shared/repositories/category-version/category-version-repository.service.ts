@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 
-import { formatDate } from '../../utils';
+import { formatDate, getLastVersionNumber } from '../../utils';
 import { CategoriesListRepositoryService } from '../categories-list';
 
 import { DatabaseService } from '../../database';
@@ -33,17 +33,19 @@ export class CategoryVersionRepositoryService {
     }, `Category ${categoryId} with version ${version} was not found`);
   }
 
-  public async getAllById(categoryId: string): Promise<CategoryVersion[]> {
-    return this.database.handleUndefinedValue(() => {
-      return this.categoriesVersions.find({
+  public async createOne(categoryId: string, category: Category): Promise<ManageResponse> {
+    const existingCategory = await this.database.handleDbError(async () => {
+      return this.categoriesVersions.findOne({
         where: {
           'category.id': categoryId,
         },
       });
-    }, `No records present for id ${categoryId}`);
-  }
+    });
 
-  public async createOne(categoryId: string, category: Category): Promise<ManageResponse> {
+    if (existingCategory) {
+      throw new BadRequestException(`Category ${categoryId} has already been created.`);
+    }
+
     const version = 'v1';
     const publishedDate = formatDate(new Date());
 
@@ -64,6 +66,7 @@ export class CategoryVersionRepositoryService {
     return {
       id: category.id,
       version,
+      status: 'pending',
     };
   }
 
@@ -71,14 +74,11 @@ export class CategoryVersionRepositoryService {
     return this.database.handleUndefinedValue(async () => {
       const versionsPackage = await this.versionsPackage.getOne(categoryId);
 
-      const [, previosVersion] = [
-        ...(versionsPackage.versions[versionsPackage.versions.length - 1].match(/\/v(\d+)/) as RegExpMatchArray),
-      ];
+      const previousVersion = getLastVersionNumber(versionsPackage.versions);
 
-      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previosVersion}`]);
-
-      const nextVersion = `v${Number(previosVersion) + 1}`;
-
+      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
+      const nextVersion = `v${Number(previousVersion) + 1}`;
+      const status = 'pending';
       const updatedAt = formatDate(new Date());
 
       await Promise.all([
@@ -86,6 +86,7 @@ export class CategoryVersionRepositoryService {
           ...previousCategoryVersion,
           version: nextVersion,
           date: updatedAt,
+          status,
           updatedAt,
           category,
         }),
@@ -96,6 +97,7 @@ export class CategoryVersionRepositoryService {
       return {
         id: categoryId,
         version: nextVersion,
+        status,
       };
     }, `Could not update version for category with id ${categoryId}`);
   }
@@ -118,6 +120,7 @@ export class CategoryVersionRepositoryService {
     return {
       id: categoryId,
       version,
+      status: 'active',
     };
   }
 }

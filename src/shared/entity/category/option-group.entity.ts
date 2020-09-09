@@ -1,39 +1,26 @@
 /* eslint import/no-cycle: 0 */
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, IsString, ArrayMinSize, ValidateNested } from 'class-validator';
+import { IsArray, IsString, ArrayMinSize, ValidateNested } from 'class-validator';
 
 import { IsUnion } from '../../validators';
 
 import { Option } from './option.entity';
 
-const optionGroupRelatesTo = [
-  'placeOfPerformance',
-  'contractPeriod',
-  'minValue',
-  'maxValue',
-  'period',
-  'value',
-  'measure',
-  'unit',
-];
+const optionGroupRelatesTo = ['value'];
 
 export class OptionGroup {
-  @ApiProperty({
-    oneOf: [{ type: 'string' }, { type: 'number' }],
-  })
-  @IsUnion(['string', 'number'])
-  public id: string | number;
+  @IsString()
+  public id: string;
 
   @ApiProperty({
     enum: optionGroupRelatesTo,
   })
   @IsUnion([optionGroupRelatesTo, 'string'])
-  public relatesTo: OptionGroupRelatesTo;
+  public relatesTo: 'value';
 
   @IsString()
-  @IsOptional()
-  public description?: string;
+  public description: string;
 
   @IsArray()
   @ArrayMinSize(1)
@@ -43,14 +30,3 @@ export class OptionGroup {
   })
   public options: Option[];
 }
-
-type OptionGroupRelatesTo =
-  | 'placeOfPerformance'
-  | 'contractPeriod'
-  | 'minValue'
-  | 'maxValue'
-  | 'period'
-  | 'value'
-  | 'measure'
-  | 'unit'
-  | string;

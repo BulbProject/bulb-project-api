@@ -1,14 +1,15 @@
 /* eslint import/no-cycle: 0 */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 import { IsUnion } from '../../validators';
-
-import { Value } from './value.entity';
 
 const unitClassificationScheme = ['UNCEFACT', 'QUDT'];
 
 export class Unit {
+  @IsString()
+  public id: string;
+
   @ApiProperty({
     enum: unitClassificationScheme,
   })
@@ -17,16 +18,7 @@ export class Unit {
   public scheme?: UnitClassificationScheme;
 
   @IsString()
-  @IsOptional()
-  public id?: string;
-
-  @IsString()
-  @IsOptional()
-  public name?: string;
-
-  @IsOptional()
-  @ValidateNested()
-  public value?: Value;
+  public name: string;
 
   @IsString()
   @IsOptional()
