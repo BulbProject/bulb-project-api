@@ -686,7 +686,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
       category: this.categoryId,
       version,
       requestedVariant: selectedBulbType,
-      recommendedVariant: availableVariants[availableVariants.length > 1 ? 1 : 0].id,
+      recommendedVariant: availableVariants[availableVariants.length > 1 ? 1 : 0].relatedItem,
       availableVariants,
     };
   }
