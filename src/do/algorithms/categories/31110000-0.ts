@@ -122,6 +122,14 @@ export class ElectricMotors extends AlgorithmEngine {
         : +requestedPower;
 
       const tariff = this.tryGetTariff(requestedNeed.requirementResponses, '04');
+      const ei1YearEnergyProduction =
+        ((availableVariants.find(({ relatedItem }) => relatedItem === Variants.IE1)?.metrics[0].observations[0]
+          .measure as number) || 0) *
+        0.01 *
+        normalizedRequestedPower *
+        hoursInDay *
+        daysInWeek *
+        52;
 
       availableVariants.forEach((variant) => {
         const efficiency =
@@ -146,12 +154,12 @@ export class ElectricMotors extends AlgorithmEngine {
           ],
         });
 
-        if (tariff) {
+        if (tariff && variant.relatedItem !== Variants.IE1) {
           variant.metrics[1].observations.push({
             id: 'financeEconomy',
             notes: 'Фінансова економія',
             value: {
-              amount: +((yearEnergyUse - yearEnergyProduction) * tariff).toFixed(1),
+              amount: +((yearEnergyProduction - ei1YearEnergyProduction) * tariff).toFixed(0),
               currency: 'грн/рік' as 'UAH',
             },
           });
