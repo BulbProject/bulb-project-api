@@ -3,6 +3,7 @@ import { registerDecorator, ValidationArguments, ValidationOptions } from 'class
 
 import { Requirement } from '../entity/category/requirement.entity';
 import { validateValueType } from '../utils';
+import { OptionGroup } from '../entity/category/option-group.entity';
 
 export const OptionValue = (validationOptions?: ValidationOptions) => (_object: Requirement, property: string) => {
   registerDecorator({
@@ -16,8 +17,8 @@ export const OptionValue = (validationOptions?: ValidationOptions) => (_object: 
         const { dataType } = object as Requirement;
 
         if (value) {
-          return value.optionGroups
-            .flatMap(({ options }) => options)
+          return !!(value.optionGroups as OptionGroup[] | undefined)
+            ?.flatMap(({ options }) => options)
             .every(({ value: optionValue }) => {
               return validateValueType(dataType, optionValue);
             });

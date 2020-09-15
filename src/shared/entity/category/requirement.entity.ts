@@ -1,7 +1,7 @@
 /* eslint import/no-cycle: 0 */
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsIn, IsOptional, IsString, ValidateNested, IsNotEmpty } from 'class-validator';
 import { DataType } from 'ts4ocds/extensions/requirements';
 
 import { ExpectedValue, IsUnion, OptionValue } from 'shared/validators';
@@ -52,6 +52,7 @@ export class Requirement {
   public unit?: Unit;
 
   @IsOptional()
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => OptionDetails)
   @OptionValue()
