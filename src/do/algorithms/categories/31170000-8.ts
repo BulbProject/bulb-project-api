@@ -7,8 +7,8 @@ import { getFormulas } from 'shared/utils';
 import { AlgorithmEngine } from '../../entity';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
+import type { AvailableVariant } from '../../entity/available-variant';
 import { CsvService } from '../../services/csv';
-import { AvailableVariant } from '../../entity/available-variant';
 
 export class Transformers extends AlgorithmEngine {
   public readonly categoryId = '31170000-8';
@@ -37,9 +37,9 @@ export class Transformers extends AlgorithmEngine {
     }
 
     const requirementId = requestedNeed.requirementResponses[0].requirement.id;
-    const requirementGroup = requirementId.slice(2, 4);
+    const requirementGroupNumber = requirementId.slice(2, 4);
 
-    if (requirementGroup === '01' || requirementGroup === '02') {
+    if (requirementGroupNumber === '01' || requirementGroupNumber === '02') {
       const formulasTable = await this.csv.getTable('formulas', this.categoryId);
 
       const calculatedValuesMap = {
@@ -48,103 +48,53 @@ export class Transformers extends AlgorithmEngine {
 
       const formulas = getFormulas(calculatedValuesMap, formulasTable);
 
-      if (requirementGroup === '01') {
-        if (providedRatedPower < 1.1 || providedRatedPower > 3150) {
-          throw new BadRequestException(
-            'A wrong rated power value was transmitted. Rated power must be between 1.1 and 3150 kVA.'
-          );
-        }
+      if (requirementGroupNumber === '01') {
+        this.rangeValidator({ exclusiveMin: 1.1, exclusiveMax: 3150, value: providedRatedPower });
 
         const mediumTransformers = ['liquid-immersed-medium', 'dry-type-medium'];
 
-        const techChars = await Promise.all(
-          mediumTransformers.map(async (transformerType) => {
-            const directoryTable = await this.csv.getTable(transformerType, this.categoryId);
-            const directoryTableData = directoryTable.filter((_, index) => index !== 0);
-
-            const availablePowers = directoryTableData.map(([power]) => +power.replace('≤', ''));
-
-            const calculationPower = availablePowers.find(
-              (availablePower) => providedRatedPower <= availablePower
-            ) as number;
-
-            const needRowIndex = directoryTable.findIndex((value) => value[0] === `${calculationPower}`);
-            const Pk = +directoryTable[needRowIndex][1];
-            const Po = +directoryTable[needRowIndex][2];
-
-            const efficiency = evaluate(formulas.PEI, {
-              Po,
-              Pco: 0,
-              Pk,
-              Sr: calculationPower * 1000,
-            });
-
-            return {
-              transformerType,
-              efficiency,
-              calculationPower,
-            };
-          })
+        const techChars = await this.calculateTechnicalCharacteristics(
+          mediumTransformers,
+          providedRatedPower,
+          formulas
         );
 
         return {
           category: this.categoryId,
           version,
           recommendedVariant: techChars.sort(
-            (transformerTypeA, transformerTypeB) => transformerTypeB.efficiency - transformerTypeA.efficiency
+            ({ efficiency: efficiencyA }, { efficiency: efficiencyB }) => efficiencyA - efficiencyB
           )[0].transformerType,
-          availableVariants: techChars.map((_) =>
-            this.generateAvailableVariant(_.transformerType, +(_.efficiency * 100).toFixed(3), _.calculationPower)
+          availableVariants: techChars.map(({ transformerType, efficiency, calculationPower }) =>
+            this.generateAvailableVariant(transformerType, +(efficiency * 100).toFixed(3), calculationPower)
           ),
         };
       }
 
-      if (requirementGroup === '02') {
-        if (providedRatedPower <= 25 || providedRatedPower >= 315) {
-          throw new BadRequestException(
-            'A wrong rated power value was transmitted. Rated power must be between 25 and 315 kVA.'
-          );
-        }
+      if (requirementGroupNumber === '02') {
+        this.rangeValidator({ exclusiveMin: 25, exclusiveMax: 315, value: providedRatedPower });
 
-        const transformerType = 'mounted-liquid-immersed-medium';
+        const transformersType = ['mounted-liquid-immersed-medium'];
 
-        const directoryTable = await this.csv.getTable(transformerType, this.categoryId);
-        const directoryTableData = directoryTable.filter((_, index) => index !== 0);
-
-        const availablePowers = directoryTableData.map(([power]) => +power.replace('≤', ''));
-
-        const calculationPower = availablePowers.find(
-          (availablePower) => providedRatedPower <= availablePower
-        ) as number;
-
-        const needRowIndex = directoryTable.findIndex((value) => value[0] === `${calculationPower}`);
-        const Pk = +directoryTable[needRowIndex][1];
-        const Po = +directoryTable[needRowIndex][2];
-
-        const efficiency = evaluate(formulas.PEI, {
-          Po,
-          Pco: 0,
-          Pk,
-          Sr: calculationPower * 1000,
-        });
+        const techChars = await this.calculateTechnicalCharacteristics(transformersType, providedRatedPower, formulas);
 
         return {
           category: this.categoryId,
           version,
-          requestedVariant: transformerType,
+          requestedVariant: transformersType[0],
           availableVariants: [
-            this.generateAvailableVariant(transformerType, +(efficiency * 100).toFixed(3), providedRatedPower),
+            this.generateAvailableVariant(
+              transformersType[0],
+              +(techChars[0].efficiency * 100).toFixed(3),
+              providedRatedPower
+            ),
           ],
         };
       }
     }
 
-    if (requirementGroup === '03') {
-      if (providedRatedPower < 4000) {
-        throw new BadRequestException(
-          'A wrong rated power value was transmitted. Rated power must be larger 4000 kVA.'
-        );
-      }
+    if (requirementGroupNumber === '03') {
+      this.rangeValidator({ exclusiveMax: 4000, value: providedRatedPower });
 
       const largeTransformers = ['liquid-immersed-large', 'dry-type-large'];
 
@@ -153,17 +103,13 @@ export class Transformers extends AlgorithmEngine {
           const directoryTable = await this.csv.getTable(transformerType, this.categoryId);
           const directoryTableData = directoryTable.filter((_, index) => index !== 0);
 
-          const availablePowers = directoryTableData.map(([power]) => +power.replace('≤', ''));
+          const calculationPower = this.getMoreEqualPower(directoryTableData, providedRatedPower);
 
-          const calculationPower = availablePowers.find(
-            (availablePower) => providedRatedPower <= availablePower
-          ) as number;
-
-          const needRowIndex = directoryTable.findIndex((value) => value[0] === `${calculationPower}`);
+          const neededRowIndex = directoryTable.findIndex((value) => value[0] === `${calculationPower}`);
 
           return {
             transformerType,
-            efficiency: +directoryTableData[needRowIndex][1],
+            efficiency: +directoryTableData[neededRowIndex][1],
             calculationPower,
           };
         })
@@ -175,8 +121,8 @@ export class Transformers extends AlgorithmEngine {
         recommendedVariant: techChars.sort(
           (transformerTypeA, transformerTypeB) => transformerTypeB.efficiency - transformerTypeA.efficiency
         )[0].transformerType,
-        availableVariants: techChars.map((_) =>
-          this.generateAvailableVariant(_.transformerType, +_.efficiency, _.calculationPower)
+        availableVariants: techChars.map(({ transformerType, efficiency, calculationPower }) =>
+          this.generateAvailableVariant(transformerType, +efficiency, calculationPower)
         ),
       };
     }
@@ -221,5 +167,91 @@ export class Transformers extends AlgorithmEngine {
         },
       ],
     };
+  }
+
+  private async calculateTechnicalCharacteristics(
+    transformersTypes: string[],
+    providedRatedPower: number,
+    formulas: Record<string, string>
+  ): Promise<{ transformerType: string; efficiency: number; calculationPower: number }[]> {
+    return Promise.all(
+      transformersTypes.map(async (transformerType) => {
+        const directoryTable = await this.csv.getTable(transformerType, this.categoryId);
+        const directoryTableData = directoryTable.filter((_, index) => index !== 0);
+
+        const calculationPower = this.getMoreEqualPower(directoryTableData, providedRatedPower);
+
+        const neededRowIndex = directoryTable.findIndex((value) => value[0] === `${calculationPower}`);
+        const Pk = +directoryTable[neededRowIndex][1];
+        const Po = +directoryTable[neededRowIndex][2];
+
+        const efficiency = evaluate(formulas.PEI, {
+          Po,
+          Pco: 0,
+          Pk,
+          Sr: calculationPower * 1000,
+        });
+
+        return {
+          transformerType,
+          efficiency,
+          calculationPower,
+        };
+      })
+    );
+  }
+
+  private getMoreEqualPower(directoryTableData: string[][], providedRatedPower: number): number {
+    return directoryTableData
+      .map(([power]) => Number(power.replace('≤', '')))
+      .find((availablePower) => providedRatedPower <= availablePower) as number;
+  }
+
+  private rangeValidator({
+    min,
+    exclusiveMin,
+    max,
+    exclusiveMax,
+    value,
+  }: {
+    min?: number;
+    exclusiveMin?: number;
+    max?: number;
+    exclusiveMax?: number;
+    value: number;
+  }): void {
+    // Min check
+    if (typeof min === 'number' && value < min) {
+      throw new BadRequestException(`Rated power must be more equal than ${min} kVA.`);
+    }
+
+    // Exclusive min check
+    if (typeof exclusiveMin === 'number' && value <= exclusiveMin) {
+      throw new BadRequestException(`Rated power must be strictly more ${exclusiveMin} kVA.`);
+    }
+
+    // Max check
+    if (typeof max === 'number' && value > max) {
+      throw new BadRequestException(`Rated power must be less is equals then ${max} kVA.`);
+    }
+
+    // Exclusive max check
+    if (typeof exclusiveMax === 'number' && value >= exclusiveMax) {
+      throw new BadRequestException(`Rated power must be strictly less then ${exclusiveMax} kVA.`);
+    }
+
+    // Range check
+    if (typeof min === 'number' && typeof max === 'number' && (value < min || value > max)) {
+      throw new BadRequestException(`Rated power must be between ${min} and ${max} kVA inclusive.`);
+    }
+
+    // Exclusive range check
+    if (
+      typeof exclusiveMin === 'number' &&
+      typeof exclusiveMax === 'number' &&
+      (value <= exclusiveMin || value >= exclusiveMax)
+    ) {
+      throw new BadRequestException(`Rated power must be between ${exclusiveMin} and ${exclusiveMax} kVA.`);
+    }
   }
 }
