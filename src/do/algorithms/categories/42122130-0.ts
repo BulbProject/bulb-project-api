@@ -118,6 +118,10 @@ export class WaterPumps extends AlgorithmEngine {
                   id: '0101',
                   measure: getEfficiency(item),
                   notes: 'ККД',
+                  unit: {
+                    id: '43',
+                    name: '%',
+                  },
                 },
               ],
             },
