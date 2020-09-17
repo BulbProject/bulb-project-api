@@ -7,21 +7,21 @@ import axios, { AxiosError } from 'axios';
 export class DocumentsService {
   public constructor(private config: ConfigService) {}
 
-  public async getTable(table: 'formulas' | 'directory', categoryId: string): Promise<string> {
+  public async getTable(table: string, categoryId: string): Promise<string> {
     const url = this.config.get('documents.url');
     const repo = this.config.get('documents.repo');
     const requestUrl = `${url}/entries/${repo.owner}/${repo.name}/${repo.branch}/calculation-data%2F${categoryId}/${table}.csv`;
     try {
-      const { data } = await axios.request<{ content: string }>({
-        method: 'get',
-        url: requestUrl,
-      });
+      const { data } = await axios.get<{ content: string }>(requestUrl);
 
       return data.content;
     } catch (error) {
-      const { message } = error as AxiosError;
+      const { message, response } = error as AxiosError;
 
-      throw new HttpException(`Could not retrieve "${table}" from url ${requestUrl}: "${message}"`, 500);
+      throw new HttpException(
+        `Could not retrieve '${table}' table from url ${requestUrl}. Reason: '${message}'.`,
+        response?.status || 500
+      );
     }
   }
 }
