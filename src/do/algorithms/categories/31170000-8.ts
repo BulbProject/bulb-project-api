@@ -86,7 +86,7 @@ export class Transformers extends AlgorithmEngine {
             this.generateAvailableVariant(
               transformersType[0],
               +(techChars[0].efficiency * 100).toFixed(3),
-              providedRatedPower
+              techChars[0].calculationPower
             ),
           ],
         };
@@ -94,7 +94,7 @@ export class Transformers extends AlgorithmEngine {
     }
 
     if (requirementGroupNumber === '03') {
-      this.rangeValidator({ exclusiveMax: 4000, value: providedRatedPower });
+      this.rangeValidator({ min: 4000, value: providedRatedPower });
 
       const largeTransformers = ['liquid-immersed-large', 'dry-type-large'];
 
