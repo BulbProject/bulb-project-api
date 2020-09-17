@@ -102,6 +102,10 @@ export class ElectricMotors extends AlgorithmEngine {
                   id: '0101',
                   measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles as string],
                   notes: 'ККД',
+                  unit: {
+                    id: '43',
+                    name: '%',
+                  },
                 },
               ],
             },

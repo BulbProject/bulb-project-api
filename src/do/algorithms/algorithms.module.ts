@@ -10,13 +10,14 @@ import { DocumentsService, DocxGeneratorService, CsvService } from '../services'
 import { SpecificationService, CalculationService } from './services';
 import { AlgorithmsService } from './algorithms.service';
 
-import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps } from './categories';
+import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps, Transformers } from './categories';
 
 const algorithms = [
   AlgorithmsService,
   LightingEquipmentAndElectricLamps,
   ElectricMotors,
   WaterPumps,
+  Transformers,
   SpecificationService,
   CalculationService,
 ];
