@@ -1,0 +1,24 @@
+axial,static,0.125 <= P <= 10,2.74 * log(P) - 6.33 + N
+axial,static,10 < P <= 500,0.78 * log(P) - 1.88 + N
+axial,total,0.125 <= P <= 10,2.74 * log(P) - 6.33 + N
+axial,total,10 < P <= 500,0.78 * log(P) - 1.88 + N
+centrifugal-forward-curved,static,0.125 <= P <= 10,2.74 * log(P) - 6.33 + N
+centrifugal-forward-curved,static,10 < P <= 500,0.78 * log(P) - 1.88 + N
+centrifugal-forward-curved,total,0.125 <= P <= 10,2.74 * log(P) - 6.33 + N
+centrifugal-forward-curved,total,10 < P <= 500,0.78 * log(P) - 1.88 + N
+centrifugal-radial-curved,static,0.125 <= P <= 10,2.74 * log(P) - 6.33 + N
+centrifugal-radial-curved,static,10 < P <= 500,0.78 * log(P) - 1.88 + N
+centrifugal-radial-curved,total,0.125 <= P <= 10,2.74 * log(P) - 6.33 + N
+centrifugal-radial-curved,total,10 < P <= 500,0.78 * log(P) - 1.88 + N
+centrifugal-backward-curved-without-housing,static,0.125 <= P <= 10,4.56 * log(P) - 10.5 + N
+centrifugal-backward-curved-without-housing,static,10 < P <= 500,1.1 * log(P) - 2.6 + N
+centrifugal-backward-curved-with-housing,static,0.125 <= P <= 10,4.56 * log(P) - 10.5 + N
+centrifugal-backward-curved-with-housing,static,10 < P <= 500,1.1 * log(P) - 2.6 + N
+centrifugal-backward-curved-with-housing,total,0.125 <= P <= 10,4.56 * log(P) - 10.5 + N
+centrifugal-backward-curved-with-housing,total,10 < P <= 500,1.1 * log(P) - 2.6 + N
+mixed-flow,static,0.125 <= P <= 10,4.56 * log(P) - 10.5 + N
+mixed-flow,static,10 < P <= 500,1.1 * log(P) - 2.6 + N
+mixed-flow,total,0.125 <= P <= 10,4.56 * log(P) - 10.5 + N
+mixed-flow,total,10 < P <= 500,1.1 * log(P) - 2.6 + N
+cross-flow,total,0.125 <= P <= 10,1.14 * log(P) - 2.6 + N
+cross-flow,total,10 < P <= 500,N

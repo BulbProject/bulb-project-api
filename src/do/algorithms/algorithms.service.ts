@@ -8,7 +8,13 @@ import type { SpecificationPayload, SpecificationResponse } from '../entity/spec
 
 import { CsvService, DocxGeneratorService } from '../services';
 
-import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps, Transformers } from './categories';
+import {
+  ElectricMotors,
+  LightingEquipmentAndElectricLamps,
+  WaterPumps,
+  Transformers,
+  IndustrialFans,
+} from './categories';
 
 @Injectable()
 export class AlgorithmsService {
@@ -17,6 +23,7 @@ export class AlgorithmsService {
     '31110000-0': new ElectricMotors(this.csv),
     '42122130-0': new WaterPumps(this.csv),
     '31170000-8': new Transformers(this.csv),
+    '42522000-1': new IndustrialFans(this.csv),
   };
 
   public constructor(
