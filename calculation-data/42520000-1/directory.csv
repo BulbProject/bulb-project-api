@@ -1,0 +1,13 @@
+Типи вентиляторів,Категорія ефективності,Клас ефективності (N)
+axial,static,40
+axial,total,58
+centrifugal-forward-curved,static,44
+centrifugal-forward-curved,total,49
+centrifugal-radial-curved,static,44
+centrifugal-radial-curved,total,49
+centrifugal-backward-curved-without-housing,static,62
+centrifugal-backward-curved-with-housing,static,61
+centrifugal-backward-curved-with-housing,total,64
+mixed-flow,static,50
+mixed-flow,total,62
+cross-flow,total,21
