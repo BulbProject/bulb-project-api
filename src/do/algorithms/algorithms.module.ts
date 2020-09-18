@@ -10,9 +10,15 @@ import { DocumentsService, DocxGeneratorService, CsvService } from '../services'
 import { SpecificationService, CalculationService } from './services';
 import { AlgorithmsService } from './algorithms.service';
 
-import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps, Transformers } from './categories';
+import {
+  ElectricMotors,
+  LightingEquipmentAndElectricLamps,
+  WaterPumps,
+  Transformers,
+  IndustrialFans,
+} from './categories';
 
-const algorithms = [LightingEquipmentAndElectricLamps, ElectricMotors, WaterPumps, Transformers];
+const algorithms = [LightingEquipmentAndElectricLamps, ElectricMotors, WaterPumps, Transformers, IndustrialFans];
 
 @Module({
   imports: [
