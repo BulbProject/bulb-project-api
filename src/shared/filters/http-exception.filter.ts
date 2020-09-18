@@ -8,7 +8,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = context.getResponse<FastifyReply>();
     const status = exception.getStatus();
     const responseBody = exception.getResponse() as { message?: string | string[]; error?: string };
-    const messages = responseBody.message || responseBody.error;
+    const messages = typeof responseBody !== 'string' ? responseBody.message || responseBody.error : responseBody;
 
     response.status(status).send({
       messages: typeof messages === 'string' ? [messages] : messages,

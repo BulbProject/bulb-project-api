@@ -10,16 +10,9 @@ import { DocumentsService, DocxGeneratorService, CsvService } from '../services'
 import { SpecificationService, CalculationService } from './services';
 import { AlgorithmsService } from './algorithms.service';
 
-import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps } from './categories';
+import { ElectricMotors, LightingEquipmentAndElectricLamps, WaterPumps, Transformers } from './categories';
 
-const algorithms = [
-  AlgorithmsService,
-  LightingEquipmentAndElectricLamps,
-  ElectricMotors,
-  WaterPumps,
-  SpecificationService,
-  CalculationService,
-];
+const algorithms = [LightingEquipmentAndElectricLamps, ElectricMotors, WaterPumps, Transformers];
 
 @Module({
   imports: [
@@ -28,7 +21,15 @@ const algorithms = [
     VersionsPackageRepositoryModule,
     ConformanceModule,
   ],
-  providers: [...algorithms, DocumentsService, DocxGeneratorService, CsvService],
-  exports: algorithms,
+  providers: [
+    AlgorithmsService,
+    ...algorithms,
+    SpecificationService,
+    CalculationService,
+    DocumentsService,
+    DocxGeneratorService,
+    CsvService,
+  ],
+  exports: [AlgorithmsService, ...algorithms, SpecificationService, CalculationService],
 })
 export class AlgorithmsModule {}
