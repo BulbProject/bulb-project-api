@@ -66,7 +66,8 @@ export class IndustrialFans extends AlgorithmEngine {
       throw new BadRequestException(`Variant response transmitted from unknown requirement group.`);
     }
 
-    const efficiencyCategory = efficiencyCategoriesMap[variantResponse.requirement.id.slice(2, 4) as '01' | '02'];
+    const efficiencyCategory: typeof efficiencyCategoriesMap[keyof typeof efficiencyCategoriesMap] =
+      efficiencyCategoriesMap[variantResponse.requirement.id.slice(2, 4) as keyof typeof efficiencyCategoriesMap];
 
     const requestedVariant = (variantResponse.value as unknown) as typeof variants.static | typeof variants.total;
 
@@ -77,10 +78,10 @@ export class IndustrialFans extends AlgorithmEngine {
       throw new BadRequestException('A wrong fan variant was transmitted.');
     }
 
-    const directoryTable = await this.csv.getTable('directory', this.categoryId);
+    const efficiencyClassTable = await this.csv.getTable('directory', this.categoryId);
 
     const efficiencyClass = this.getValueFromTable(
-      directoryTable,
+      efficiencyClassTable,
       (row) => row[0] === requestedVariant && row[1] === efficiencyCategory,
       2
     );
@@ -125,7 +126,9 @@ export class IndustrialFans extends AlgorithmEngine {
               observations: [
                 {
                   id: '0101',
-                  measure: +evaluate(efficiencyFormulas[item], { P: providedPower, N: +efficiencyClass }).toFixed(3),
+                  measure: Number(
+                    evaluate(efficiencyFormulas[item], { P: providedPower, N: +efficiencyClass }).toFixed(3)
+                  ),
                   notes: 'Цільова енергоефективність',
                 },
                 {
