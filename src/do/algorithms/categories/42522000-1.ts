@@ -2,12 +2,13 @@ import { BadRequestException, InternalServerErrorException } from '@nestjs/commo
 import { evaluate } from 'mathjs';
 import { v4 as uuid } from 'uuid';
 
+import { sortAvailableVariantsByMeasure } from 'shared/utils';
+
 import { CsvService } from '../../services/csv';
 import { AlgorithmEngine } from '../../entity';
 import { CalculationPayload, CalculationResponse } from '../../entity/calculation';
 import { SpecificationPayload, SpecificationResponse } from '../../entity/specification';
-import { sortAvailableVariantsByMeasure } from '../../../shared/utils';
-import { AvailableVariant } from '../../entity/available-variant';
+import type { AvailableVariant } from '../../entity/available-variant';
 
 const efficiencyCategoriesMap = { '01': 'static', '02': 'total' } as const;
 
@@ -73,7 +74,7 @@ export class IndustrialFans extends AlgorithmEngine {
       typeof requestedVariant !== 'string' ||
       ![...new Set([...variants.static, ...variants.total])].includes(requestedVariant)
     ) {
-      throw new BadRequestException('A wrong power value was transmitted.');
+      throw new BadRequestException('A wrong fan variant was transmitted.');
     }
 
     const directoryTable = await this.csv.getTable('directory', this.categoryId);
@@ -108,7 +109,7 @@ export class IndustrialFans extends AlgorithmEngine {
 
         return { ...formulasObject, [variant]: formula };
       },
-      {} as Record<string, string>
+      {}
     );
 
     const availableVariants = sortAvailableVariantsByMeasure(
@@ -124,7 +125,7 @@ export class IndustrialFans extends AlgorithmEngine {
               observations: [
                 {
                   id: '0101',
-                  measure: +evaluate(efficiencyFormulas[item], { P: providedPower, N: efficiencyClass }).toFixed(3),
+                  measure: +evaluate(efficiencyFormulas[item], { P: providedPower, N: +efficiencyClass }).toFixed(3),
                   notes: 'Цільова енергоефективність',
                 },
                 {
@@ -135,6 +136,16 @@ export class IndustrialFans extends AlgorithmEngine {
                     id: '123',
                     name: 'кВА',
                   },
+                },
+                {
+                  id: '0103',
+                  measure: efficiencyCategory === 'static' ? 'статична' : 'загальна',
+                  notes: 'Категорія ефективності',
+                },
+                {
+                  id: '0104',
+                  measure: efficiencyClass,
+                  notes: 'Клас ефективності',
                 },
               ],
             },
