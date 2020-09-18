@@ -48,12 +48,16 @@ export class CategoriesListRepositoryService {
     }, `Could not find a record for category with id ${categoryId}.`);
 
     return this.database.handleDbError(async () => {
-      await this.categoriesList.save({
-        id: category.id,
-        version,
-        date: updatedAt,
-        updatedAt,
-      });
+      await this.categoriesList.updateOne(
+        { id: category.id },
+        {
+          $set: {
+            version,
+            date: updatedAt,
+            updatedAt,
+          },
+        }
+      );
     });
   }
 }
