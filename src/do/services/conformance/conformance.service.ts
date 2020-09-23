@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { getLastVersionNumber } from 'shared/utils';
 import { VersionsPackageRepositoryService } from 'shared/repositories/versions-package';
-import { CategoryVersionRepositoryService } from 'shared/repositories/category-version';
+import { CategoryVersion, CategoryVersionRepositoryService } from 'shared/repositories/category-version';
 
 @Injectable()
 export class ConformanceService {
@@ -11,7 +11,7 @@ export class ConformanceService {
     private categories: CategoryVersionRepositoryService
   ) {}
 
-  public async getCategory(categoryId: string, version: string) {
+  public async getCategory(categoryId: string, version: string): Promise<CategoryVersion> {
     const versionsPackages = await this.versionsPackage.getOne(categoryId);
 
     const lastVersion = getLastVersionNumber(versionsPackages.versions);
@@ -26,7 +26,7 @@ export class ConformanceService {
       throw new BadRequestException(`Calculation is impossible for archived version.`);
     }
 
-    const categoryVersion = await this.categories.getOne([categoryId, version]);
+    const categoryVersion = await this.categories.getOne(categoryId, version);
 
     if (categoryVersion.status !== 'active') {
       throw new BadRequestException('Calculation is only possible for active category.');

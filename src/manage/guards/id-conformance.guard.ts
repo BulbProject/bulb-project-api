@@ -11,7 +11,7 @@ export class IdConformanceGuard implements CanActivate {
     }
 
     if (categoryId !== bodyId) {
-      throw new BadRequestException("Parameter 'categoryId' must correspond to the provided category's 'id'.");
+      throw new BadRequestException("Path parameter 'categoryId' must correspond to the provided category's 'id'.");
     }
 
     return true;
