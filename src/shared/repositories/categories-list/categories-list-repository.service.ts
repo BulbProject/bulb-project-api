@@ -40,7 +40,7 @@ export class CategoriesListRepositoryService {
     });
   }
 
-  public async updateVersion([categoryId, version]: [string, string], updatedAt: string): Promise<void> {
+  public async updateVersion(categoryId: string, version: string, updatedAt: string): Promise<void> {
     const category = await this.database.handleUndefinedValue(async () => {
       return this.categoriesList.findOne({
         id: categoryId,

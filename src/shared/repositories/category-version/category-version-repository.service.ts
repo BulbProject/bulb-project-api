@@ -104,8 +104,8 @@ export class CategoryVersionRepositoryService {
         updatedAt,
         category,
       });
-      await this.versionsPackage.updateVersion([categoryId, nextVersion], updatedAt);
-      await this.categoriesList.updateVersion([categoryId, nextVersion], updatedAt);
+      await this.versionsPackage.updateVersion(categoryId, nextVersion, updatedAt);
+      await this.categoriesList.updateVersion(categoryId, nextVersion, updatedAt);
 
       return {
         id: categoryId,

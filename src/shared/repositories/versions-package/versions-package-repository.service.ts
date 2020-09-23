@@ -56,7 +56,7 @@ export class VersionsPackageRepositoryService {
     });
   }
 
-  public async updateVersion([categoryId, version]: [string, string], updatedAt: string): Promise<void> {
+  public async updateVersion(categoryId: string, version: string, updatedAt: string): Promise<void> {
     const versionPackage = await this.getOne(categoryId);
 
     await this.packages.updateOne(
