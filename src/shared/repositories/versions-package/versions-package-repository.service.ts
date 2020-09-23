@@ -9,12 +9,16 @@ import { VersionsPackage } from './models';
 
 @Injectable()
 export class VersionsPackageRepositoryService {
+  private readonly serviceHost: string;
+
   public constructor(
     @InjectRepository(VersionsPackage)
     private packages: MongoRepository<VersionsPackage>,
     private config: ConfigService,
     private database: DatabaseService
-  ) {}
+  ) {
+    this.serviceHost = this.config.get<string>('service.url') as string;
+  }
 
   public async getOne(
     categoryId: string,
@@ -23,7 +27,7 @@ export class VersionsPackageRepositoryService {
     return this.database.handleUndefinedValue(
       () =>
         this.packages.findOne({
-          id: categoryId,
+          _id: categoryId,
         }),
       exceptionMessage
     );
@@ -36,7 +40,7 @@ export class VersionsPackageRepositoryService {
 
     await this.database.handleDbError(async () => {
       await this.packages.save({
-        id: categoryId,
+        _id: categoryId,
         uri: `${url}/categories/${categoryId}`,
         version: serviceVersion,
         publisher: {
@@ -55,14 +59,14 @@ export class VersionsPackageRepositoryService {
   public async updateVersion([categoryId, version]: [string, string], updatedAt: string): Promise<void> {
     const versionPackage = await this.getOne(categoryId);
 
-    await this.database.handleDbError(async () => {
-      const url = this.config.get<string>('service.url');
-
-      await this.packages.save({
-        ...versionPackage,
-        updatedAt,
-        versions: [...versionPackage.versions, `${url}/categories/${categoryId}/${version}`],
-      });
-    });
+    await this.packages.updateOne(
+      { _id: categoryId },
+      {
+        $set: {
+          updatedAt,
+          versions: [...versionPackage.versions, `${this.serviceHost}/categories/${categoryId}/${version}`],
+        },
+      }
+    );
   }
 }

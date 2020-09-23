@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { ApiHideProperty } from '@nestjs/swagger';
 
 import { Timestamp } from '../../../entity';
@@ -10,10 +10,6 @@ export class VersionsPackage extends Timestamp {
   @ApiHideProperty()
   @Exclude({ toPlainOnly: true })
   public _id: string;
-
-  @Column()
-  @Index()
-  public id: string;
 
   @Column()
   public license?: string;

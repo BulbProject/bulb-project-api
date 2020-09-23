@@ -14,20 +14,22 @@ export class CategoriesDetailsService {
   public async getCategoriesDetails(): Promise<CategoryDetails[]> {
     const categoriesListEntries = await this.categoriesList.findAll();
 
-    return Promise.all(
-      categoriesListEntries.map(async ({ version, id }) => {
-        const { date, status, category } = await this.categoriesVersions.getOne([id, version]);
+    if (categoriesListEntries.length === 0) {
+      return [];
+    }
 
-        return {
-          id,
-          version,
-          date,
-          status,
-          title: category.title,
-          description: category.description,
-          image: category.documents.find((document) => !document.relatesTo)?.url as string,
-        };
-      })
+    const categoriesVersions = await this.categoriesVersions.getMany(
+      categoriesListEntries.map(({ id, version }) => ({ categoryId: id, version }))
     );
+
+    return categoriesVersions.map(({ version, date, status, category: { id, title, description, documents } }) => ({
+      id,
+      version,
+      status,
+      date,
+      title,
+      description,
+      image: documents.find(({ relatesTo, relatedItem }) => !relatesTo && !relatedItem)?.url as string,
+    }));
   }
 }
