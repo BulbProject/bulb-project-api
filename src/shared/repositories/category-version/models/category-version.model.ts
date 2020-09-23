@@ -6,12 +6,13 @@ import { Category, Timestamp } from '../../../entity';
 
 @Entity({ name: 'categories-versions' })
 export class CategoryVersion extends Timestamp {
-  @ObjectIdColumn({
-    select: false,
-  })
+  @ObjectIdColumn()
   @ApiHideProperty()
   @Exclude({ toPlainOnly: true })
   public _id: string;
+
+  @Column()
+  public id: string;
 
   @Column()
   public version: string;

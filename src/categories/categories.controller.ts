@@ -87,7 +87,7 @@ export class CategoriesController {
   public async getCategory(
     @Param('categoryId')
     categoryId: string
-  ): Promise<VersionsPackage> {
+  ): Promise<VersionsPackage | null> {
     return this.versionsPackages.getOne(categoryId);
   }
 
@@ -105,6 +105,6 @@ export class CategoriesController {
     @Param('version')
     version: string
   ): Promise<CategoryVersion> {
-    return this.categoriesVersions.getOne([categoryId, version]);
+    return this.categoriesVersions.getOne(categoryId, version);
   }
 }
