@@ -103,15 +103,24 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     })?.value as unknown;
   }
 
-  private static getDirectoryPower(providedPower: number, availablePowers: number[]): number {
-    return (
-      availablePowers.find(
-        (availablePower: number) => {
-          return availablePower >= providedPower;
-        }
-        // @TODO need clarification
-      ) || Math.max(...availablePowers)
-    );
+  private static getDirectoryPower(
+    providedPower: number,
+    availablePowers: number[],
+    powerIsGreaterErrorMessage?: string
+  ): number {
+    const directoryPower = availablePowers.find((availablePower: number) => {
+      return availablePower >= providedPower;
+    });
+
+    if (!directoryPower && powerIsGreaterErrorMessage) {
+      throw new BadRequestException(
+        `${powerIsGreaterErrorMessage}. Maximum power value from directory - ${
+          availablePowers[availablePowers.length - 1]
+        }W.`
+      );
+    }
+
+    return directoryPower || availablePowers[availablePowers.length - 1];
   }
 
   private static generateAvailableVariants(
@@ -365,7 +374,8 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
 
       const directoryPower = LightingEquipmentAndElectricLamps.getDirectoryPower(
         providedPower,
-        techChars[selectedBulbType].availablePowers
+        techChars[selectedBulbType].availablePowers,
+        'The transmitted power value is greater than the maximum from the directory'
       );
 
       const lum = evaluate(formulas.lum, {
