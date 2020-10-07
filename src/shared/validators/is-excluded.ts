@@ -12,6 +12,7 @@ export const IsExcluded = (validationOptions?: ValidationOptions) => (_object: R
     validator: {
       validate: (_value: Requirement['expectedValue'], { object }: ValidationArguments) => {
         const { expectedValue } = object as Requirement;
+
         return !expectedValue;
       },
       defaultMessage: (): string => {
