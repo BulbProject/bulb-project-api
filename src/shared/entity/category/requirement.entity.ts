@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { IsIn, IsOptional, IsString, ValidateNested, IsNotEmpty } from 'class-validator';
 import { DataType } from 'ts4ocds/extensions/requirements';
 
-import { ExpectedValue, IsUnion, OptionValue } from 'shared/validators';
+import { ExpectedValue, IsUnion } from 'shared/validators';
 
 import { OptionDetails } from './option-details.entity';
 import { Unit } from './unit.entity';
@@ -55,6 +55,5 @@ export class Requirement {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => OptionDetails)
-  @OptionValue()
   public optionDetails?: OptionDetails;
 }

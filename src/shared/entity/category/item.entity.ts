@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, IsString, ArrayMinSize, ValidateNested } from 'class-validator';
+import { IsArray, IsOptional, IsString, ArrayMinSize, ValidateNested, IsObject } from 'class-validator';
 
 import { Classification } from './classification.entity';
 
@@ -10,6 +10,7 @@ export class Item {
   @IsString()
   public description: string;
 
+  @IsObject()
   @Type(() => Classification)
   @ValidateNested()
   public classification: Classification;
