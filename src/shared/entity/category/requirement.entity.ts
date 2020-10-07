@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { IsIn, IsOptional, IsString, ValidateNested, IsNotEmpty } from 'class-validator';
 import { DataType } from 'ts4ocds/extensions/requirements';
 
-import { ExpectedValue, IsUnion, OptionValue } from 'shared/validators';
+import { ExpectedValue, IsUnion, OptionValue, IsExcluded } from 'shared/validators';
 
 import { OptionDetails } from './option-details.entity';
 import { Unit } from './unit.entity';
@@ -39,11 +39,13 @@ export class Requirement {
   @IsUnion(['number', 'integer'])
   @IsOptional()
   @ExpectedValue()
+  @IsExcluded()
   public minValue?: number;
 
   @IsUnion(['number', 'integer'])
   @IsOptional()
   @ExpectedValue()
+  @IsExcluded()
   public maxValue?: number;
 
   @IsOptional()
@@ -56,5 +58,6 @@ export class Requirement {
   @ValidateNested()
   @Type(() => OptionDetails)
   @OptionValue()
+  @IsExcluded()
   public optionDetails?: OptionDetails;
 }
