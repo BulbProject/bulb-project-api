@@ -1,8 +1,6 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
-
-class Requirement {
-  public expectedValue?: string | number | boolean;
-}
+// eslint-disable-next-line import/no-cycle
+import { Requirement } from '../entity/category/requirement.entity';
 
 export const IsExcluded = (validationOptions?: ValidationOptions) => (_object: Requirement, propertyName: string) => {
   registerDecorator({
