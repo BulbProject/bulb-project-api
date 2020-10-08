@@ -1,6 +1,8 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
-// eslint-disable-next-line import/no-cycle
-import { Requirement } from '../entity/category/requirement.entity';
+
+class Requirement {
+  public expectedValue?: string | number | boolean;
+}
 
 export const IsExcluded = (validationOptions?: ValidationOptions) => (_object: Requirement, propertyName: string) => {
   registerDecorator({
@@ -16,7 +18,7 @@ export const IsExcluded = (validationOptions?: ValidationOptions) => (_object: R
         return !expectedValue;
       },
       defaultMessage: (): string => {
-        return `If expectedValue exist, minValue, maxValue and optionDetails should not exist.`;
+        return `minValue, maxValue, optionDetails and expectedValue are mutually exclusive attributes.`;
       },
     },
   });
