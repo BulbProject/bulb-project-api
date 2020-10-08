@@ -16,7 +16,7 @@ export const IsExcluded = (validationOptions?: ValidationOptions) => (_object: R
         return !expectedValue;
       },
       defaultMessage: (): string => {
-        return `minValue, maxValue, optionDetails and expectedValue are mutually exclusive attributes.`;
+        return `minValue, maxValue and optionDetails mutually exclusive attributes with expectedValue.`;
       },
     },
   });

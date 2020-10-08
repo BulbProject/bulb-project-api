@@ -17,7 +17,7 @@ export class CalculationService {
   ): Promise<CalculationResponse> {
     // TODO: add validation for empty body request
     if (Object.keys(requestedNeed).length === 0) {
-      throw new BadRequestException(`Requested body must be not an empty object.`);
+      throw new BadRequestException(`Requested body must not be an empty object.`);
     }
 
     const categoryVersion = await this.conformance.getCategory(categoryId, version);
