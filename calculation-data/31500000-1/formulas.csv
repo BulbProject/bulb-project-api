@@ -8,4 +8,4 @@ workingHoursInWeek,hoursInDay * daysInWeek,Кількість робочих г�
 workingHoursInYear,workingHoursInWeek * weeksInYear,Кількість робочих годин на рік
 energyEconomy,((Pselected * quantity - Pother * quantity) * workingHoursInYear) / 1000,Економія енергії
 financeEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * workingHoursInYear,Фінансова економія за рік
-fullFinanceEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * timeRate,Фінансова економія за термін служби
+lifetimeFinanceEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * timeRate,Фінансова економія за термін служби

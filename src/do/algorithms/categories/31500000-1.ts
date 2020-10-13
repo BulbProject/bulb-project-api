@@ -55,7 +55,7 @@ type Calculation = {
     workingHoursInYear?: number;
     energyEconomy?: number;
     financeEconomy?: number;
-    fullFinanceEconomy?: number;
+    lifetimeFinanceEconomy?: number;
   };
 };
 
@@ -205,7 +205,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             },
           });
 
-          if (currentBulb.financeEconomy && currentBulb.fullFinanceEconomy) {
+          if (currentBulb.financeEconomy && currentBulb.lifetimeFinanceEconomy) {
             observations.push(
               ...[
                 {
@@ -217,10 +217,10 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   },
                 },
                 {
-                  id: 'fullFinanceEconomy',
+                  id: 'lifetimeFinanceEconomy',
                   notes: 'Фінансової економії за термін служби',
                   value: {
-                    amount: Number(currentBulb.fullFinanceEconomy.toFixed(0)),
+                    amount: Number(currentBulb.lifetimeFinanceEconomy.toFixed(0)),
                     currency: 'грн' as 'UAH',
                   },
                 },
@@ -333,7 +333,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
       workingHoursInYear: 'workingHoursInYear',
       energyEconomy: 'energyEconomy',
       financeEconomy: 'financeEconomy',
-      fullFinanceEconomy: 'fullFinanceEconomy',
+      lifetimeFinanceEconomy: 'lifetimeFinanceEconomy',
     } as const;
 
     const formulas = getFormulas(calculatedValuesMap, formulasTable);
@@ -690,7 +690,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
               workingHoursInYear,
             });
 
-            availableBulbTypes[bulbType].fullFinanceEconomy = evaluate(formulas.fullFinanceEconomy, {
+            availableBulbTypes[bulbType].lifetimeFinanceEconomy = evaluate(formulas.lifetimeFinanceEconomy, {
               Pselected: availableBulbTypes[selectedBulbType].power,
               quantity,
               tariff,
