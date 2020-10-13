@@ -55,6 +55,7 @@ type Calculation = {
     workingHoursInYear?: number;
     energyEconomy?: number;
     financeEconomy?: number;
+    fullFinanceEconomy?: number;
   };
 };
 
@@ -204,15 +205,27 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             },
           });
 
-          if (currentBulb.financeEconomy) {
-            observations.push({
-              id: 'financeEconomy',
-              notes: 'Фінансової економії',
-              value: {
-                amount: +currentBulb.financeEconomy.toFixed(0),
-                currency: 'грн/рік' as 'UAH',
-              },
-            });
+          if (currentBulb.financeEconomy && currentBulb.fullFinanceEconomy) {
+            observations.push(
+              ...[
+                {
+                  id: 'financeEconomy',
+                  notes: 'Фінансової економії',
+                  value: {
+                    amount: Number(currentBulb.financeEconomy.toFixed(0)),
+                    currency: 'грн/рік' as 'UAH',
+                  },
+                },
+                {
+                  id: 'fullFinanceEconomy',
+                  notes: 'Фінансової економії за термін служби',
+                  value: {
+                    amount: Number(currentBulb.fullFinanceEconomy.toFixed(0)),
+                    currency: 'грн' as 'UAH',
+                  },
+                },
+              ]
+            );
           }
 
           // eslint-disable-next-line no-unused-expressions
@@ -320,6 +333,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
       workingHoursInYear: 'workingHoursInYear',
       energyEconomy: 'energyEconomy',
       financeEconomy: 'financeEconomy',
+      fullFinanceEconomy: 'fullFinanceEconomy',
     } as const;
 
     const formulas = getFormulas(calculatedValuesMap, formulasTable);
@@ -655,8 +669,8 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
         });
 
         availableBulbTypes[bulbType].workingHoursInYear = workingHoursInYear;
-        availableBulbTypes[bulbType].modeOfUseLifetime = +(techChars[bulbType].timeRate / workingHoursInYear).toFixed(
-          2
+        availableBulbTypes[bulbType].modeOfUseLifetime = Number(
+          (techChars[bulbType].timeRate / workingHoursInYear).toFixed(2)
         );
 
         if (workingHoursInYear) {
@@ -668,13 +682,21 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
           });
 
           if (tariff) {
-            availableBulbTypes[bulbType].financeEconomy = +evaluate(formulas.financeEconomy, {
+            availableBulbTypes[bulbType].financeEconomy = evaluate(formulas.financeEconomy, {
               Pselected: availableBulbTypes[selectedBulbType].power,
               quantity,
               tariff,
               Pother: power,
               workingHoursInYear,
-            }).toFixed(2);
+            });
+
+            availableBulbTypes[bulbType].fullFinanceEconomy = evaluate(formulas.fullFinanceEconomy, {
+              Pselected: availableBulbTypes[selectedBulbType].power,
+              quantity,
+              tariff,
+              Pother: power,
+              timeRate: techChars[bulbType].timeRate,
+            });
           }
         }
       });
