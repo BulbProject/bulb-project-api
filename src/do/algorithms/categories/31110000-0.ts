@@ -163,8 +163,8 @@ export class ElectricMotors extends AlgorithmEngine {
             id: 'financeEconomy',
             notes: 'Фінансова економія',
             value: {
-              amount: +((yearEnergyProduction - ei1YearEnergyProduction) * tariff).toFixed(0),
-              currency: 'грн/рік' as 'UAH',
+              amount: Number(((yearEnergyProduction - ei1YearEnergyProduction) * tariff).toFixed(0)),
+              currency: 'грн/рік',
             },
           });
         }

@@ -213,7 +213,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   notes: 'Фінансової економії',
                   value: {
                     amount: Number(currentBulb.financeEconomy.toFixed(0)),
-                    currency: 'грн/рік' as 'UAH',
+                    currency: 'грн/рік',
                   },
                 },
                 {
@@ -221,7 +221,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   notes: 'Фінансової економії за термін служби',
                   value: {
                     amount: Number(currentBulb.lifetimeFinanceEconomy.toFixed(0)),
-                    currency: 'грн' as 'UAH',
+                    currency: 'грн',
                   },
                 },
               ]
@@ -240,7 +240,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
         metrics,
         avgValue: {
           amount: 0,
-          currency: 'UAH',
+          currency: 'грн',
         },
         relatedProducts: ['https://prozorro.gov.ua/ProzorroMarket'],
         criteria: [
