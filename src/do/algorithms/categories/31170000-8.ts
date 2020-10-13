@@ -181,7 +181,7 @@ export class Transformers extends AlgorithmEngine {
 
         const calculationPower = this.getMoreEqualPower(directoryTableData, providedRatedPower);
 
-        const neededRowIndex = directoryTable.findIndex((value) => value[0] === `${calculationPower}`);
+        const neededRowIndex = directoryTable.findIndex((value) => value[0].replace('≤', '') === `${calculationPower}`);
         const Pk = +directoryTable[neededRowIndex][1];
         const Po = +directoryTable[neededRowIndex][2];
 

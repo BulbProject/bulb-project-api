@@ -66,7 +66,7 @@ export class WaterPumps extends AlgorithmEngine {
 
       const head = getValueFromResponses('0201010000');
 
-      if (typeof head !== 'number' || head > 140) {
+      if (typeof head !== 'number' || head > 140 || head <= 0) {
         throw new BadRequestException(`Head value was provided incorrect.`);
       }
 

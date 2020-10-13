@@ -22,27 +22,39 @@ export class CategoryVersionRepositoryService {
     private database: DatabaseService
   ) {}
 
-  public async getOne([categoryId, version]: [string, string]): Promise<CategoryVersion> {
+  public async getOne(categoryId: string, version: string): Promise<CategoryVersion> {
     return this.database.handleUndefinedValue(() => {
       return this.categoriesVersions.findOne({
         where: {
-          version,
-          'category.id': categoryId,
+          _id: this.generateInternalId(categoryId, version),
         },
       });
     }, `Category ${categoryId} with version ${version} was not found`);
   }
 
-  public async createOne(categoryId: string, category: Category): Promise<ManageResponse> {
-    const existingCategory = await this.database.handleDbError(async () => {
-      return this.categoriesVersions.findOne({
+  public async getMany(query: { categoryId: string; version: string }[]): Promise<CategoryVersion[]> {
+    return this.database.handleUndefinedValue(async () => {
+      return this.categoriesVersions.find({
         where: {
-          'category.id': categoryId,
+          $or: query.map(({ categoryId, version }) => ({
+            _id: this.generateInternalId(categoryId, version),
+          })),
         },
+        order: {
+          date: 'DESC',
+        },
+      });
+    }, '');
+  }
+
+  public async createOne(categoryId: string, category: Category): Promise<ManageResponse> {
+    const existingCategoriesVersions = await this.database.handleDbError(() => {
+      return this.categoriesVersions.find({
+        id: categoryId,
       });
     });
 
-    if (existingCategory) {
+    if (existingCategoriesVersions.length !== 0) {
       throw new BadRequestException(`Category ${categoryId} has already been created.`);
     }
 
@@ -52,6 +64,8 @@ export class CategoryVersionRepositoryService {
     await this.database.handleDbError(async () => {
       await Promise.all([
         this.categoriesVersions.save({
+          _id: this.generateInternalId(categoryId, version),
+          id: categoryId,
           version,
           category,
           date: publishedDate,
@@ -72,27 +86,26 @@ export class CategoryVersionRepositoryService {
 
   public async updateVersion(categoryId: string, category: Category): Promise<ManageResponse> {
     return this.database.handleUndefinedValue(async () => {
-      const versionsPackage = await this.versionsPackage.getOne(categoryId);
+      const versionsPackage = await this.versionsPackage.getOne(
+        categoryId,
+        `Version package for category ${categoryId} was not found.`
+      );
 
       const previousVersion = getLastVersionNumber(versionsPackage.versions);
-
-      const { _id, ...previousCategoryVersion } = await this.getOne([categoryId, `v${previousVersion}`]);
       const nextVersion = `v${Number(previousVersion) + 1}`;
       const status = 'pending';
       const updatedAt = formatDate(new Date());
 
-      await Promise.all([
-        this.categoriesVersions.save({
-          ...previousCategoryVersion,
-          version: nextVersion,
-          date: updatedAt,
-          status,
-          updatedAt,
-          category,
-        }),
-        this.versionsPackage.updateVersion([categoryId, nextVersion], updatedAt),
-        this.categoriesList.updateVersion([categoryId, nextVersion], updatedAt),
-      ]);
+      await this.categoriesVersions.save({
+        _id: this.generateInternalId(categoryId, nextVersion),
+        version: nextVersion,
+        date: updatedAt,
+        status,
+        updatedAt,
+        category,
+      });
+      await this.versionsPackage.updateVersion(categoryId, nextVersion, updatedAt);
+      await this.categoriesList.updateVersion(categoryId, nextVersion, updatedAt);
 
       return {
         id: categoryId,
@@ -103,18 +116,22 @@ export class CategoryVersionRepositoryService {
   }
 
   public async updateStatus([categoryId, version]: [string, string]): Promise<ManageResponse> {
-    const category = await this.getOne([categoryId, version]);
+    const category = await this.getOne(categoryId, version);
 
     if (category.status === 'active') {
       throw new BadRequestException(`Category ${categoryId} had already been activated.`);
     }
 
     await this.database.handleDbError(async () => {
-      await this.categoriesVersions.save({
-        ...category,
-        updatedAt: formatDate(new Date()),
-        status: 'active',
-      });
+      await this.categoriesVersions.updateOne(
+        { _id: this.generateInternalId(categoryId, version) },
+        {
+          $set: {
+            updatedAt: formatDate(new Date()),
+            status: 'active',
+          },
+        }
+      );
     });
 
     return {
@@ -122,5 +139,9 @@ export class CategoryVersionRepositoryService {
       version,
       status: 'active',
     };
+  }
+
+  private generateInternalId(categoryId: string, version: string): string {
+    return `${categoryId}/${version}`;
   }
 }

@@ -21,7 +21,7 @@ export class Document {
     enum: documentType,
   })
   @IsIn(documentType)
-  public documentType?: DocumentType;
+  public documentType: DocumentType;
 
   @IsString()
   @IsOptional()

@@ -6,5 +6,6 @@ lightRateLux,lightRateInLum * roomArea,Рівень освітлення в лю
 P,lightRateLux / quantity / η,Потужність
 workingHoursInWeek,hoursInDay * daysInWeek,Кількість робочих годин на тиждень
 workingHoursInYear,workingHoursInWeek * weeksInYear,Кількість робочих годин на рік
-energyEconomy,((Pselected * quantity - Pother * quantity) * workingHoursInYear) / 1000,-
-financeEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * workingHoursInYear,-
+energyEconomy,((Pselected * quantity - Pother * quantity) * workingHoursInYear) / 1000,Економія енергії
+financeEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * workingHoursInYear,Фінансова економія за рік
+lifetimeFinanceEconomy,(Pselected * 0.001 * quantity * tariff - Pother * 0.001 * quantity * tariff) * timeRate,Фінансова економія за термін служби

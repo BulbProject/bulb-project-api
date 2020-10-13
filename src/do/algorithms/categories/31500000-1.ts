@@ -55,6 +55,7 @@ type Calculation = {
     workingHoursInYear?: number;
     energyEconomy?: number;
     financeEconomy?: number;
+    lifetimeFinanceEconomy?: number;
   };
 };
 
@@ -103,15 +104,24 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     })?.value as unknown;
   }
 
-  private static getDirectoryPower(providedPower: number, availablePowers: number[]): number {
-    return (
-      availablePowers.find(
-        (availablePower: number) => {
-          return availablePower >= providedPower;
-        }
-        // @TODO need clarification
-      ) || Math.max(...availablePowers)
-    );
+  private static getDirectoryPower(
+    providedPower: number,
+    availablePowers: number[],
+    powerIsGreaterErrorMessage?: string
+  ): number {
+    const directoryPower = availablePowers.find((availablePower: number) => {
+      return availablePower >= providedPower;
+    });
+
+    if (!directoryPower && powerIsGreaterErrorMessage) {
+      throw new BadRequestException(
+        `${powerIsGreaterErrorMessage}. Maximum power value from directory - ${
+          availablePowers[availablePowers.length - 1]
+        }W.`
+      );
+    }
+
+    return directoryPower || availablePowers[availablePowers.length - 1];
   }
 
   private static generateAvailableVariants(
@@ -195,15 +205,27 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             },
           });
 
-          if (currentBulb.financeEconomy) {
-            observations.push({
-              id: 'financeEconomy',
-              notes: 'Фінансової економії',
-              value: {
-                amount: +currentBulb.financeEconomy.toFixed(0),
-                currency: 'грн/рік' as 'UAH',
-              },
-            });
+          if (currentBulb.financeEconomy && currentBulb.lifetimeFinanceEconomy) {
+            observations.push(
+              ...[
+                {
+                  id: 'financeEconomy',
+                  notes: 'Фінансової економії',
+                  value: {
+                    amount: Number(currentBulb.financeEconomy.toFixed(0)),
+                    currency: 'грн/рік',
+                  },
+                },
+                {
+                  id: 'lifetimeFinanceEconomy',
+                  notes: 'Фінансової економії за термін служби',
+                  value: {
+                    amount: Number(currentBulb.lifetimeFinanceEconomy.toFixed(0)),
+                    currency: 'грн',
+                  },
+                },
+              ]
+            );
           }
 
           // eslint-disable-next-line no-unused-expressions
@@ -218,7 +240,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
         metrics,
         avgValue: {
           amount: 0,
-          currency: 'UAH',
+          currency: 'грн',
         },
         relatedProducts: ['https://prozorro.gov.ua/ProzorroMarket'],
         criteria: [
@@ -311,6 +333,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
       workingHoursInYear: 'workingHoursInYear',
       energyEconomy: 'energyEconomy',
       financeEconomy: 'financeEconomy',
+      lifetimeFinanceEconomy: 'lifetimeFinanceEconomy',
     } as const;
 
     const formulas = getFormulas(calculatedValuesMap, formulasTable);
@@ -365,7 +388,8 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
 
       const directoryPower = LightingEquipmentAndElectricLamps.getDirectoryPower(
         providedPower,
-        techChars[selectedBulbType].availablePowers
+        techChars[selectedBulbType].availablePowers,
+        'The transmitted power value is greater than the maximum from the directory'
       );
 
       const lum = evaluate(formulas.lum, {
@@ -645,8 +669,8 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
         });
 
         availableBulbTypes[bulbType].workingHoursInYear = workingHoursInYear;
-        availableBulbTypes[bulbType].modeOfUseLifetime = +(techChars[bulbType].timeRate / workingHoursInYear).toFixed(
-          2
+        availableBulbTypes[bulbType].modeOfUseLifetime = Number(
+          (techChars[bulbType].timeRate / workingHoursInYear).toFixed(2)
         );
 
         if (workingHoursInYear) {
@@ -658,13 +682,21 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
           });
 
           if (tariff) {
-            availableBulbTypes[bulbType].financeEconomy = +evaluate(formulas.financeEconomy, {
+            availableBulbTypes[bulbType].financeEconomy = evaluate(formulas.financeEconomy, {
               Pselected: availableBulbTypes[selectedBulbType].power,
               quantity,
               tariff,
               Pother: power,
               workingHoursInYear,
-            }).toFixed(2);
+            });
+
+            availableBulbTypes[bulbType].lifetimeFinanceEconomy = evaluate(formulas.lifetimeFinanceEconomy, {
+              Pselected: availableBulbTypes[selectedBulbType].power,
+              quantity,
+              tariff,
+              Pother: power,
+              timeRate: techChars[bulbType].timeRate,
+            });
           }
         }
       });
