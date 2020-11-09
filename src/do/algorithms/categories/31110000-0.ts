@@ -95,11 +95,11 @@ export class ElectricMotors extends AlgorithmEngine {
           relatedItem: motor,
           metrics: [
             {
-              id: '0100',
+              id: 'energyEconomy',
               title: 'Показники енергоефективності',
               observations: [
                 {
-                  id: '0101',
+                  id: uuid(),
                   measure: efficiencyObject[requestedPower][motor][requestedNumberOfPoles as string],
                   notes: 'ККД',
                   unit: {
@@ -143,12 +143,11 @@ export class ElectricMotors extends AlgorithmEngine {
         const yearEnergyProductionImMW = yearEnergyProduction / 1000;
 
         variant.metrics.push({
-          id: '0200',
-          title: 'Економічні показники',
+          id: 'energyEconomy',
+          title: 'Виробнича ємність',
           observations: [
             {
-              id: 'energyEconomy',
-              notes: 'Виробнича ємність',
+              id: uuid(),
               measure: (yearEnergyProductionImMW < 0.01 ? yearEnergyProduction : yearEnergyProductionImMW).toFixed(2),
               unit: {
                 id: '332',
@@ -159,13 +158,18 @@ export class ElectricMotors extends AlgorithmEngine {
         });
 
         if (tariff && variant.relatedItem !== Variants.IE1) {
-          variant.metrics[1].observations.push({
+          variant.metrics.push({
             id: 'financeEconomy',
-            notes: 'Фінансова економія',
-            value: {
-              amount: Number(((yearEnergyProduction - ei1YearEnergyProduction) * tariff).toFixed(0)),
-              currency: 'грн/рік',
-            },
+            title: 'Фінансова економія',
+            observations: [
+              {
+                id: uuid(),
+                value: {
+                  amount: Number(((yearEnergyProduction - ei1YearEnergyProduction) * tariff).toFixed(0)),
+                  currency: 'грн/рік',
+                },
+              },
+            ],
           });
         }
       });
