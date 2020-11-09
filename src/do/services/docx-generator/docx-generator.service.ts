@@ -309,7 +309,8 @@ export class DocxGeneratorService {
           ];
         }),
 
-        new Paragraph({
+        /* Temporary solution */
+        /* new Paragraph({
           pageBreakBefore: true,
         }),
 
@@ -320,7 +321,7 @@ export class DocxGeneratorService {
               children: [
                 new TableCell({
                   ...DocxGeneratorService.tableCellStyles,
-                  children: [DocxGeneratorService.subLetterHeading('Мінімальні значення вимог зелених закупівель')],
+                  children: [DocxGeneratorService.subLetterHeading('Мінімальні значення вимог зелених закупівель')],
                 }),
 
                 new TableCell({
@@ -335,7 +336,7 @@ export class DocxGeneratorService {
               ],
             }),
           ],
-        }),
+        }), */
       ],
     });
 
