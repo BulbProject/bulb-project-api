@@ -198,24 +198,22 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             title: 'Економія електроенергії',
             observations: [
               {
-                id: uuid(),
                 notes: 'на рік',
                 measure: currentBulb.energyEconomy.toFixed(currentBulb.energyEconomy >= 1 ? 0 : 1),
-                unit: {
-                  id: '332',
-                  name: 'кВт*год',
-                },
               },
               {
-                id: uuid(),
                 notes: 'за весь термін',
                 measure: currentBulb.lifetimeEnergyEconomy.toFixed(currentBulb.energyEconomy >= 1 ? 0 : 1),
-                unit: {
-                  id: '332',
-                  name: 'кВт*год',
-                },
               },
-            ],
+            ].map(({ notes, measure }) => ({
+              id: uuid(),
+              notes,
+              measure,
+              unit: {
+                id: '332',
+                name: 'кВт*год',
+              },
+            })),
           };
 
           metrics.push(energyEconomy);
@@ -226,22 +224,21 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
               title: 'Фінансова економія',
               observations: [
                 {
-                  id: uuid(),
                   notes: 'на рік',
-                  value: {
-                    amount: Number(currentBulb.financeEconomy.toFixed(0)),
-                    currency: 'грн',
-                  },
+                  amount: Number(currentBulb.financeEconomy.toFixed(0)),
                 },
                 {
-                  id: uuid(),
                   notes: 'за весь термін',
-                  value: {
-                    amount: Number(currentBulb.lifetimeFinanceEconomy.toFixed(0)),
-                    currency: 'грн',
-                  },
+                  amount: Number(currentBulb.lifetimeFinanceEconomy.toFixed(0)),
                 },
-              ],
+              ].map(({ notes, amount }) => ({
+                id: uuid(),
+                notes,
+                value: {
+                  amount,
+                  currency: 'грн',
+                },
+              })),
             };
 
             metrics.push(financeEconomy);
