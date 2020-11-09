@@ -3604,9 +3604,9 @@ find-cache-dir@^2.1.0:
     pkg-dir "^3.0.0"
 
 find-my-way@^3.0.0:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/find-my-way/-/find-my-way-3.0.4.tgz#a485973d1a3fdafd989ac9f12fd2d88e83cda268"
-  integrity sha512-Trl/mNAVvTgCpo9ox6yixkwiZUvecKYUQZoAuMCBACsgGqv+FbWe+jE5sBA5+U8LIWrJk/cw8zPV53GPrjTnsw==
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/find-my-way/-/find-my-way-3.0.5.tgz#f71c5ef1b4865401e1b97ba428121a8f55439eec"
+  integrity sha512-FweGg0cv1sBX8z7WhvBX5B5AECW4Zdh/NiB38Oa0qwSNIyPgRBCl/YjxuZn/rz38E/MMBHeVKJ22i7W3c626Gg==
   dependencies:
     fast-decode-uri-component "^1.0.1"
     safe-regex2 "^2.0.0"
@@ -5293,12 +5293,7 @@ lodash.zip@^4.2.0:
   resolved "https://registry.yarnpkg.com/lodash.zip/-/lodash.zip-4.2.0.tgz#ec6662e4896408ed4ab6c542a3990b72cc080020"
   integrity sha1-7GZi5IlkCO1KtsVCo5kLcswIACA=
 
-lodash@4.17.20, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15:
-  version "4.17.20"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
-  integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
-
-lodash@^4.17.19:
+lodash@4.17.20, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
