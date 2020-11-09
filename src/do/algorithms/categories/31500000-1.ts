@@ -54,6 +54,7 @@ type Calculation = {
     modeOfUseLifetime?: number;
     workingHoursInYear?: number;
     energyEconomy?: number;
+    lifetimeEnergyEconomy?: number;
     financeEconomy?: number;
     lifetimeFinanceEconomy?: number;
   };
@@ -179,12 +180,11 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
 
       if (bulbType !== selectedBulbType) {
         metrics.push({
-          id: '0300',
-          title: 'Економічні показники',
+          id: 'serviceLife',
+          title: 'Термін служби',
           observations: [
             {
-              id: 'serviceLife',
-              notes: 'Термін служби',
+              id: uuid(),
               measure: (
                 techCharacteristics[bulbType].timeRate / techCharacteristics[selectedBulbType].timeRate
               ).toFixed(1),
@@ -192,44 +192,60 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
           ],
         });
 
-        if (currentBulb.energyEconomy) {
-          const observations = [];
-
-          observations.push({
+        if (currentBulb.energyEconomy && currentBulb.lifetimeEnergyEconomy) {
+          const energyEconomy = {
             id: 'energyEconomy',
-            notes: 'Менше енергії',
-            measure: currentBulb.energyEconomy.toFixed(currentBulb.energyEconomy >= 1 ? 0 : 1),
-            unit: {
-              id: '332',
-              name: 'кВт*год/рік',
-            },
-          });
+            title: 'Економія електроенергії',
+            observations: [
+              {
+                id: uuid(),
+                notes: 'на рік',
+                measure: currentBulb.energyEconomy.toFixed(currentBulb.energyEconomy >= 1 ? 0 : 1),
+                unit: {
+                  id: '332',
+                  name: 'кВт*год',
+                },
+              },
+              {
+                id: uuid(),
+                notes: 'за весь термін',
+                measure: currentBulb.lifetimeEnergyEconomy.toFixed(currentBulb.energyEconomy >= 1 ? 0 : 1),
+                unit: {
+                  id: '332',
+                  name: 'кВт*год',
+                },
+              },
+            ],
+          };
+
+          metrics.push(energyEconomy);
 
           if (currentBulb.financeEconomy && currentBulb.lifetimeFinanceEconomy) {
-            observations.push(
-              ...[
+            const financeEconomy = {
+              id: 'financeEconomy',
+              title: 'Фінансова економія',
+              observations: [
                 {
-                  id: 'financeEconomy',
-                  notes: 'Фінансової економії',
+                  id: uuid(),
+                  notes: 'на рік',
                   value: {
                     amount: Number(currentBulb.financeEconomy.toFixed(0)),
-                    currency: 'грн/рік',
+                    currency: 'грн',
                   },
                 },
                 {
-                  id: 'lifetimeFinanceEconomy',
-                  notes: 'Фінансової економії за термін служби',
+                  id: uuid(),
+                  notes: 'за весь термін',
                   value: {
                     amount: Number(currentBulb.lifetimeFinanceEconomy.toFixed(0)),
                     currency: 'грн',
                   },
                 },
-              ]
-            );
-          }
+              ],
+            };
 
-          // eslint-disable-next-line no-unused-expressions
-          metrics.find((metric) => metric.id === '0300')?.observations.push(...observations);
+            metrics.push(financeEconomy);
+          }
         }
       }
 
@@ -332,6 +348,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
       workingHoursInWeek: 'workingHoursInWeek',
       workingHoursInYear: 'workingHoursInYear',
       energyEconomy: 'energyEconomy',
+      lifetimeEnergyEconomy: 'lifetimeEnergyEconomy',
       financeEconomy: 'financeEconomy',
       lifetimeFinanceEconomy: 'lifetimeFinanceEconomy',
     } as const;
@@ -679,6 +696,13 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             quantity,
             Pother: power,
             workingHoursInYear,
+          });
+
+          availableBulbTypes[bulbType].lifetimeEnergyEconomy = evaluate(formulas.lifetimeEnergyEconomy, {
+            Pselected: availableBulbTypes[selectedBulbType].power,
+            quantity,
+            Pother: power,
+            timeRate: techChars[bulbType].timeRate,
           });
 
           if (tariff) {
@@ -1128,7 +1152,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                 {
                   title: Functionality.SwitchingCycle,
                   dataType: 'integer',
-                  minValue: 0,
+                  minValue: 30000,
                   unit: {
                     id: '',
                     name: 'h',
@@ -1233,7 +1257,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                 {
                   title: Functionality.SwitchingCycle,
                   dataType: 'integer',
-                  minValue: 0,
+                  minValue: 30000,
                   unit: {
                     id: '',
                     name: 'h',
@@ -1313,7 +1337,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             {
               title: Functionality.SwitchingCycle,
               dataType: 'integer',
-              minValue: 0,
+              minValue: techChars[Variants.LED].timeRate / 2,
               unit: {
                 id: '',
                 name: 'h',
@@ -1363,10 +1387,6 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   return 0.9;
                 }
               })(),
-              unit: {
-                id: '',
-                name: '%',
-              },
             },
             {
               title: Functionality.ColourRendering,
