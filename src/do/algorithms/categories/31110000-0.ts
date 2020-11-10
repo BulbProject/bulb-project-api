@@ -95,7 +95,7 @@ export class ElectricMotors extends AlgorithmEngine {
           relatedItem: motor,
           metrics: [
             {
-              id: 'energyEconomy',
+              id: uuid(),
               title: 'Показники енергоефективності',
               observations: [
                 {
@@ -148,10 +148,11 @@ export class ElectricMotors extends AlgorithmEngine {
           observations: [
             {
               id: uuid(),
+              notes: 'за рік',
               measure: (yearEnergyProductionImMW < 0.01 ? yearEnergyProduction : yearEnergyProductionImMW).toFixed(2),
               unit: {
                 id: '332',
-                name: `${yearEnergyProductionImMW < 0.01 ? 'к' : 'М'}Вт/рік`,
+                name: `${yearEnergyProductionImMW < 0.01 ? 'к' : 'М'}Вт`,
               },
             },
           ],
@@ -164,9 +165,10 @@ export class ElectricMotors extends AlgorithmEngine {
             observations: [
               {
                 id: uuid(),
+                notes: 'за рік',
                 value: {
                   amount: Number(((yearEnergyProduction - ei1YearEnergyProduction) * tariff).toFixed(0)),
-                  currency: 'грн/рік',
+                  currency: 'грн',
                 },
               },
             ],
