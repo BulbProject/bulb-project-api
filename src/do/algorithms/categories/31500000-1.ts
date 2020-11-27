@@ -830,7 +830,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
 
     const efficacyCriterion: Criterion = {
       id: '010000',
-      title: 'Вимоги до ефективності',
+      title: 'Вимоги до енергоефективності',
       requirementGroups: [efficacyRequirementGroup],
     };
 
