@@ -1204,10 +1204,6 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   title: Functionality.PowerFactor,
                   dataType: 'number',
                   minValue: power <= 25 ? 0.55 : 0.9,
-                  unit: {
-                    id: '',
-                    name: 'kW/klm',
-                  },
                 },
                 {
                   title: Functionality.ColourRendering,
@@ -1291,10 +1287,6 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   title: Functionality.PowerFactor,
                   dataType: 'number',
                   minValue: power <= 25 ? 0.55 : 0.9,
-                  unit: {
-                    id: '',
-                    name: 'kW/klm',
-                  },
                 },
                 {
                   title: Functionality.ColourRendering,
