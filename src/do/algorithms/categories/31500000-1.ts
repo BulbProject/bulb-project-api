@@ -138,7 +138,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
       metrics.push(
         {
           id: '0100',
-          title: 'Технічні показники',
+          title: 'Технічні характеристики',
           observations: [
             {
               id: '0101',
@@ -151,7 +151,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             },
             {
               id: '0102',
-              notes: 'Термін експлуатації',
+              notes: 'Номінальний термін служби',
               measure: techCharacteristics[bulbType].timeRate,
               unit: {
                 id: '155',
