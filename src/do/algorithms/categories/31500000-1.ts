@@ -975,7 +975,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                 {
                   title: Functionality.PowerFactor,
                   dataType: 'number',
-                  minValue: power <= 25 ? 0.5 : 0.95,
+                  minValue: power <= 25 ? 0.5 : 0.9,
                 },
               ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
             );
@@ -1108,7 +1108,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                 {
                   title: Functionality.PowerFactor,
                   dataType: 'number',
-                  minValue: power <= 25 ? 0.5 : 0.95,
+                  minValue: power <= 25 ? 0.5 : 0.9,
                 },
               ].map(generateId(functionalityRequirementsBaseId)) as Requirement[])
             );
@@ -1212,7 +1212,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                 {
                   title: Functionality.ColourRendering,
                   dataType: 'integer',
-                  maxValue: 80,
+                  minValue: 80,
                   unit: {
                     id: '',
                     name: 'Ra',
@@ -1299,7 +1299,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                 {
                   title: Functionality.ColourRendering,
                   dataType: 'integer',
-                  maxValue: 80,
+                  minValue: 80,
                   unit: {
                     id: '',
                     name: 'Ra',
