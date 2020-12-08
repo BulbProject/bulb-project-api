@@ -1188,7 +1188,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   maxValue: 2,
                   unit: {
                     id: '',
-                    name: 'kW/klm',
+                    name: 'mW/klm',
                   },
                 },
                 {
@@ -1197,7 +1197,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   maxValue: 0.01,
                   unit: {
                     id: '',
-                    name: 'kW/klm',
+                    name: 'mW/klm',
                   },
                 },
                 {
