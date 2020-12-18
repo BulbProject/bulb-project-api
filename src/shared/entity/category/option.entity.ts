@@ -20,4 +20,8 @@ export class Option {
   })
   @IsUnion(['string', 'number'])
   public value: string | number;
+
+  @IsString()
+  @IsOptional()
+  public relatedRequirementID?: string;
 }
