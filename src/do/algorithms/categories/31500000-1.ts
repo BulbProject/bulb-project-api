@@ -359,7 +359,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
       };
     }, {} as Calculation);
 
-    const selectedBulbType = requirementResponses.find(({ requirement }) => requirement.id.startsWith('02'))?.value as
+    const selectedBulbType = requirementResponses.find(({ requirement }) => requirement.id.startsWith('03'))?.value as
       | Variants
       | undefined;
 
@@ -637,7 +637,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             return (
               requirementGroup.id ===
               requirementResponses
-                .find(({ requirement }) => requirement.id.startsWith('02'))
+                .find(({ requirement }) => requirement.id.startsWith('03'))
                 ?.requirement.id.replace(/\d{6}$/, '000000')
             );
           });
@@ -665,11 +665,11 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     }
 
     // 3) Bulb lifetime
-    const modeOfUse = this.tryGetModeOfUse(requirementResponses, '03');
+    const modeOfUse = this.tryGetModeOfUse(requirementResponses, '04');
 
     if (modeOfUse) {
       const { hoursInDay, daysInWeek } = modeOfUse;
-      const tariff = this.tryGetTariff(requirementResponses, '04');
+      const tariff = this.tryGetTariff(requirementResponses, '05');
 
       (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
         const { quantity, power } = availableBulbTypes[bulbType];
