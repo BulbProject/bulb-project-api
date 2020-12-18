@@ -79,7 +79,7 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=12.16.0 <13.0.0"
+    "node": ">=12.16.0 <=14.15.1"
   },
   "husky": {
     "hooks": {
