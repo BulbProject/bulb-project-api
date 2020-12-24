@@ -23,6 +23,15 @@ import type { SpecificationResponse } from '../../entity/specification';
 import { DocxGeneratorService } from '../../services/docx-generator';
 import { CsvService } from '../../services/csv';
 
+enum Criteria {
+  TypeOfNeed = '01',
+  TypeOfBase = '02',
+  BulbType = '03',
+  LightFlowType = '04',
+  ModeOfUse = '05',
+  Tariff = '06',
+}
+
 enum Variants {
   Incandescent = '31519100-8',
   Halogen = '31512000-8',
@@ -71,32 +80,50 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     super();
   }
 
-  private static calculateEnergyEfficiencyClass(eei: number): string {
-    if (eei <= 0.13) {
-      return 'A++';
+  private static reduceEnergyEfficiencyFormulas(
+    eei: number,
+    configuration: Array<[energyEfficiencyClass: string, upperRange?: number]>
+  ): string {
+    /* eslint-disable immutable/no-let */
+    let [finalEnergyEfficiencyClass] = configuration[0];
+
+    for (let i = 0; i < configuration.length; i += 1) {
+      const [energyEfficiencyClass, upperRange = eei] = configuration[i];
+      const [, lowerRange = 0] = configuration[i - 1] || [];
+
+      if (eei > lowerRange && eei <= upperRange) {
+        finalEnergyEfficiencyClass = energyEfficiencyClass;
+
+        break;
+      }
     }
 
-    if (eei > 0.13 && eei <= 0.18) {
-      return 'A+';
+    return finalEnergyEfficiencyClass;
+  }
+
+  private static calculateEnergyEfficiencyClass(eei: number, lightFlowType: LightFlowType): string {
+    if (lightFlowType === LightFlowType.Directional) {
+      return LightingEquipmentAndElectricLamps.reduceEnergyEfficiencyFormulas(eei, [
+        ['A++', 0.13],
+        ['A+', 0.18],
+        ['A', 0.4],
+        ['B', 0.95],
+        ['C', 1.2],
+        ['D', 1.75],
+        ['E'],
+      ]);
     }
 
-    if (eei > 0.18 && eei <= 0.4) {
-      return 'A';
-    }
-
-    if (eei > 0.4 && eei <= 0.95) {
-      return 'B';
-    }
-
-    if (eei > 0.95 && eei <= 1.2) {
-      return 'C';
-    }
-
-    if (eei > 1.2 && eei <= 1.75) {
-      return 'D';
-    }
-
-    return 'E';
+    // LightFlowType.NonDirectional
+    return LightingEquipmentAndElectricLamps.reduceEnergyEfficiencyFormulas(eei, [
+      ['A++', 0.11],
+      ['A+', 0.17],
+      ['A', 0.24],
+      ['B', 0.6],
+      ['C', 0.8],
+      ['D', 0.95],
+      ['E'],
+    ]);
   }
 
   private static getValueFromResponses(responses: RequirementResponse[], requirementId: string): unknown {
@@ -303,6 +330,16 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     ];
   }
 
+  private static getLightFlowType(requirementResponses: RequirementResponse[], criterionNumber: string): LightFlowType {
+    const [lightFlowTypeResponse] = this.getResponsesForCriterion(requirementResponses, criterionNumber);
+
+    if (!lightFlowTypeResponse) {
+      return LightFlowType.NonDirectional;
+    }
+
+    return lightFlowTypeResponse.value as LightFlowType;
+  }
+
   // eslint-disable-next-line sonarjs/cognitive-complexity
   public async getCalculation({
     category: { items, criteria, conversions },
@@ -359,9 +396,10 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
       };
     }, {} as Calculation);
 
-    const selectedBulbType = requirementResponses.find(({ requirement }) => requirement.id.startsWith('03'))?.value as
-      | Variants
-      | undefined;
+    const selectedBulbType = LightingEquipmentAndElectricLamps.getResponsesForCriterion(
+      requirementResponses,
+      Criteria.BulbType
+    )[0]?.value as Variants | undefined;
 
     if (selectedBulbType === undefined || !Object.values(Variants).includes(selectedBulbType)) {
       throw new BadRequestException(`Incorrect lamp type was provided.`);
@@ -374,7 +412,10 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     }
 
     // 1) Type of need
-    const typeOfNeedResponses = requirementResponses.filter(({ requirement }) => requirement.id.startsWith('01'));
+    const typeOfNeedResponses = LightingEquipmentAndElectricLamps.getResponsesForCriterion(
+      requirementResponses,
+      Criteria.TypeOfNeed
+    );
 
     const typeOfNeedResponsesIsConsistent = typeOfNeedResponses.every(({ requirement }) => {
       return typeOfNeedResponses[0].requirement.id.slice(2, 4) === requirement.id.slice(2, 4);
@@ -665,11 +706,11 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     }
 
     // 3) Bulb lifetime
-    const modeOfUse = this.tryGetModeOfUse(requirementResponses, '04');
+    const modeOfUse = LightingEquipmentAndElectricLamps.tryGetModeOfUse(requirementResponses, Criteria.ModeOfUse);
 
     if (modeOfUse) {
       const { hoursInDay, daysInWeek } = modeOfUse;
-      const tariff = this.tryGetTariff(requirementResponses, '05');
+      const tariff = LightingEquipmentAndElectricLamps.tryGetTariff(requirementResponses, Criteria.Tariff);
 
       (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
         const { quantity, power } = availableBulbTypes[bulbType];
@@ -725,7 +766,8 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
 
     (Object.keys(availableBulbTypes) as Variants[]).forEach((bulbType) => {
       availableBulbTypes[bulbType].eeClass = LightingEquipmentAndElectricLamps.calculateEnergyEfficiencyClass(
-        availableBulbTypes[bulbType].eei
+        availableBulbTypes[bulbType].eei,
+        LightingEquipmentAndElectricLamps.getLightFlowType(requirementResponses, Criteria.LightFlowType)
       );
     });
 
