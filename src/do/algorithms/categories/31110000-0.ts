@@ -115,7 +115,7 @@ export class ElectricMotors extends AlgorithmEngine {
       })
     );
 
-    const modeOfUse = this.tryGetModeOfUse(requestedNeed.requirementResponses, '03');
+    const modeOfUse = ElectricMotors.tryGetModeOfUse(requestedNeed.requirementResponses, '03');
 
     if (modeOfUse) {
       const { hoursInDay, daysInWeek } = modeOfUse;
@@ -125,7 +125,7 @@ export class ElectricMotors extends AlgorithmEngine {
           requestedPower.split('-').length
         : +requestedPower;
 
-      const tariff = this.tryGetTariff(requestedNeed.requirementResponses, '04');
+      const tariff = ElectricMotors.tryGetTariff(requestedNeed.requirementResponses, '04');
       const ei1YearEnergyProduction =
         ((availableVariants.find(({ relatedItem }) => relatedItem === Variants.IE1)?.metrics[0].observations[0]
           .measure as number) || 0) *
