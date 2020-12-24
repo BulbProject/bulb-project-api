@@ -12,35 +12,20 @@ interface ModeOfUse {
 export abstract class AlgorithmEngine {
   public readonly categoryId: string;
 
-  protected tryGetTariff(requirementResponses: RequirementResponse[], criterionNumber: string): number | void {
-    const tariffResponses = requirementResponses.filter(({ requirement }) => {
+  protected static getResponsesForCriterion(
+    requirementResponses: RequirementResponse[],
+    criterionNumber: string
+  ): RequirementResponse[] {
+    return requirementResponses.filter(({ requirement }) => {
       return requirement.id.startsWith(criterionNumber);
     });
-
-    if (tariffResponses.length !== 1) {
-      throw new BadRequestException(`Incorrect tariffs information provided.`);
-    }
-
-    const tariffValue = tariffResponses[0].value;
-    const requirementReferenceId = tariffResponses[0].requirement.id;
-
-    if (
-      !['number', 'boolean'].includes(typeof tariffValue) ||
-      (requirementReferenceId === '0401010000' && (typeof tariffValue !== 'number' || tariffValue <= 0)) ||
-      (requirementReferenceId === '0402010000' && (typeof tariffValue !== 'boolean' || !tariffValue))
-    ) {
-      throw new BadRequestException(`Requirement responses for tariffs are not valid.`);
-    }
-
-    if (typeof tariffValue === 'number') {
-      return tariffValue;
-    }
   }
 
-  protected tryGetModeOfUse(requirementResponses: RequirementResponse[], criterionNumber: string): ModeOfUse | void {
-    const modeOfUseResponses = requirementResponses.filter(({ requirement }) => {
-      return requirement.id.startsWith(criterionNumber);
-    });
+  protected static tryGetModeOfUse(
+    requirementResponses: RequirementResponse[],
+    criterionNumber: string
+  ): ModeOfUse | void {
+    const modeOfUseResponses = this.getResponsesForCriterion(requirementResponses, criterionNumber);
 
     if (modeOfUseResponses.length === 0) {
       throw new BadRequestException(`Mode of use responses must be provided.`);
@@ -69,6 +54,30 @@ export abstract class AlgorithmEngine {
       }
 
       return { hoursInDay, daysInWeek };
+    }
+  }
+
+  protected static tryGetTariff(requirementResponses: RequirementResponse[], criterionNumber: string): number | void {
+    const tariffResponses = this.getResponsesForCriterion(requirementResponses, criterionNumber);
+
+    if (tariffResponses.length !== 1) {
+      throw new BadRequestException(`Incorrect tariffs information provided.`);
+    }
+
+    const tariffValue = tariffResponses[0].value;
+    const requirementReferenceId = tariffResponses[0].requirement.id;
+
+    if (
+      !['number', 'boolean'].includes(typeof tariffValue) ||
+      (requirementReferenceId === `${criterionNumber}01010000` &&
+        (typeof tariffValue !== 'number' || tariffValue <= 0)) ||
+      (requirementReferenceId === `${criterionNumber}02010000` && (typeof tariffValue !== 'boolean' || !tariffValue))
+    ) {
+      throw new BadRequestException(`Requirement responses for tariffs are not valid.`);
+    }
+
+    if (typeof tariffValue === 'number') {
+      return tariffValue;
     }
   }
 
