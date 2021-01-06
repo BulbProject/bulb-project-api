@@ -31,7 +31,7 @@
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.3.0",
     "atob": "^2.1.2",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "buid": "^0.3.1",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
