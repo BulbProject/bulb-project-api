@@ -882,15 +882,15 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
     };
 
     enum Functionality {
-      RatedLifetime = 'Rated lifetime',
-      LumenMaintenance = 'Lumen maintenance',
-      SwitchingCycle = 'Switching cycle',
-      StartingTime = 'Starting time',
-      WarmUp = 'Warm up',
-      PrematureFailure = 'Premature failure rate',
-      PowerFactor = 'Power factor',
-      ColourRendering = 'Colour rendering (Ra)',
-      SurvivalFactor = 'Survival factor',
+      RatedLifetime = 'Номінальний термін служби ламп',
+      LumenMaintenance = 'Збереження світловіддачі',
+      SwitchingCycle = 'Кількість циклів вимикання перед виходом з ладу',
+      StartingTime = 'Час запуску',
+      WarmUp = 'Час розігрівання лампи',
+      PrematureFailure = 'Відсоток передчасного виходу з ладу',
+      PowerFactor = 'Коефіцієнт потужності',
+      ColourRendering = 'Кольоропередача',
+      SurvivalFactor = 'Коефіцієнт довговічності лампи',
     }
 
     switch (relatedItem) {
@@ -905,11 +905,11 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   minValue: 2000,
                   unit: {
                     id: '',
-                    name: 'h',
+                    name: 'год',
                   },
                 },
                 {
-                  title: `${Functionality.LumenMaintenance} at 75% of rated average lifetime`,
+                  title: `${Functionality.LumenMaintenance} при 75% номінального середнього терміна служби ламп`,
                   dataType: 'integer',
                   minValue: 85,
                   unit: {
@@ -928,20 +928,20 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   maxValue: 0.2,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.WarmUp} to 60% of lumenus flux`,
+                  title: `${Functionality.WarmUp} до 60% Ф`,
                   dataType: 'number',
                   maxValue: 1,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.PrematureFailure} at 200 h`,
+                  title: `${Functionality.PrematureFailure} при 200 год`,
                   dataType: 'number',
                   maxValue: 5,
                   unit: {
@@ -970,11 +970,11 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   minValue: 2000,
                   unit: {
                     id: '',
-                    name: 'h',
+                    name: 'год',
                   },
                 },
                 {
-                  title: `${Functionality.LumenMaintenance} at 75% of rated average lifetime`,
+                  title: `${Functionality.LumenMaintenance} при 75% номінального середнього терміна служби ламп`,
                   dataType: 'integer',
                   minValue: 80,
                   unit: {
@@ -993,20 +993,20 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   maxValue: 0.2,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.WarmUp} to 60% of lumenus flux`,
+                  title: `${Functionality.WarmUp} до 60% Ф`,
                   dataType: 'number',
                   maxValue: 1,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.PrematureFailure} at 200 h`,
+                  title: `${Functionality.PrematureFailure} при 200 год`,
                   dataType: 'number',
                   maxValue: 5,
                   unit: {
@@ -1038,11 +1038,11 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   minValue: 2000,
                   unit: {
                     id: '',
-                    name: 'h',
+                    name: 'год',
                   },
                 },
                 {
-                  title: `${Functionality.LumenMaintenance} at 75% of rated average lifetime`,
+                  title: `${Functionality.LumenMaintenance} при 75% номінального середнього терміна служби ламп`,
                   dataType: 'integer',
                   minValue: 85,
                   unit: {
@@ -1061,20 +1061,20 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   maxValue: 0.2,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.WarmUp} to 60% of lumenus flux`,
+                  title: `${Functionality.WarmUp} до 60% Ф`,
                   dataType: 'number',
                   maxValue: 1,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.PrematureFailure} at 200 h`,
+                  title: `${Functionality.PrematureFailure} при 200 год`,
                   dataType: 'number',
                   maxValue: 5,
                   unit: {
@@ -1103,11 +1103,11 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   minValue: 2000,
                   unit: {
                     id: '',
-                    name: 'h',
+                    name: 'год',
                   },
                 },
                 {
-                  title: `${Functionality.LumenMaintenance} at 75% of rated average lifetime`,
+                  title: `${Functionality.LumenMaintenance} при 75% номінального середнього терміна служби ламп`,
                   dataType: 'integer',
                   minValue: 80,
                   unit: {
@@ -1126,20 +1126,20 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   maxValue: 0.2,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.WarmUp} to 60% of lumenus flux`,
+                  title: `${Functionality.WarmUp} до 60% Ф`,
                   dataType: 'number',
                   maxValue: 1,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.PrematureFailure} at 200 h`,
+                  title: `${Functionality.PrematureFailure} при 200 год`,
                   dataType: 'number',
                   maxValue: 5,
                   unit: {
@@ -1166,12 +1166,12 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             functionalityRequirementGroup.requirements.push(
               ...([
                 {
-                  title: `${Functionality.SurvivalFactor} at 6000 h`,
+                  title: `${Functionality.SurvivalFactor} при 6000 год`,
                   dataType: 'number',
                   minValue: 0.7,
                 },
                 {
-                  title: `${Functionality.LumenMaintenance} at 2000 h`,
+                  title: `${Functionality.LumenMaintenance} при 2000 год`,
                   dataType: 'integer',
                   minValue: 88,
                   unit: {
@@ -1180,7 +1180,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   },
                 },
                 {
-                  title: `${Functionality.LumenMaintenance} at 6000 h`,
+                  title: `${Functionality.LumenMaintenance} при 6000 год`,
                   dataType: 'integer',
                   minValue: 70,
                   unit: {
@@ -1194,7 +1194,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   minValue: 30000,
                   unit: {
                     id: '',
-                    name: 'h',
+                    name: 'год',
                   },
                 },
                 {
@@ -1203,20 +1203,20 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   maxValue: power >= 10 ? 1 : 1.5,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.WarmUp} to 60% of lumenus flux`,
+                  title: `${Functionality.WarmUp} до 60% Ф`,
                   dataType: 'integer',
                   maxValue: 40,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.PrematureFailure} at 400 h`,
+                  title: `${Functionality.PrematureFailure} при 400 год`,
                   dataType: 'integer',
                   maxValue: 2,
                   unit: {
@@ -1225,7 +1225,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   },
                 },
                 {
-                  title: 'UVA + UVB radiation',
+                  title: 'Випромінення UVA + UVB',
                   dataType: 'integer',
                   maxValue: 2,
                   unit: {
@@ -1234,7 +1234,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   },
                 },
                 {
-                  title: 'UVC radiation',
+                  title: 'Випромінення UVC',
                   dataType: 'number',
                   maxValue: 0.01,
                   unit: {
@@ -1267,12 +1267,12 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
             functionalityRequirementGroup.requirements.push(
               ...([
                 {
-                  title: `${Functionality.SurvivalFactor} at 6000 h`,
+                  title: `${Functionality.SurvivalFactor} при 6000 год`,
                   dataType: 'number',
                   minValue: 0.7,
                 },
                 {
-                  title: `${Functionality.LumenMaintenance} at 2000 h`,
+                  title: `${Functionality.LumenMaintenance} при 2000 год`,
                   dataType: 'integer',
                   minValue: 83,
                   unit: {
@@ -1281,7 +1281,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   },
                 },
                 {
-                  title: `${Functionality.LumenMaintenance} at 6000 h`,
+                  title: `${Functionality.LumenMaintenance} при 6000 год`,
                   dataType: 'integer',
                   minValue: 70,
                   unit: {
@@ -1295,7 +1295,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   minValue: 30000,
                   unit: {
                     id: '',
-                    name: 'h',
+                    name: 'год',
                   },
                 },
                 {
@@ -1304,20 +1304,20 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
                   maxValue: power >= 10 ? 1 : 1.5,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.WarmUp} to 60% of lumenus flux`,
+                  title: `${Functionality.WarmUp} до 60% Ф`,
                   dataType: 'integer',
                   maxValue: 40,
                   unit: {
                     id: '',
-                    name: 's',
+                    name: 'сек',
                   },
                 },
                 {
-                  title: `${Functionality.PrematureFailure} at 1000 h`,
+                  title: `${Functionality.PrematureFailure} при 1000 год`,
                   dataType: 'integer',
                   maxValue: 5,
                   unit: {
@@ -1352,12 +1352,12 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
         functionalityRequirementGroup.requirements.push(
           ...([
             {
-              title: `${Functionality.SurvivalFactor} at 6000 h`,
+              title: `${Functionality.SurvivalFactor} при 6000 год`,
               dataType: 'number',
               minValue: 0.9,
             },
             {
-              title: `${Functionality.LumenMaintenance} at 6000 h`,
+              title: `${Functionality.LumenMaintenance} при 6000 год`,
               dataType: 'integer',
               minValue: 80,
               unit: {
@@ -1371,7 +1371,7 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
               minValue: techChars[Variants.LED].timeRate / 2,
               unit: {
                 id: '',
-                name: 'h',
+                name: 'год',
               },
             },
             {
@@ -1380,20 +1380,20 @@ export class LightingEquipmentAndElectricLamps extends AlgorithmEngine {
               maxValue: 0.5,
               unit: {
                 id: '',
-                name: 's',
+                name: 'сек',
               },
             },
             {
-              title: `${Functionality.WarmUp} to 95% of lumenus flux`,
+              title: `${Functionality.WarmUp} до 95% Ф`,
               dataType: 'number',
               maxValue: 2,
               unit: {
                 id: '',
-                name: 's',
+                name: 'сек',
               },
             },
             {
-              title: `${Functionality.PrematureFailure} at 1000 h`,
+              title: `${Functionality.PrematureFailure} при 1000 год`,
               dataType: 'integer',
               maxValue: 5,
               unit: {
