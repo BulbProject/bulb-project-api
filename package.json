@@ -39,7 +39,7 @@
     "csv-string": "^4.0.1",
     "dayjs": "^1.8.34",
     "docx": "^5.3.0",
-    "fastify": "^3.3.0",
+    "fastify": "^3.29.4",
     "fastify-swagger": "^3.3.0",
     "mathjs": "^7.2.0",
     "mongodb": "^3.6.0",
